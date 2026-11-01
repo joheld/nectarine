@@ -36,6 +36,7 @@ gitGraph
 | **CP-08** | Fase 4: Anotaciones Atadas | Callouts, flechas y texto en trayectoria anclados al `node_id` que viajan con los datos. | **Completado** |
 | **CP-09** | Fase 5: Purga DOM & Exportación SVG | Limpieza estricta de gizmos/fantasmas en `exportService.ts` y guardado nativo con Tauri Dialog/FS. | **Completado** |
 | **CP-10** | Verificación Zero-Defect | Batería en 5 frentes: typecheck (0 errores), tests (15/15 pasados), build de producción y socket liveness (HTTP 200 en puerto 5220). | **Completado** |
+| **CP-11** | Lanzadores de Escritorio macOS | Accesos directos creados: `Vectura Studio.app` y `Vectura Studio.command` en el Escritorio con resolución portable de paths y socket liveness. | **Completado** |
 
 ---
 

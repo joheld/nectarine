@@ -63,3 +63,20 @@ Se concibe **Vectura** como un atelier de diseño y analítica nativo para macOS
 - **Cargo Rust Backend**: `cargo check` en `src-tauri` completado exitosamente en 4.58s con compatibilidad nativa para macOS overlay titlebar y plugins Tauri v2 (`fs` y `dialog`).
 - **Pruebas Automatizadas**: 15 tests pasados (100%) en `tests/profiler.test.ts`, `tests/engine.test.ts`, `tests/stateAndEthics.test.ts` y `tests/exportService.test.ts`.
 - **Liveness Gate**: Socket HTTP en `127.0.0.1:5220` activo y respondiendo con `HTTP/1.1 200 OK` y cabeceras de aislamiento WebAssembly (`Cross-Origin-Opener-Policy: same-origin`, `Cross-Origin-Embedder-Policy: require-corp`).
+
+
+---
+
+## Entrada 003 — Creación de Accesos Directos de Escritorio macOS
+- **Fecha y Hora**: 2026-11-01
+- **Fase**: Despliegue y Ergonomía del Sistema
+- **Arquitecto**: Antigravity Principal Software Architect
+
+### Acciones Realizadas
+1. **Scripts de Lanzamiento Desacoplados**:
+   - `run.sh`: Detecta el intérprete de Bun de forma dinámica, verifica la disponibilidad del puerto `5220`, lanza el servidor en segundo plano desacoplado de `stdin` mediante `</dev/null` con `nohup` y sondea el socket hasta validar respuesta `HTTP 200`.
+   - `launch-desktop.sh`: Valida si el servicio ya responde en `http://127.0.0.1:5220`; de lo contrario invoca `run.sh`, abre la URL en el navegador nativo y envía una notificación del sistema mediante `osascript`.
+2. **Accesos Directos en el Escritorio**:
+   - `Vectura Studio.app` (`/Users/joe/Desktop/Vectura Studio.app`): Applet nativo de macOS compilado con `osacompile` que incluye el icono de alta resolución `icon.icns` y firma de código.
+   - `Vectura Studio.command` (`/Users/joe/Desktop/Vectura Studio.command`): Script ejecutable para terminal con permisos `+x`.
+3. **Portabilidad Multi-Máquina**: Cero rutas absolutas estáticas (`$HOME` dinámico).
