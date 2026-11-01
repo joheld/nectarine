@@ -1,6 +1,6 @@
-# PROJECT_MAP.md — Lienzo Studio (Taller de Datos & Arte Vectorial para macOS)
+# PROJECT_MAP.md — Cinnamon Atelier (Taller de Datos & Arte Vectorial para macOS)
 
-> Arquitectura de software, grafo de versiones y flujo reactivo para Lienzo: la estación de trabajo nativa de macOS con tema claro por defecto, pensada para que cualquier persona pueda convertir datos locales en ilustraciones vectoriales con facilidad.
+> Arquitectura de software, grafo de versiones y flujo reactivo para Cinnamon: la estación de trabajo nativa de macOS con estética cálida artesanal (tonos canela, ámbar y crema), icono botánico de ramita de canela y analítica local en memoria con DuckDB-WASM y D3.
 
 ---
 
@@ -17,7 +17,7 @@ gitGraph
     commit id: "canvas-semantic-layers"
     commit id: "lasso-tethered-annotations"
     commit id: "export-clean-purge" tag: "v1.0.0"
-    commit id: "rebrand-lienzo-light-ergonomics" tag: "v1.1.0"
+    commit id: "rebrand-cinnamon-artisanal" tag: "v1.2.0"
 ```
 
 ---
@@ -37,8 +37,9 @@ gitGraph
 | **CP-08** | Fase 4: Anotaciones Atadas | Callouts, flechas y texto en trayectoria anclados al `node_id` que viajan con los datos. | **Completado** |
 | **CP-09** | Fase 5: Purga DOM & Exportación SVG | Limpieza estricta de gizmos/fantasmas en `exportService.ts` y guardado nativo con Tauri Dialog/FS. | **Completado** |
 | **CP-10** | Verificación Zero-Defect | Batería en 5 frentes: typecheck (0 errores), tests (15/15 pasados), build de producción y socket liveness (HTTP 200 en puerto 5220). | **Completado** |
-| **CP-11** | Lanzadores de Escritorio macOS | Accesos directos creados: `Lienzo Studio.app` y `Lienzo Studio.command` en el Escritorio con resolución portable de paths y socket liveness. | **Completado** |
-| **CP-12** | Rediseño Ergonómico & Modo Claro | Rebranding a **Lienzo**, tema claro limpio estilo papel por defecto, conmutador Sol/Luna, barra de inicio rápido y panel inspector de puntos. | **Completado** |
+| **CP-11** | Lanzadores de Escritorio macOS | Accesos directos creados: `Cinnamon.app` y `Cinnamon.command` en el Escritorio con resolución portable de paths y socket liveness. | **Completado** |
+| **CP-12** | Rediseño Ergonómico Accesible | Barra de inicio rápido con carga de datos en 1 clic y panel inspector lateral amigable para editar puntos. | **Completado** |
+| **CP-13** | Rebranding a Cinnamon & Logo Botánico | Renombrado oficial a **Cinnamon**, generación del icono de ramitas de canela (`icon.icns`), y purga total de zonas oscuras a favor de tonos crema, vainilla y ámbar canela. | **Completado** |
 
 ---
 

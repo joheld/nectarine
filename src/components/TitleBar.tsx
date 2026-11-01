@@ -1,76 +1,50 @@
-import React, { useEffect, useState } from 'react';
-import { Database, ShieldCheck, Activity, Sun, Moon } from 'lucide-react';
+import React from 'react';
+import { Database, ShieldCheck, Activity } from 'lucide-react';
 import { useDataStore } from '../store/dataStore';
 import { useMutationStore } from '../store/mutationStore';
+import { CinnamonLogo } from './CinnamonLogo';
 
 export const TitleBar: React.FC = () => {
   const { datasetName, baseNodes } = useDataStore();
   const { mutations } = useMutationStore();
   const pinnedCount = Object.values(mutations).filter((m) => m.isPinned).length;
 
-  // Theme state: defaults to light!
-  const [isDarkMode, setIsDarkMode] = useState(false);
-
-  useEffect(() => {
-    // Check if user previously had dark mode, otherwise default to light
-    const html = document.documentElement;
-    if (isDarkMode) {
-      html.classList.add('dark');
-      html.classList.remove('light');
-    } else {
-      html.classList.remove('dark');
-      html.classList.add('light');
-    }
-  }, [isDarkMode]);
-
-  const toggleTheme = () => {
-    setIsDarkMode((prev) => !prev);
-  };
-
   return (
-    <header className="h-[38px] min-h-[38px] bg-mac-surface border-b border-mac-border flex items-center justify-between px-3 mac-titlebar select-none z-50 transition-colors">
+    <header className="h-[38px] min-h-[38px] bg-mac-surface border-b border-mac-border flex items-center justify-between px-3 mac-titlebar select-none z-50">
       {/* Left traffic lights placeholder spacing */}
-      <div className="flex items-center gap-3 w-52 no-drag">
+      <div className="flex items-center gap-2.5 w-52 no-drag">
         <div className="w-14" /> {/* Space for macOS native stoplights */}
-        <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-[11px] font-mono text-emerald-700 dark:text-emerald-400">
-          <Database className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
+        <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-[11px] font-mono text-emerald-800">
+          <Database className="w-3 h-3 text-emerald-600" />
           <span>DuckDB Local</span>
         </div>
       </div>
 
-      {/* Center Document Title */}
+      {/* Center Document Title with Cinnamon Branch Logo */}
       <div className="flex items-center gap-2 text-xs font-medium text-mac-text">
-        <span className="font-bold text-mac-text tracking-tight text-sm">Lienzo</span>
+        <CinnamonLogo size={20} className="w-5 h-5 shrink-0" />
+        <span className="font-bold text-stone-900 tracking-tight text-sm">Cinnamon</span>
         <span className="text-mac-textMuted">—</span>
-        <span className="text-mac-textSecondary text-[11px]">Taller de Datos & Arte</span>
+        <span className="text-cinnamon-800 font-medium text-[11px]">Atelier de Datos & Arte</span>
         <span className="text-mac-textMuted hidden sm:inline">|</span>
-        <span className="text-mac-textSecondary font-mono text-[11px] bg-black/5 dark:bg-white/5 px-2 py-0.5 rounded border border-mac-border">
+        <span className="text-stone-600 font-mono text-[11px] bg-stone-100 px-2 py-0.5 rounded border border-mac-border">
           {datasetName}
         </span>
       </div>
 
-      {/* Right Telemetry & Theme Switcher */}
+      {/* Right Telemetry */}
       <div className="flex items-center gap-2 no-drag text-[11px] font-mono">
-        <div className="flex items-center gap-1.5 px-2 py-0.5 rounded bg-black/5 dark:bg-white/5 border border-mac-border text-mac-textSecondary">
-          <Activity className="w-3 h-3 text-mac-accent" />
+        <div className="flex items-center gap-1.5 px-2 py-0.5 rounded bg-stone-100 border border-mac-border text-stone-700">
+          <Activity className="w-3 h-3 text-cinnamon-700" />
           <span>{baseNodes.length} puntos</span>
         </div>
 
         {pinnedCount > 0 && (
-          <div className="flex items-center gap-1.5 px-2 py-0.5 rounded bg-amber-500/10 border border-amber-500/30 text-amber-700 dark:text-amber-400">
-            <ShieldCheck className="w-3 h-3" />
+          <div className="flex items-center gap-1.5 px-2 py-0.5 rounded bg-amber-50 border border-amber-200 text-amber-800">
+            <ShieldCheck className="w-3 h-3 text-amber-600" />
             <span>{pinnedCount} fijos</span>
           </div>
         )}
-
-        {/* 1-Click Theme Switcher (Sol / Luna) */}
-        <button
-          onClick={toggleTheme}
-          className="p-1 rounded-md hover:bg-black/5 dark:hover:bg-white/10 text-mac-textSecondary transition-colors"
-          title={isDarkMode ? 'Cambiar a Modo Claro' : 'Cambiar a Modo Oscuro'}
-        >
-          {isDarkMode ? <Sun className="w-3.5 h-3.5 text-amber-400" /> : <Moon className="w-3.5 h-3.5 text-slate-600" />}
-        </button>
       </div>
     </header>
   );

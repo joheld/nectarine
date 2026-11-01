@@ -1,12 +1,12 @@
 [package]
-name = "lienzo"
+name = "cinnamon"
 version = "0.1.0"
-description = "Lienzo — Taller de Datos y Arte Vectorial para macOS"
+description = "Cinnamon — macOS Local Data & Vector Art Atelier"
 authors = ["Antigravity Architecture"]
 edition = "2021"
 
 [lib]
-name = "lienzo_lib"
+name = "cinnamon_lib"
 crate-type = ["staticlib", "cdylib", "rlib"]
 
 [build-dependencies]

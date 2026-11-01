@@ -16,13 +16,11 @@ export const Canvas: React.FC<CanvasProps> = ({ svgRef }) => {
   const { clearSelection } = useMutationStore();
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Pan and Zoom Transform State
   const [zoom, setZoom] = useState(1);
   const [pan, setPan] = useState({ x: 0, y: 0 });
   const [isPanning, setIsPanning] = useState(false);
   const panStartRef = useRef({ x: 0, y: 0 });
 
-  // Context Menu State
   const [contextMenu, setContextMenu] = useState<{
     visible: boolean;
     x: number;
@@ -30,7 +28,6 @@ export const Canvas: React.FC<CanvasProps> = ({ svgRef }) => {
     targetNodeId: string | null;
   }>({ visible: false, x: 0, y: 0, targetNodeId: null });
 
-  // ResizeObserver to update layout bounds dynamically
   useEffect(() => {
     if (!containerRef.current) return;
     const observer = new ResizeObserver((entries) => {
@@ -50,7 +47,6 @@ export const Canvas: React.FC<CanvasProps> = ({ svgRef }) => {
     return () => observer.disconnect();
   }, [setLayoutBounds]);
 
-  // Zoom handlers
   const handleWheel = (e: React.WheelEvent) => {
     e.preventDefault();
     const zoomFactor = e.deltaY < 0 ? 1.08 : 0.92;
@@ -107,38 +103,38 @@ export const Canvas: React.FC<CanvasProps> = ({ svgRef }) => {
   return (
     <div
       ref={containerRef}
-      className="flex-1 h-full relative overflow-hidden bg-[#fafbfc] dark:bg-[#0c0e14] select-none cursor-default transition-colors"
+      className="flex-1 h-full relative overflow-hidden bg-[#fffdf9] select-none cursor-default"
       onWheel={handleWheel}
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
       onContextMenu={handleContextMenu}
     >
-      {/* Dynamic View Controls Overlay */}
-      <div className="absolute bottom-4 right-4 z-20 flex items-center gap-1.5 bg-white/90 dark:bg-mac-panel/90 backdrop-blur-md p-1 rounded-lg border border-mac-border shadow-macos text-xs text-mac-text">
+      {/* Zoom Controls Overlay */}
+      <div className="absolute bottom-4 right-4 z-20 flex items-center gap-1.5 bg-white/95 backdrop-blur-md p-1 rounded-lg border border-stone-200 shadow-sm text-xs text-stone-700">
         <button
           onClick={() => setZoom((z) => Math.min(z * 1.2, 5))}
-          className="p-1.5 rounded hover:bg-black/5 dark:hover:bg-white/10"
+          className="p-1.5 rounded hover:bg-stone-100"
           title="Acercar (Zoom In)"
         >
-          <ZoomIn className="w-3.5 h-3.5" />
+          <ZoomIn className="w-3.5 h-3.5 text-stone-600" />
         </button>
-        <span className="font-mono text-[10px] w-12 text-center text-mac-textSecondary">
+        <span className="font-mono text-[10px] w-12 text-center text-stone-500 font-medium">
           {Math.round(zoom * 100)}%
         </span>
         <button
           onClick={() => setZoom((z) => Math.max(z / 1.2, 0.3))}
-          className="p-1.5 rounded hover:bg-black/5 dark:hover:bg-white/10"
+          className="p-1.5 rounded hover:bg-stone-100"
           title="Alejar (Zoom Out)"
         >
-          <ZoomOut className="w-3.5 h-3.5" />
+          <ZoomOut className="w-3.5 h-3.5 text-stone-600" />
         </button>
         <button
           onClick={resetView}
-          className="p-1.5 rounded hover:bg-black/5 dark:hover:bg-white/10"
-          title="Centrar y restablecer vista"
+          className="p-1.5 rounded hover:bg-stone-100"
+          title="Centrar vista"
         >
-          <Maximize2 className="w-3.5 h-3.5" />
+          <Maximize2 className="w-3.5 h-3.5 text-stone-600" />
         </button>
       </div>
 
@@ -149,15 +145,12 @@ export const Canvas: React.FC<CanvasProps> = ({ svgRef }) => {
         viewBox={`0 0 ${layoutBounds.width} ${layoutBounds.height}`}
       >
         <defs>
-          {/* Subtle blueprint dot pattern adapted for light and dark */}
           <pattern id="grid-dots" width="24" height="24" patternUnits="userSpaceOnUse">
-            <circle cx="12" cy="12" r="0.75" className="fill-slate-300 dark:fill-white/15" />
+            <circle cx="12" cy="12" r="0.8" fill="#e5dacd" />
           </pattern>
         </defs>
 
-        {/* Scaled and Translated Viewport Group */}
         <g transform={`translate(${pan.x}, ${pan.y}) scale(${zoom})`}>
-          {/* Background Grid Pattern */}
           <rect
             x={0}
             y={0}
@@ -167,17 +160,15 @@ export const Canvas: React.FC<CanvasProps> = ({ svgRef }) => {
             className="pointer-events-none"
           />
 
-          {/* Axes and Metric Reference Ticks */}
           <g className="axes-group select-none" data-editor-ui="true">
-            {/* X-Axis Ticks */}
             {axes.xTicks.map((t, idx) => (
               <g key={`xtick-${idx}`} transform={`translate(${t.x}, ${layoutBounds.height - layoutBounds.padding.bottom})`}>
-                <line y1="0" y2="6" stroke="rgba(100, 116, 139, 0.4)" />
-                <line y1="0" y2={-(layoutBounds.height - layoutBounds.padding.bottom - layoutBounds.padding.top)} stroke="rgba(100, 116, 139, 0.12)" strokeDasharray="3 3" />
+                <line y1="0" y2="6" stroke="#c4b5a5" />
+                <line y1="0" y2={-(layoutBounds.height - layoutBounds.padding.bottom - layoutBounds.padding.top)} stroke="#ede3d7" strokeDasharray="3 3" />
                 <text
                   y="18"
                   textAnchor="middle"
-                  className="fill-slate-500 dark:fill-slate-400"
+                  fill="#78716c"
                   fontSize="9.5"
                   fontFamily="SF Mono, monospace"
                 >
@@ -186,16 +177,15 @@ export const Canvas: React.FC<CanvasProps> = ({ svgRef }) => {
               </g>
             ))}
 
-            {/* Y-Axis Ticks */}
             {axes.yTicks.map((t, idx) => (
               <g key={`ytick-${idx}`} transform={`translate(${layoutBounds.padding.left}, ${t.y})`}>
-                <line x1="-6" x2="0" stroke="rgba(100, 116, 139, 0.4)" />
-                <line x1="0" x2={layoutBounds.width - layoutBounds.padding.left - layoutBounds.padding.right} stroke="rgba(100, 116, 139, 0.12)" strokeDasharray="3 3" />
+                <line x1="-6" x2="0" stroke="#c4b5a5" />
+                <line x1="0" x2={layoutBounds.width - layoutBounds.padding.left - layoutBounds.padding.right} stroke="#ede3d7" strokeDasharray="3 3" />
                 <text
                   x="-10"
                   y="3"
                   textAnchor="end"
-                  className="fill-slate-500 dark:fill-slate-400"
+                  fill="#78716c"
                   fontSize="9.5"
                   fontFamily="SF Mono, monospace"
                 >
@@ -205,7 +195,6 @@ export const Canvas: React.FC<CanvasProps> = ({ svgRef }) => {
             ))}
           </g>
 
-          {/* Voronoi Tessellation Mesh if active */}
           {chartType === 'voronoi' && (
             <g className="voronoi-mesh" opacity="0.45">
               {Array.from(voronoiCells.entries()).map(([nodeId, pathD]) => (
@@ -213,7 +202,7 @@ export const Canvas: React.FC<CanvasProps> = ({ svgRef }) => {
                   key={`voronoi-${nodeId}`}
                   d={pathD}
                   fill="none"
-                  stroke="#3b82f6"
+                  stroke="#c2410c"
                   strokeWidth="0.8"
                   strokeDasharray="2 2"
                 />
@@ -221,7 +210,6 @@ export const Canvas: React.FC<CanvasProps> = ({ svgRef }) => {
             </g>
           )}
 
-          {/* Hybrid Vector Nodes (Combining Math Geometry + Mutation Overrides) */}
           <g className="nodes-group">
             {baseNodes.map((node) => (
               <CanvasNode
@@ -232,12 +220,10 @@ export const Canvas: React.FC<CanvasProps> = ({ svgRef }) => {
             ))}
           </g>
 
-          {/* Dynamic Tethered Annotations */}
           <TetheredAnnotations />
         </g>
       </svg>
 
-      {/* Contextual Data Lasso Menu */}
       {contextMenu.visible && (
         <DataLassoContextMenu
           x={contextMenu.x}

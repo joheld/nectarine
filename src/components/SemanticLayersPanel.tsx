@@ -21,7 +21,6 @@ export const SemanticLayersPanel: React.FC = () => {
   const { layerOverrides, toggleLayerVisibility, toggleLayerLock, setLayerColor } = useLayerStore();
   const [collapsedFolders, setCollapsedFolders] = useState<Record<string, boolean>>({});
 
-  // Group nodes by category
   const groups = React.useMemo(() => {
     const map = new Map<string, typeof baseNodes>();
     baseNodes.forEach((node) => {
@@ -55,14 +54,14 @@ export const SemanticLayersPanel: React.FC = () => {
   };
 
   return (
-    <aside className="w-64 bg-mac-surface border-r border-mac-border flex flex-col h-full select-none text-xs transition-colors">
+    <aside className="w-64 bg-mac-surface border-r border-mac-border flex flex-col h-full select-none text-xs">
       {/* Panel Header */}
-      <div className="p-3 border-b border-mac-border flex items-center justify-between bg-mac-panel">
+      <div className="p-3 border-b border-mac-border flex items-center justify-between bg-stone-50/60">
         <div className="flex items-center gap-2">
-          <Layers className="w-4 h-4 text-mac-accent" />
-          <span className="font-semibold text-mac-text">Grupos por Categoría</span>
+          <Layers className="w-4 h-4 text-cinnamon-700" />
+          <span className="font-semibold text-stone-800">Grupos por Categoría</span>
         </div>
-        <span className="text-[11px] font-mono text-mac-textMuted bg-black/5 dark:bg-white/5 px-2 py-0.5 rounded">
+        <span className="text-[11px] font-mono text-stone-600 bg-stone-100 px-2 py-0.5 rounded border border-stone-200">
           {groups.length} grupos
         </span>
       </div>
@@ -82,8 +81,8 @@ export const SemanticLayersPanel: React.FC = () => {
               key={category}
               className={`rounded-lg border transition-all ${
                 isGroupSelected
-                  ? 'bg-blue-50 dark:bg-blue-950/40 border-mac-accent'
-                  : 'bg-mac-card border-mac-border hover:border-mac-borderHover'
+                  ? 'bg-amber-50 border-cinnamon-600'
+                  : 'bg-white border-mac-border hover:border-cinnamon-300'
               }`}
             >
               {/* Folder Header Row */}
@@ -98,7 +97,7 @@ export const SemanticLayersPanel: React.FC = () => {
                       e.stopPropagation();
                       toggleFolder(category);
                     }}
-                    className="text-mac-textMuted hover:text-mac-text p-0.5"
+                    className="text-stone-400 hover:text-stone-700 p-0.5"
                   >
                     {isCollapsed ? (
                       <ChevronRight className="w-3.5 h-3.5" />
@@ -108,20 +107,19 @@ export const SemanticLayersPanel: React.FC = () => {
                   </button>
 
                   {isCollapsed ? (
-                    <Folder className="w-4 h-4 text-mac-accent shrink-0" />
+                    <Folder className="w-4 h-4 text-cinnamon-700 shrink-0" />
                   ) : (
-                    <FolderOpen className="w-4 h-4 text-mac-accent shrink-0" />
+                    <FolderOpen className="w-4 h-4 text-cinnamon-700 shrink-0" />
                   )}
 
-                  <span className="font-medium text-mac-text truncate">{category}</span>
-                  <span className="text-[10px] font-mono text-mac-textMuted bg-black/5 dark:bg-black/30 px-1.5 py-0.2 rounded">
+                  <span className="font-medium text-stone-800 truncate">{category}</span>
+                  <span className="text-[10px] font-mono text-stone-500 bg-stone-100 px-1.5 py-0.2 rounded border border-stone-200">
                     {count}
                   </span>
                 </div>
 
                 {/* Layer Quick Controls */}
                 <div className="flex items-center gap-1 pl-1">
-                  {/* Color Swatch Picker */}
                   <label className="cursor-pointer relative flex items-center justify-center p-0.5" title="Cambiar color del grupo">
                     <input
                       type="color"
@@ -130,27 +128,25 @@ export const SemanticLayersPanel: React.FC = () => {
                       className="opacity-0 absolute inset-0 w-full h-full cursor-pointer"
                     />
                     <div
-                      className="w-3.5 h-3.5 rounded-full border border-black/10 dark:border-white/30 shadow-sm"
+                      className="w-3.5 h-3.5 rounded-full border border-stone-300 shadow-sm"
                       style={{ backgroundColor: currentColor }}
                     />
                   </label>
 
-                  {/* Visibility Eye */}
                   <button
                     onClick={() => toggleLayerVisibility(category)}
-                    className={`p-1 rounded hover:bg-black/5 dark:hover:bg-white/10 ${
-                      isVisible ? 'text-mac-textSecondary' : 'text-mac-textMuted opacity-40'
+                    className={`p-1 rounded hover:bg-stone-100 ${
+                      isVisible ? 'text-stone-600' : 'text-stone-300'
                     }`}
                     title={isVisible ? 'Ocultar grupo en el lienzo' : 'Mostrar grupo'}
                   >
                     {isVisible ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}
                   </button>
 
-                  {/* Lock Toggle */}
                   <button
                     onClick={() => toggleLayerLock(category)}
-                    className={`p-1 rounded hover:bg-black/5 dark:hover:bg-white/10 ${
-                      isLocked ? 'text-amber-500' : 'text-mac-textMuted'
+                    className={`p-1 rounded hover:bg-stone-100 ${
+                      isLocked ? 'text-amber-600' : 'text-stone-400'
                     }`}
                     title={isLocked ? 'Grupo bloqueado contra cambios' : 'Bloquear grupo'}
                   >
@@ -159,22 +155,21 @@ export const SemanticLayersPanel: React.FC = () => {
                 </div>
               </div>
 
-              {/* Subnodes preview if expanded */}
               {!isCollapsed && (
-                <div className="px-3 pb-2 pt-0 border-t border-mac-border/50 max-h-36 overflow-y-auto space-y-0.5 text-[11px] text-mac-textSecondary font-mono">
+                <div className="px-3 pb-2 pt-0 border-t border-stone-100 max-h-36 overflow-y-auto space-y-0.5 text-[11px] text-stone-600 font-mono">
                   {nodes.slice(0, 15).map((n) => {
                     const isSelected = selectedNodeIds.includes(n.id);
                     return (
                       <div
                         key={n.id}
                         className={`py-0.5 px-1.5 rounded flex items-center justify-between cursor-pointer ${
-                          isSelected ? 'bg-mac-accent text-white' : 'hover:bg-black/5 dark:hover:bg-white/5'
+                          isSelected ? 'bg-cinnamon-700 text-white' : 'hover:bg-amber-50'
                         }`}
                         onClick={() => selectAll([n.id])}
                       >
                         <span className="truncate">{n.label}</span>
                         {n.valueY !== undefined && (
-                          <span className="text-[10px] opacity-75">{n.valueY.toFixed(1)}</span>
+                          <span className="text-[10px] opacity-80">{n.valueY.toFixed(1)}</span>
                         )}
                       </div>
                     );
@@ -186,8 +181,7 @@ export const SemanticLayersPanel: React.FC = () => {
         })}
       </div>
 
-      {/* Footer Instructions */}
-      <div className="p-2.5 border-t border-mac-border bg-mac-card text-[11px] text-mac-textMuted">
+      <div className="p-2.5 border-t border-mac-border bg-stone-50/50 text-[11px] text-stone-500">
         <span>💡 Toca un grupo para seleccionarlo entero.</span>
       </div>
     </aside>

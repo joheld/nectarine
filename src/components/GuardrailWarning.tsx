@@ -22,60 +22,60 @@ export const GuardrailWarning: React.FC = () => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-md select-none p-4 animate-in fade-in zoom-in-95 duration-150">
-      <div className="w-full max-w-lg bg-mac-surface border border-amber-500/40 rounded-xl shadow-macos overflow-hidden text-xs">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-stone-900/30 backdrop-blur-sm select-none p-4 animate-in fade-in zoom-in-95 duration-150">
+      <div className="w-full max-w-lg bg-white border border-amber-300 rounded-xl shadow-2xl overflow-hidden text-xs text-stone-800">
         {/* Header */}
-        <div className="px-4 py-3 bg-amber-500/10 border-b border-amber-500/20 flex items-center gap-2.5">
-          <AlertTriangle className="w-5 h-5 text-amber-400 shrink-0" />
+        <div className="px-4 py-3 bg-amber-50 border-b border-amber-200 flex items-center gap-2.5">
+          <AlertTriangle className="w-5 h-5 text-amber-600 shrink-0" />
           <div>
-            <h3 className="font-semibold text-amber-200 text-sm">
-              Guardarraíl de Rendimiento Vectorial
+            <h3 className="font-semibold text-amber-950 text-sm">
+              Aviso de Rendimiento de Gráficos
             </h3>
-            <p className="text-[11px] text-amber-300/80">
-              {guardrailCheck.nodeCount.toLocaleString()} nodos detectados (Umbral: {guardrailCheck.threshold.toLocaleString()})
+            <p className="text-[11px] text-amber-800">
+              {guardrailCheck.nodeCount.toLocaleString()} puntos detectados (Límite recomendado: {guardrailCheck.threshold.toLocaleString()})
             </p>
           </div>
         </div>
 
         {/* Message */}
         <div className="p-4 space-y-4">
-          <p className="text-gray-300 leading-relaxed">
+          <p className="text-stone-600 leading-relaxed">
             {guardrailCheck.message}
           </p>
 
           <div className="space-y-2">
-            <h4 className="font-medium text-gray-200 text-[11px] tracking-wide uppercase">
-              Opciones de Mitigación Recomendadas:
+            <h4 className="font-semibold text-stone-700 text-[11px] tracking-wide uppercase">
+              Opciones Recomendadas:
             </h4>
 
             {/* Mitigation 1: Sample */}
             <div
               onClick={handleSample2000}
-              className="p-2.5 rounded-lg bg-mac-panel border border-mac-border/60 hover:border-mac-accent cursor-pointer transition-all flex items-start gap-3"
+              className="p-3 rounded-lg bg-amber-50/50 border border-amber-200 hover:border-cinnamon-600 cursor-pointer transition-all flex items-start gap-3"
             >
-              <Filter className="w-4 h-4 text-mac-accent mt-0.5 shrink-0" />
+              <Filter className="w-4 h-4 text-cinnamon-700 mt-0.5 shrink-0" />
               <div>
-                <span className="font-semibold text-gray-200 block">
-                  Muestreo Estadístico Inteligente (Top 2,000)
+                <span className="font-semibold text-stone-900 block">
+                  Mostrar los 2,000 puntos principales
                 </span>
-                <span className="text-gray-400 text-[11px]">
-                  Filtra los registros líderes conservando la dispersión visual sin saturar el motor DOM.
+                <span className="text-stone-500 text-[11px]">
+                  Conserva la forma del gráfico mostrando los registros más representativos sin lentitud.
                 </span>
               </div>
             </div>
 
-            {/* Mitigation 2: Simplified View */}
+            {/* Mitigation 2: Continue */}
             <div
               onClick={dismissGuardrail}
-              className="p-2.5 rounded-lg bg-mac-panel border border-mac-border/60 hover:border-emerald-500 cursor-pointer transition-all flex items-start gap-3"
+              className="p-3 rounded-lg bg-stone-50 border border-stone-200 hover:border-emerald-600 cursor-pointer transition-all flex items-start gap-3"
             >
-              <Zap className="w-4 h-4 text-emerald-400 mt-0.5 shrink-0" />
+              <Zap className="w-4 h-4 text-emerald-600 mt-0.5 shrink-0" />
               <div>
-                <span className="font-semibold text-gray-200 block">
-                  Continuar en Modo Rendimiento
+                <span className="font-semibold text-stone-900 block">
+                  Continuar en modo rápido
                 </span>
-                <span className="text-gray-400 text-[11px]">
-                  Desactiva la teselación de Voronoi y los filtros de sombra complejos para acelerar el renderizado.
+                <span className="text-stone-500 text-[11px]">
+                  Dibuja los puntos con trazado ligero para mantener la fluidez.
                 </span>
               </div>
             </div>
@@ -83,12 +83,12 @@ export const GuardrailWarning: React.FC = () => {
         </div>
 
         {/* Footer */}
-        <div className="px-4 py-2.5 bg-mac-panel/40 border-t border-mac-border flex items-center justify-end gap-2">
+        <div className="px-4 py-2.5 bg-stone-50 border-t border-stone-200 flex items-center justify-end gap-2">
           <button
             onClick={dismissGuardrail}
-            className="px-3 py-1.5 rounded bg-white/10 hover:bg-white/15 text-gray-300 font-medium transition-colors"
+            className="px-3 py-1.5 rounded bg-stone-200 hover:bg-stone-300 text-stone-700 font-medium transition-colors"
           >
-            Ignorar Riesgo y Renderizar Todo
+            Dibujar Todo
           </button>
         </div>
       </div>

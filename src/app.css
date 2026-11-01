@@ -3,35 +3,23 @@
 @tailwind utilities;
 
 @layer base {
-  /* LIGHT THEME (DEFAULT) — macOS Clean Paper & Pearl Artboard */
+  /* CINNAMON WARM LIGHT THEME (DEFAULT) — Artisanal Paper, Cream & Warm Spiced Amber */
   :root {
     --titlebar-height: 38px;
     --mac-font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Helvetica Neue", sans-serif;
     
-    --mac-bg: #f5f6f8;
+    --mac-bg: #faf7f2;
     --mac-surface: #ffffff;
     --mac-panel: #ffffff;
-    --mac-card: #f9fafb;
-    --mac-border: rgba(0, 0, 0, 0.09);
-    --mac-border-subtle: rgba(0, 0, 0, 0.04);
-    --mac-border-hover: rgba(0, 0, 0, 0.16);
-    --mac-text: #1e293b;
-    --mac-text-secondary: #475569;
-    --mac-text-muted: #94a3b8;
-  }
-
-  /* DARK THEME (OPTIONAL VIA TOGGLE) */
-  html.dark {
-    --mac-bg: #0c0e14;
-    --mac-surface: #161922;
-    --mac-panel: #1c212d;
-    --mac-card: #222736;
-    --mac-border: rgba(255, 255, 255, 0.08);
-    --mac-border-subtle: rgba(255, 255, 255, 0.04);
-    --mac-border-hover: rgba(255, 255, 255, 0.16);
-    --mac-text: #f1f5f9;
-    --mac-text-secondary: #cbd5e1;
-    --mac-text-muted: #64748b;
+    --mac-card: #f7f3ec;
+    --mac-border: #e8ded4;
+    --mac-border-subtle: #f0e9e1;
+    --mac-border-hover: #d4c5b6;
+    --mac-text: #292524;
+    --mac-text-secondary: #57534e;
+    --mac-text-muted: #8c827a;
+    --mac-accent: #c2410c;
+    --mac-accent-hover: #ea580c;
   }
 
   body {
@@ -45,7 +33,7 @@
   }
 }
 
-/* macOS Custom Scrollbars */
+/* Cinnamon Custom Scrollbars */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -56,16 +44,12 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.12);
+  background: rgba(194, 65, 12, 0.18);
   border-radius: 9999px;
 }
 
-html.dark ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.12);
-}
-
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 0, 0, 0.25);
+  background: rgba(194, 65, 12, 0.35);
 }
 
 /* Native Glass & TitleBar */
@@ -88,10 +72,6 @@ html.dark ::-webkit-scrollbar-thumb {
 
 .blend-overlay {
   mix-blend-mode: overlay;
-}
-
-.blend-color-dodge {
-  mix-blend-mode: color-dodge;
 }
 
 .blend-normal {

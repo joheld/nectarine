@@ -1,8 +1,8 @@
 {
-  "name": "lienzo",
+  "name": "cinnamon",
   "private": true,
   "version": "0.1.0",
-  "description": "Lienzo — Taller de Datos y Arte Vectorial para macOS",
+  "description": "Cinnamon — macOS Local Data & Vector Art Atelier",
   "type": "module",
   "scripts": {
     "dev": "vite",

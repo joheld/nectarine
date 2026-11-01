@@ -100,3 +100,26 @@ Se concibe **Vectura** como un atelier de diseño y analítica nativo para macOS
    - **Barra de Inicio Rápido (`QuickStartBar.tsx`)**: Permite con un solo clic cargar datasets demostrativos precargados ("Países y Economía" o "Ventas de Tecnología"), sin obligar al usuario a tener archivos Parquet/CSV listos.
    - **Inspector Lateral de Puntos (`NodeInspector.tsx`)**: Al hacer clic en cualquier punto del lienzo, se abre un panel lateral amigable que muestra los valores en lenguaje natural, permite cambiar el color con paletas circulares de 1 clic, ajustar el tamaño con un deslizador y regresar el punto a su coordenada exacta con un solo botón ("Regresar a su posición exacta").
    - **Terminología Simplificada**: Se reemplazó la jerga técnica por explicaciones cotidianas ("Grupos de Datos", "Puntos", "Rastro guía al origen").
+
+
+---
+
+## Entrada 005 — Rebranding a Cinnamon, Purga Total de Oscuridad e Icono Botánico
+- **Fecha y Hora**: 2026-11-01
+- **Fase**: Identidad de Marca & Purga Estética Coherente
+- **Arquitecto**: Antigravity Principal Software Architect
+
+### Modificaciones en Respuesta al Feedback
+1. **Rebranding Definitivo a "Cinnamon"**:
+   - Se renombró la aplicación a **Cinnamon** (*Atelier de Datos & Arte*), con identificador `com.cinnamon.atelier` en Tauri v2, `package.json` y `Cargo.toml`.
+   - Se crearon los lanzadores de escritorio: `/Users/joe/Desktop/Cinnamon.app` y `/Users/joe/Desktop/Cinnamon.command`.
+2. **Icono Artesanal de Ramita de Canela**:
+   - Se programó un generador gráfico con Python Pillow para renderizar dos ramas de canela entrelazadas en espiral con listón de rafia y hoja aromática verde.
+   - Se generaron los archivos para macOS: `icon.icns`, `icon.png`, `128x128.png`, `32x32.png` y el SVG vectorial `cinnamon-logo.svg` embebido en la barra de título nativa.
+3. **Purga Integral de Elementos Oscuros**:
+   - Se eliminaron todos los fondos negros y modales sombríos. La paleta es ahora 100% cálida y luminosa:
+     - Fondo principal: Crema vainilla `#faf7f2`.
+     - Lienzo de dibujo: Papel suave `#fffdf9` con trama de puntos sutiles `#e5dacd`.
+     - Controles y tarjetas: Blanco cálido `#ffffff` con bordes suaves `#e8ded4`.
+     - Acentos interactivos: Ámbar canela tostada `#c2410c` y `#ea580c`.
+   - Modales (Guardarraíl, Filtros, Inspector) rediseñados con fondos translúcidos amables y tarjetas claras.

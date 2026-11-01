@@ -3,7 +3,7 @@ set -euo pipefail
 
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PORT="${PORT:-5220}"
-LOG_FILE="/tmp/lienzo_studio.log"
+LOG_FILE="/tmp/cinnamon.log"
 
 export PATH="$HOME/.cargo/bin:$HOME/.bun/bin:$HOME/.local/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:$PATH"
 
@@ -16,30 +16,30 @@ elif [ -x "/opt/homebrew/bin/bun" ]; then
 elif [ -x "/usr/local/bin/bun" ]; then
   BUN_BIN="/usr/local/bin/bun"
 else
-  echo "[Lienzo] Error: No se encontró 'bun' en el sistema."
+  echo "[Cinnamon] Error: No se encontró 'bun' en el sistema."
   echo "Instala bun con: curl -fsSL https://bun.sh/install | bash"
   exit 1
 fi
 
-echo "[Lienzo] Usando motor en: ${BUN_BIN}"
-echo "[Lienzo] Verificando puerto dedicado ${PORT}..."
+echo "[Cinnamon] Usando motor en: ${BUN_BIN}"
+echo "[Cinnamon] Verificando puerto dedicado ${PORT}..."
 
 if ! lsof -i :"$PORT" -t >/dev/null 2>&1; then
-  echo "[Lienzo] Iniciando servidor analítico y vectorial en http://127.0.0.1:${PORT}..."
+  echo "[Cinnamon] Iniciando servidor analítico y vectorial en http://127.0.0.1:${PORT}..."
   cd "$DIR"
   nohup "$BUN_BIN" run dev </dev/null >"$LOG_FILE" 2>&1 &
   SERVER_PID=$!
-  echo "[Lienzo] Proceso lanzado en segundo plano con PID ${SERVER_PID}."
+  echo "[Cinnamon] Proceso lanzado en segundo plano con PID ${SERVER_PID}."
 fi
 
 for i in {1..30}; do
   if curl -s -o /dev/null -w "%{http_code}" "http://127.0.0.1:${PORT}" 2>/dev/null | grep -q "200"; then
-    echo "[Lienzo] Servidor en línea y respondiendo HTTP 200 OK en http://127.0.0.1:${PORT}"
+    echo "[Cinnamon] Servidor en línea y respondiendo HTTP 200 OK en http://127.0.0.1:${PORT}"
     exit 0
   fi
   sleep 0.5
 done
 
-echo "[Lienzo] Error: El servidor no respondió a tiempo. Logs recientes:"
+echo "[Cinnamon] Error: El servidor no respondió a tiempo. Logs recientes:"
 tail -n 25 "$LOG_FILE" 2>/dev/null || true
 exit 1
