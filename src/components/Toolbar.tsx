@@ -24,11 +24,9 @@ import { useDataStore } from '../store/dataStore';
 import { useMutationStore } from '../store/mutationStore';
 import { colorService, EDITORIAL_PALETTES } from '../services/colorService';
 import { datasetProfiler } from '../services/profiler';
-import { duckdbService } from '../services/duckdb';
 import { exportService } from '../services/exportService';
 import { ChartType } from '../engine/types';
-import { open } from '@tauri-apps/plugin-dialog';
-import { readTextFile, readFile } from '@tauri-apps/plugin-fs';
+import { openNativeFileDialog, processDataFile } from '../services/fileImportHelper';
 
 interface ToolbarProps {
   onOpenProfiler: () => void;
@@ -49,59 +47,13 @@ export const Toolbar: React.FC<ToolbarProps> = ({ onOpenProfiler, svgRef }) => {
   };
 
   const handleNativeImport = async () => {
-    try {
-      if (typeof window !== 'undefined' && (window as any).__TAURI_INTERNALS__) {
-        const selected = await open({
-          multiple: false,
-          filters: [
-            {
-              name: 'Archivos de Datos (CSV, JSON, Parquet)',
-              extensions: ['csv', 'json', 'parquet'],
-            },
-          ],
-        });
-
-        if (selected && typeof selected === 'string') {
-          const filename = selected.split('/').pop() || 'data';
-          if (filename.endsWith('.parquet')) {
-            const buffer = await readFile(selected);
-            const rows = await duckdbService.ingestParquet(filename, buffer);
-            loadDataset(filename, rows);
-          } else if (filename.endsWith('.json')) {
-            const text = await readTextFile(selected);
-            const rows = await duckdbService.ingestJSON(filename, text);
-            loadDataset(filename, rows);
-          } else {
-            const text = await readTextFile(selected);
-            const rows = await duckdbService.ingestCSV(filename, text);
-            loadDataset(filename, rows);
-          }
-          return;
-        }
-      }
-    } catch (err) {
-      console.warn('Tauri native dialog not available, using web fallback:', err);
-    }
-    fileInputRef.current?.click();
+    await openNativeFileDialog(loadDataset, fileInputRef.current);
   };
 
   const handleWebFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-
-    if (file.name.endsWith('.parquet')) {
-      const buffer = new Uint8Array(await file.arrayBuffer());
-      const rows = await duckdbService.ingestParquet(file.name, buffer);
-      loadDataset(file.name, rows);
-    } else if (file.name.endsWith('.json')) {
-      const text = await file.text();
-      const rows = await duckdbService.ingestJSON(file.name, text);
-      loadDataset(file.name, rows);
-    } else {
-      const text = await file.text();
-      const rows = await duckdbService.ingestCSV(file.name, text);
-      loadDataset(file.name, rows);
-    }
+    await processDataFile(file, loadDataset);
   };
 
   const handleExport = async () => {

@@ -5,7 +5,9 @@ import { CanvasNode } from './CanvasNode';
 import { TetheredAnnotations } from './TetheredAnnotations';
 import { DataLassoContextMenu } from './DataLasso';
 import { colorService } from '../services/colorService';
-import { ZoomIn, ZoomOut, Maximize2 } from 'lucide-react';
+import { ZoomIn, ZoomOut, Maximize2, Upload, ShieldCheck } from 'lucide-react';
+import { NectarineLogo } from './NectarineLogo';
+import { openNativeFileDialog, processDataFile } from '../services/fileImportHelper';
 
 interface CanvasProps {
   svgRef: React.RefObject<SVGSVGElement | null>;
@@ -24,13 +26,16 @@ export const Canvas: React.FC<CanvasProps> = ({ svgRef }) => {
     layoutBounds,
     chartType,
     setLayoutBounds,
+    loadDataset,
   } = useDataStore();
   const { clearSelection, isGlowEnabled } = useMutationStore();
   const containerRef = useRef<HTMLDivElement>(null);
+  const fileInputFallbackRef = useRef<HTMLInputElement>(null);
 
   const [zoom, setZoom] = useState(1);
   const [pan, setPan] = useState({ x: 0, y: 0 });
   const [isPanning, setIsPanning] = useState(false);
+  const [isDraggingFile, setIsDraggingFile] = useState(false);
   const panStartRef = useRef({ x: 0, y: 0 });
 
   const [contextMenu, setContextMenu] = useState<{
@@ -91,6 +96,35 @@ export const Canvas: React.FC<CanvasProps> = ({ svgRef }) => {
     setIsPanning(false);
   };
 
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDraggingFile(true);
+  };
+
+  const handleDragLeave = () => {
+    setIsDraggingFile(false);
+  };
+
+  const handleDrop = async (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDraggingFile(false);
+    const file = e.dataTransfer.files?.[0];
+    if (file) {
+      await processDataFile(file, loadDataset);
+    }
+  };
+
+  const handleNativeUploadClick = async () => {
+    await openNativeFileDialog(loadDataset, fileInputFallbackRef.current);
+  };
+
+  const handleFallbackFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      await processDataFile(file, loadDataset);
+    }
+  };
+
   const handleContextMenu = (e: React.MouseEvent) => {
     e.preventDefault();
     const target = e.target as Element;
@@ -115,13 +149,72 @@ export const Canvas: React.FC<CanvasProps> = ({ svgRef }) => {
   return (
     <div
       ref={containerRef}
-      className="flex-1 h-full relative overflow-hidden bg-[#fffdf9] select-none cursor-default"
+      className={`flex-1 h-full relative overflow-hidden bg-[#fffdf9] select-none cursor-default transition-colors ${
+        isDraggingFile ? 'bg-rose-50/50 ring-4 ring-inset ring-[#e11d48]/20' : ''
+      }`}
       onWheel={handleWheel}
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
       onContextMenu={handleContextMenu}
+      onDragOver={handleDragOver}
+      onDragLeave={handleDragLeave}
+      onDrop={handleDrop}
     >
+      {/* Hidden File Input for Canvas Empty State */}
+      <input
+        ref={fileInputFallbackRef}
+        type="file"
+        accept=".csv,.json,.parquet"
+        onChange={handleFallbackFileChange}
+        className="hidden"
+      />
+
+      {/* Empty State / Drag-and-Drop Ingestion Card */}
+      {baseNodes.length === 0 && (
+        <div className="absolute inset-0 z-30 flex items-center justify-center p-6 pointer-events-auto bg-[#fffdf9]/95 backdrop-blur-2xs">
+          <div
+            className={`max-w-md w-full p-8 rounded-2xl border-2 transition-all flex flex-col items-center text-center space-y-4 shadow-xl ${
+              isDraggingFile
+                ? 'border-[#e11d48] bg-[#fff5f5] scale-[1.02]'
+                : 'border-dashed border-[#dfd2c4] bg-white'
+            }`}
+          >
+            <div className="w-16 h-16 rounded-2xl bg-[#faf7f2] border border-[#ebd9c8] flex items-center justify-center shadow-2xs">
+              <NectarineLogo size={36} />
+            </div>
+
+            <div className="space-y-1.5">
+              <h2 className="text-base font-bold text-[#2c1a0e] tracking-tight">
+                Abre tus datos para comenzar
+              </h2>
+              <p className="text-xs text-[#5e4634] leading-relaxed">
+                Arrastra y suelta aquí cualquier archivo <strong>CSV, JSON o Parquet</strong>, o pulsa el botón para seleccionarlo desde tu Mac.
+              </p>
+            </div>
+
+            <button
+              onClick={handleNativeUploadClick}
+              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#e11d48] hover:bg-[#be123c] active:translate-y-px text-white text-xs font-semibold shadow-xs transition-all cursor-pointer"
+            >
+              <Upload className="w-4 h-4" />
+              <span>Subir Archivo de Datos</span>
+            </button>
+
+            <div className="flex items-center gap-2 pt-2 text-[10.5px] text-[#8c7664] font-mono">
+              <span className="px-2 py-0.5 rounded bg-[#f5ede3] border border-[#e2d5c5]">.csv delimitado</span>
+              <span className="px-2 py-0.5 rounded bg-[#f5ede3] border border-[#e2d5c5]">.json matrices</span>
+              <span className="px-2 py-0.5 rounded bg-[#f5ede3] border border-[#e2d5c5]">.parquet columnar</span>
+            </div>
+
+            <div className="flex items-center gap-1.5 pt-1 text-[10.5px] text-[#8c7664]">
+              <ShieldCheck className="w-3.5 h-3.5 text-[#059669]" />
+              <span>Privacidad total: tus datos nunca salen de tu Mac</span>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Zoom Controls Overlay */}
       <div className="absolute bottom-4 right-4 z-20 flex items-center gap-1.5 bg-white/95 backdrop-blur-md p-1 rounded-lg border border-stone-200 shadow-sm text-xs text-stone-700">
         <button

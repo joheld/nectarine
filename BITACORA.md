@@ -345,3 +345,37 @@ El usuario detectó con precisión que el manual anunciaba "9 geometrías" pero 
    - `vite build`: Build de producción generado en 2.39s.
    - `cargo check`: Superado limpiamente para `nectarine v0.1.0`.
    - Socket `http://127.0.0.1:5220`: Respondiendo `HTTP/1.1 200 OK`.
+
+---
+
+## Entrada 013 — Purga de Datos de Muestra, Lienzo con Dropzone & Agrupación Dinámica Multicolumna
+- **Fecha y Hora**: 2026-11-01
+- **Fase**: Higiene de Datos, Desacoplamiento & Experiencia de Usuario en Capas
+- **Arquitecto**: Antigravity Principal Software Architect
+
+### Diagnóstico de Brechas (En respuesta al feedback del usuario)
+1. **Confusión por Datos Ficticios**: El arranque automático cargando `paises_y_desarrollo.csv` y la presencia de banners de inicio rápido creaban la falsa impresión de que Nectarine estaba hardcodeado para estadísticas socioeconómicas o ventas de gadgets, restando profesionalismo a la aplicación.
+2. **Duda sobre Agrupación de Múltiples Columnas**: El usuario señaló con agudeza: *"no entiendo porque los 'grupos' cuando subo un archivo que tiene varias columnas solo toman una de ellas"*. Anteriormente, `dataStore.ts` seleccionaba de forma ciega la primera columna de texto para `mappings.category` y el panel lateral de capas no ofrecía ningún selector ni explicación para que el usuario pudiera conmutar libremente qué columna definía los grupos y el teñido de los nodos.
+3. **Residuos de Clases Oscuras**: Modales como `DataProfilerModal` y `DataLasso` conservaban clases `dark:bg-slate-900` incompatibles con el arquetipo cálido marfil de Nectarine.
+
+### Resoluciones Aplicadas
+1. **Purga Radical de Datasets de Muestra**:
+   - Se eliminó el componente `QuickStartBar.tsx`.
+   - Se eliminaron los métodos `loadDefaultDataset` y `loadSalesDataset` en `duckdbService.ts`.
+   - `dataStore.ts` arranca ahora en estado inmaculado (`datasetName: ''`, `rawRows: []`, `baseNodes: []`).
+   - Se actualizó `TitleBar.tsx` para reflejar con elegancia "Sin archivo cargado" y telemetría en "Listo".
+2. **Lienzo Limpio con Zona Interactiva de Ingestión (Dropzone)**:
+   - Al abrir la aplicación sin archivo, el lienzo exhibe una tarjeta de taller con el logotipo esculpido de Nectarine, invitando al usuario a arrastrar y soltar cualquier archivo `.csv`, `.json` o `.parquet` o pulsar el botón para seleccionarlo nativamente desde su Mac.
+   - Insignia de privacidad de datos: "Privacidad total: tus datos nunca salen de tu Mac".
+3. **Selector Dinámico Multicolumna & Subgrupos en Capas Semánticas (`SemanticLayersPanel.tsx`)**:
+   - Se añadió un control desplegable prominente: **"Agrupar por columna"**, listando todas las columnas del dataset junto a su tipo y recuento de valores distintos (`distinctCount`). Al cambiarlo, se actualiza `mappings.category` e inmediatamente se recalcula la disposición de nodos, teñido cromático y ejes en tiempo real.
+   - Se añadió un selector secundario opcional: **"Sub-agrupar por"**, permitiendo construir una jerarquía anidada de 2 niveles (e.g. `Continente` -> `Sector Económico`) para selección granular en lote.
+   - Las carpetas inician colapsadas por defecto, evitando saturar la vista vertical cuando una dimensión posee decenas de valores.
+4. **Erradicación Total de Estilos Obsoletos**:
+   - Se refactorizaron completamente `DataProfilerModal.tsx` y `DataLasso.tsx` al estándar Warm Swiss Editorial con fondos `#fffdfa`, bordes `#e6dcce` y acentos `#e11d48`.
+5. **Verificación Zero-Defect**:
+   - `bun test`: 19/19 tests unitarios aprobados en 170ms.
+   - `tsc -b`: 0 errores.
+   - `vite build`: Build de producción generado en 2.25s.
+   - `cargo check`: Aprobado limpiamente en 0.51s.
+   - Socket `http://127.0.0.1:5220`: Respondiendo `HTTP/1.1 200 OK`.

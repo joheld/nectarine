@@ -22,6 +22,7 @@ gitGraph
     commit id: "docs-center-visual-diagrams" tag: "v1.4.0"
     commit id: "docs-masterclass-single-entrypoint" tag: "v1.5.0"
     commit id: "docs-9-of-9-geometries-complete" tag: "v1.6.0"
+    commit id: "purge-samples-dynamic-grouping-deslop" tag: "v1.7.0"
 ```
 
 ---
@@ -51,6 +52,7 @@ gitGraph
 | **CP-18** | Centro de Documentación Integral & Diagramas Visuales Paso a Paso | Módulo `DocumentationModal.tsx` de 7 capítulos con explicaciones en lenguaje claro, capturas esquemáticas vectoriales incrustadas, acceso inicial y atajo `<kbd>?</kbd>`. | **Completado** |
 | **CP-19** | Unificación de Acceso al Manual & Expansión Enciclopédica Masterclass | Eliminación del botón duplicado en `Toolbar.tsx` liberando espacio horizontal. Expansión exhaustiva de `DocumentationModal.tsx` a 9 capítulos profundos. | **Completado** |
 | **CP-20** | Desglose Individual Íntegro de las 9 de 9 Geometrías Maestras | Separación rigurosa de las 9 geometrías en 9 fichas individuales independientes numeradas del 1 al 9 (Dispersión, Burbujas, Barras, Voronoi, Red de Fuerza, Ondas, Cuerdas Radiales, Espiral Áurea, Mapa Celestial), cada una con su propia miniatura SVG vectorial, fundamento matemático, directrices de 'Ideal para' y 'Evitar cuando', más selector interactivo por categoría (Todas, Cartesianas, Redes, Visual Cinnamon). | **Completado** |
+| **CP-21** | Purga de Datos Muestra, Lienzo con Dropzone & Agrupación Dinámica Multicolumna | Eliminación radical de muestras precargadas (`paises_y_desarrollo.csv` y `ventas_tecnologia.csv`). El lienzo arranca limpio con tarjeta interactiva de soltar archivos (drag & drop). En el panel de Capas Semánticas se implementó selector de columna primaria y sub-agrupación secundaria jerárquica con recálculo en tiempo real. Erradicación completa de clases oscuras en `DataProfilerModal`, `DataLasso` y `App`. | **Completado** |
 
 ---
 
@@ -98,5 +100,5 @@ flowchart TD
 
 ## 4. Estado de la Sesión
 
-- **Estado Actual**: Nectarine Studio totalmente estabilizado. 19/19 tests unitarios aprobados, tipado estricto `tsc` con 0 errores, build de producción en 2.3s, Centro de Documentación con capturas esquemáticas vectoriales integrado y accesible vía `<kbd>?</kbd>`, servidor dev escuchando en puerto 5220 y lanzadores actualizados en el Escritorio.
+- **Estado Actual**: Nectarine Studio totalmente estabilizado bajo el estándar Warm Swiss Editorial. Datos de muestra purgados al 100%, inicio limpio con zona de soltar archivos en el lienzo, selector dinámico multicolumna y subgrupos en el panel de capas, manual unificado en 9 capítulos y 9 geometrías desglosadas. 19/19 tests unitarios aprobados, tipado estricto `tsc` con 0 errores, build de producción en 2.25s y servidor escuchando en puerto 5220.
 - **Siguiente Paso**: Commit atómico y entrega al usuario con reporte técnico y guía de operación.

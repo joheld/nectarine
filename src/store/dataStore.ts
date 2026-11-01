@@ -59,17 +59,12 @@ const DEFAULT_BOUNDS: LayoutBounds = {
 };
 
 export const useDataStore = create<DataState>((set, get) => ({
-  datasetName: 'world_development.csv',
+  datasetName: '',
   rawRows: [],
   activeRows: [],
   profiledColumns: [],
   chartType: 'scatter',
-  mappings: {
-    x: 'gdp_per_capita',
-    y: 'life_expectancy',
-    size: 'population_millions',
-    category: 'region',
-  },
+  mappings: {},
   baseNodes: [],
   voronoiCells: new Map(),
   chordRibbons: [],

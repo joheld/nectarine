@@ -24,10 +24,18 @@ export const TitleBar: React.FC<TitleBarProps> = ({ onOpenDocs }) => {
       <div className="flex items-center gap-2.5 text-xs font-medium">
         <NectarineLogo size={22} className="w-[22px] h-[22px] shrink-0" />
         <span className="font-bold text-[#2c1a0e] tracking-tight text-sm">Nectarine</span>
-        <span className="text-[#c4b5a5]">/</span>
-        <span className="text-[#5e4634] font-medium text-[11px] bg-[#f0e7dc] px-2.5 py-0.5 rounded-md border border-[#e2d5c5]">
-          {datasetName}
-        </span>
+        {datasetName ? (
+          <>
+            <span className="text-[#c4b5a5]">/</span>
+            <span className="text-[#5e4634] font-medium text-[11px] bg-[#f0e7dc] px-2.5 py-0.5 rounded-md border border-[#e2d5c5]">
+              {datasetName}
+            </span>
+          </>
+        ) : (
+          <span className="text-[#8c7664] text-[11px] bg-[#f5ede3] px-2 py-0.5 rounded border border-[#e6dcce]">
+            Sin archivo cargado
+          </span>
+        )}
       </div>
 
       {/* Right Controls: Manual & Telemetry */}
@@ -44,7 +52,7 @@ export const TitleBar: React.FC<TitleBarProps> = ({ onOpenDocs }) => {
 
         <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-[#f0e7dc] border border-[#e2d5c5] text-[#5e4634] font-mono">
           <Activity className="w-3.5 h-3.5 text-[#e11d48]" />
-          <span>{baseNodes.length} nodos</span>
+          <span>{baseNodes.length > 0 ? `${baseNodes.length} nodos` : 'Listo'}</span>
         </div>
 
         {pinnedCount > 0 && (

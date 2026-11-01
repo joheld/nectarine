@@ -375,11 +375,11 @@ export const DocumentationModal: React.FC<DocumentationModalProps> = ({ isOpen, 
                     <span>Tutorial Guiado: Tu Primera Infografía en 3 Minutos</span>
                   </div>
                   <ol className="text-xs text-[#5e4634] space-y-2 list-decimal list-inside leading-relaxed">
-                    <li>Haz clic en el botón <strong>«Países & Economía»</strong> de la barra de muestras superior para cargar los datos de 30 naciones.</li>
-                    <li>Observa cómo Nectarine activa la vista de <strong>Dispersión</strong> con el PIB per cápita en X y la Esperanza de Vida en Y.</li>
-                    <li>Cambia la geometría a <strong>«Cuerdas»</strong> para ver a los países organizados en una circunferencia conectándose mediante cintas orgánicas según su continente.</li>
-                    <li>Activa la herramienta <strong>Mover (<kbd className="font-mono text-[10px] bg-white px-1 rounded border">M</kbd>)</strong> y arrastra a Singapur o Suiza para destacarlos; nota la línea discontinua azul (rastro fantasma) que se proyecta hacia su posición original.</li>
-                    <li>Toca <strong>«Luz & Glow»</strong> para bañar la ilustración con resplandor estelar y haz clic en <strong>«Exportar SVG»</strong>.</li>
+                    <li>Haz clic en el botón <strong>«Subir Archivo»</strong> o arrastra cualquier archivo CSV, JSON o Parquet directamente al lienzo de trabajo.</li>
+                    <li>Observa cómo Nectarine activa automáticamente la geometría óptima e ilumina en la barra superior todas las geometrías compatibles con tus datos.</li>
+                    <li>En el panel izquierdo de <strong>Grupos</strong>, utiliza el desplegable <strong>«Agrupar por columna»</strong> para seleccionar libremente cuál de las columnas de tu archivo categoriza y tiñe los vectores.</li>
+                    <li>Activa la herramienta <strong>Mover (<kbd className="font-mono text-[10px] bg-white px-1 rounded border">M</kbd>)</strong> y arrastra puntos para despejar rótulos; observa la línea discontinua azul (rastro fantasma) que vela por la integridad analítica.</li>
+                    <li>Toca <strong>«Luz & Glow»</strong> para bañar la ilustración con resplandor estelar y pulsa <strong>«Exportar SVG»</strong> para obtener tu vector puro para imprenta o Illustrator.</li>
                   </ol>
                 </div>
               </div>
@@ -931,6 +931,25 @@ Singapur,72800.0,83.6,Asia`}
                 </div>
 
                 <div className="space-y-4">
+                  {/* Multicolumn Grouping Deep-Dive */}
+                  <div className="p-4 rounded-xl bg-[#fffbeb] border border-[#fef3c7] space-y-2.5">
+                    <div className="flex items-center gap-2">
+                      <Layers className="w-4 h-4 text-[#d97706]" />
+                      <h3 className="font-semibold text-xs text-[#92400e]">¿Por qué mi archivo tiene varias columnas y cómo agrupar por cualquiera de ellas?</h3>
+                    </div>
+                    <p className="text-xs text-[#78350f] leading-relaxed">
+                      Cuando subes un dataset que tiene múltiples dimensiones (por ejemplo: <code>pais</code>, <code>continente</code>, <code>sector</code>, <code>tipo_gobierno</code>, <code>año</code>), Nectarine no te limita a una sola:
+                    </p>
+                    <ul className="text-xs text-[#78350f] space-y-1.5 list-disc list-inside leading-relaxed">
+                      <li>
+                        <strong>Selector de Columna Principal:</strong> En la cabecera del panel izquierdo («Agrupar por columna»), puedes cambiar en cualquier momento la columna activa. Si cambias de <em>Continente</em> a <em>Sector</em>, los vectores se reclasifican y tiñen de inmediato en el lienzo y las carpetas se reconstruyen en tiempo real.
+                      </li>
+                      <li>
+                        <strong>Sub-agrupación Jerárquica:</strong> Con el desplegable <em>«Sub-agrupar por»</em>, puedes anidar una segunda dimensión dentro de cada grupo (por ejemplo, dentro de <em>Europa</em> ver subcarpetas de <em>Finanzas</em>, <em>Tech</em> y <em>Salud</em>) para realizar selecciones quirúrgicas en un clic.
+                      </li>
+                    </ul>
+                  </div>
+
                   <div className="p-4 rounded-xl bg-[#fbf8f3] border border-[#e6dcce] space-y-2">
                     <h3 className="font-semibold text-xs text-[#2c1a0e]">Carpetas Inteligentes por Dimensión</h3>
                     <p className="text-xs text-[#5e4634] leading-relaxed">

@@ -71,14 +71,14 @@ export const DataLassoContextMenu: React.FC<DataLassoContextMenuProps> = ({
 
   return (
     <div
-      className="fixed z-50 w-64 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg shadow-xl text-xs p-1 select-none animate-in fade-in zoom-in-95 duration-100 text-slate-800 dark:text-slate-100"
+      className="fixed z-50 w-64 bg-white border border-[#e6dcce] rounded-xl shadow-xl text-xs p-1 select-none animate-in fade-in zoom-in-95 duration-100 text-[#2c1a0e]"
       style={{ top: y, left: x }}
       onClick={(e) => e.stopPropagation()}
     >
       {targetNode && (
-        <div className="px-2.5 py-1.5 border-b border-slate-100 dark:border-slate-800 text-slate-500 font-mono text-[10px] flex items-center justify-between">
-          <span className="truncate max-w-[150px] font-medium">{targetNode.label}</span>
-          <span className="text-mac-accent font-semibold">{targetNode.category}</span>
+        <div className="px-2.5 py-1.5 border-b border-[#ebd9c8] text-[#8c7664] font-mono text-[10px] flex items-center justify-between bg-[#faf7f2] rounded-t-lg">
+          <span className="truncate max-w-[150px] font-medium text-[#2c1a0e]">{targetNode.label}</span>
+          <span className="text-[#e11d48] font-semibold">{targetNode.category}</span>
         </div>
       )}
 
@@ -87,25 +87,25 @@ export const DataLassoContextMenu: React.FC<DataLassoContextMenuProps> = ({
           <>
             <button
               onClick={handleSelectCategory}
-              className="flex items-center gap-2 px-2.5 py-1.5 rounded hover:bg-blue-50 dark:hover:bg-blue-900/40 text-slate-700 dark:text-slate-200 hover:text-blue-600 transition-colors text-left"
+              className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg hover:bg-[#fff5f5] text-[#5e4634] hover:text-[#e11d48] transition-colors text-left cursor-pointer"
             >
-              <CheckSquare className="w-3.5 h-3.5 text-blue-500" />
+              <CheckSquare className="w-3.5 h-3.5 text-[#e11d48]" />
               <span>Seleccionar grupo: <strong className="font-semibold">{targetNode.category}</strong></span>
             </button>
 
             <button
               onClick={handleSelectValueRange}
-              className="flex items-center gap-2 px-2.5 py-1.5 rounded hover:bg-blue-50 dark:hover:bg-blue-900/40 text-slate-700 dark:text-slate-200 hover:text-blue-600 transition-colors text-left"
+              className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg hover:bg-[#fff5f5] text-[#5e4634] hover:text-[#e11d48] transition-colors text-left cursor-pointer"
             >
-              <Palette className="w-3.5 h-3.5 text-indigo-500" />
+              <Palette className="w-3.5 h-3.5 text-[#f97316]" />
               <span>Seleccionar puntos con valores similares (±25%)</span>
             </button>
 
             <button
               onClick={handleAddAnnotation}
-              className="flex items-center gap-2 px-2.5 py-1.5 rounded hover:bg-blue-50 dark:hover:bg-blue-900/40 text-slate-700 dark:text-slate-200 hover:text-blue-600 transition-colors text-left"
+              className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg hover:bg-[#fff5f5] text-[#5e4634] hover:text-[#e11d48] transition-colors text-left cursor-pointer"
             >
-              <MessageSquarePlus className="w-3.5 h-3.5 text-purple-500" />
+              <MessageSquarePlus className="w-3.5 h-3.5 text-[#e11d48]" />
               <span>Añadir nota explicativa con flecha</span>
             </button>
           </>
@@ -113,15 +113,15 @@ export const DataLassoContextMenu: React.FC<DataLassoContextMenuProps> = ({
 
         <button
           onClick={handleTogglePinSelection}
-          className="flex items-center gap-2 px-2.5 py-1.5 rounded hover:bg-blue-50 dark:hover:bg-blue-900/40 text-slate-700 dark:text-slate-200 hover:text-blue-600 transition-colors text-left"
+          className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg hover:bg-[#fff5f5] text-[#5e4634] hover:text-[#b44b10] transition-colors text-left cursor-pointer"
         >
-          <Pin className="w-3.5 h-3.5 text-amber-500" />
+          <Pin className="w-3.5 h-3.5 text-[#b44b10]" />
           <span>Fijar / Desanclar posición</span>
         </button>
 
         <button
           onClick={handleResetSelected}
-          className="flex items-center gap-2 px-2.5 py-1.5 rounded hover:bg-red-50 dark:hover:bg-red-900/40 text-red-600 dark:text-red-400 transition-colors text-left"
+          className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg hover:bg-[#fff1f2] text-[#be123c] transition-colors text-left cursor-pointer"
         >
           <RotateCcw className="w-3.5 h-3.5" />
           <span>Regresar a su posición matemática</span>
