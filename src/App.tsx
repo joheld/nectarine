@@ -65,10 +65,9 @@ export const App: React.FC = () => {
       {/* 1. macOS Native Window TitleBar with Documentation button */}
       <TitleBar onOpenDocs={() => setIsDocsOpen(true)} />
 
-      {/* 2. Analytical & Vector Tools Bar */}
+      {/* 2. Analytical & Vector Tools Bar (Clean & Focused Workbench) */}
       <Toolbar
         onOpenProfiler={() => setIsProfilerOpen(true)}
-        onOpenDocs={() => setIsDocsOpen(true)}
         svgRef={svgRef}
       />
 

@@ -19,7 +19,6 @@ import {
   Orbit,
   Sparkles,
   SunMedium,
-  BookOpen,
 } from 'lucide-react';
 import { useDataStore } from '../store/dataStore';
 import { useMutationStore } from '../store/mutationStore';
@@ -33,11 +32,10 @@ import { readTextFile, readFile } from '@tauri-apps/plugin-fs';
 
 interface ToolbarProps {
   onOpenProfiler: () => void;
-  onOpenDocs?: () => void;
   svgRef: React.RefObject<SVGSVGElement | null>;
 }
 
-export const Toolbar: React.FC<ToolbarProps> = ({ onOpenProfiler, onOpenDocs, svgRef }) => {
+export const Toolbar: React.FC<ToolbarProps> = ({ onOpenProfiler, svgRef }) => {
   const { chartType, setChartType, profiledColumns, rawRows, loadDataset, recalculateLayout } = useDataStore();
   const { activeTool, setActiveTool, resetAllMutations, mutations, isGlowEnabled, toggleGlow } = useMutationStore();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -155,17 +153,6 @@ export const Toolbar: React.FC<ToolbarProps> = ({ onOpenProfiler, onOpenDocs, sv
           <SlidersHorizontal className="w-3.5 h-3.5 text-[#f97316]" />
           <span>Filtros</span>
         </button>
-
-        {onOpenDocs && (
-          <button
-            onClick={onOpenDocs}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white hover:bg-[#faf7f2] text-[#2c1a0e] border border-[#e6dcce] transition-colors font-medium shadow-2xs"
-            title="Abrir Manual y Documentación Paso a Paso (Atajo: ?)"
-          >
-            <BookOpen className="w-3.5 h-3.5 text-[#e11d48]" />
-            <span className="hidden xl:inline">Manual</span>
-          </button>
-        )}
       </div>
 
       <div className="h-5 w-px bg-[#e6dcce] shrink-0" />

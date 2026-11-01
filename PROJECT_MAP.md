@@ -20,6 +20,7 @@ gitGraph
     commit id: "rebrand-cinnamon-artisanal" tag: "v1.2.0"
     commit id: "rebrand-nectarine-ux-deslop" tag: "v1.3.0"
     commit id: "docs-center-visual-diagrams" tag: "v1.4.0"
+    commit id: "docs-masterclass-single-entrypoint" tag: "v1.5.0"
 ```
 
 ---
@@ -46,7 +47,8 @@ gitGraph
 | **CP-15** | Rediseño de Iconografía de Alta Gama | Reemplazo del logo por renderizado 3D de alta fidelidad. | **Completado** |
 | **CP-16** | Expansión Visual Cinnamon: Radial, Espiral, Celestial & Resplandor SVG | Cuerdas radiales, espirales áureas, cartas celestiales y filtros de luz `<feGaussianBlur>`. | **Completado** |
 | **CP-17** | Rebranding a Nectarine, Desahogo UX/UI & Iconografía Esculpida | Renombrado oficial a **Nectarine** (`com.nectarine.studio`), icono 3D de fruta fresca, purga de 'DuckDB Local' y 'Atelier Gráfico & Analítico', barra aireada con etiquetas contextuales y paleta *Nectarine & Melocotón*. | **Completado** |
-| **CP-18** | Centro de Documentación Integral & Diagramas Visuales Paso a Paso | Módulo `DocumentationModal.tsx` de 7 capítulos con explicaciones en lenguaje claro, capturas esquemáticas vectoriales incrustadas (flujo DuckDB -> D3 -> Bézier -> Purga, previsualizaciones de geometrías, rastros fantasma de ética, anotaciones atadas y comparador antes/después de purga), acceso directo desde TitleBar, Toolbar y atajo `<kbd>?</kbd>`. | **Completado** |
+| **CP-18** | Centro de Documentación Integral & Diagramas Visuales Paso a Paso | Módulo `DocumentationModal.tsx` de 7 capítulos con explicaciones en lenguaje claro, capturas esquemáticas vectoriales incrustadas, acceso inicial y atajo `<kbd>?</kbd>`. | **Completado** |
+| **CP-19** | Unificación de Acceso al Manual & Expansión Enciclopédica Masterclass | Eliminación del botón duplicado en `Toolbar.tsx` liberando espacio horizontal. Expansión exhaustiva de `DocumentationModal.tsx` a 9 capítulos profundos (Ingesta DuckDB WASM en RAM, catálogo exhaustivo de 9 geometrías con fórmulas y teoría, ética vectorial con cálculo $\Delta\%$, física de Coulomb/Hooke, serigrafía multiply, guardarraíl >10k nodos, consejos para Illustrator/Figma/prensa y hoja completa de atajos). | **Completado** |
 
 ---
 

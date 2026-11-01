@@ -280,3 +280,35 @@ El usuario solicitó erradicar cualquier vestigio de "código vibecodificado" (A
    - `tsc -b`: 0 advertencias y 0 errores de tipado estricto.
    - `vite build`: Build de producción generado en 2.32s.
    - `curl -I http://127.0.0.1:5220`: Servidor activo y respondiendo `HTTP/1.1 200 OK`.
+
+---
+
+## Entrada 011 — Unificación de Acceso al Manual & Expansión Enciclopédica Masterclass
+- **Fecha y Hora**: 2026-11-01
+- **Fase**: Optimización de Espacio en Toolbar & Documentación Exhaustiva
+- **Arquitecto**: Antigravity Principal Software Architect
+
+### Diagnóstico de Brechas (En respuesta al feedback del usuario)
+1. **Desperdicio de Espacio por Botones Duplicados**: Existían dos botones de manual simultáneos: uno en la barra de título (`TitleBar.tsx`) y otro redundante en la barra de herramientas (`Toolbar.tsx`), compitiendo por espacio horizontal crítico.
+2. **Profundidad Insuficiente en el Manual**: El manual previo carecía de explicaciones matemáticas profundas, detalles sobre formatos de archivo, preparación de esquemas, física de fuerzas, calibración perceptual de radios y consejos de producción gráfica real para imprenta y Figma.
+
+### Resoluciones Aplicadas
+1. **Unificación de Punto de Entrada Único**:
+   - Se purgó definitivamente el botón redundante de `Toolbar.tsx` y su prop en `ToolbarProps` y `App.tsx`.
+   - Se mantiene un único botón limpio y natural en el ángulo superior derecho de la barra de título (`TitleBar.tsx`): `[?] Manual` con insignia `<kbd>?</kbd>`, accesible también vía atajo global de teclado.
+2. **Expansión a 9 Capítulos Monográficos de Alta Densidad Técnica (`DocumentationModal.tsx`)**:
+   - **Capítulo 1: Inicio Rápido & Filosofía**: Por qué Nectarine es superior al workflow fragmentado D3 -> Illustrator; flujo en 4 estaciones y tutorial guiado paso a paso con datos de muestra.
+   - **Capítulo 2: Ingesta & Motor DuckDB WASM**: Arquitectura 100% local en RAM; diferencias y estructura para CSV (delimitadores, comas decimales), JSON (arrays de objetos) y Parquet (compresión Snappy columnar); clasificación tripartita de columnas (métricas, dimensiones categóricas, variables temporales); y transformaciones sin SQL en el panel de Filtros.
+   - **Capítulo 3: Enciclopedia de las 9 Geometrías**: Análisis exhaustivo con fórmulas matemáticas, pros, contras, casos de uso y miniaturas SVG para Cuerdas Radiales (trigonometría polar y `<textPath>`), Espiral Áurea ($r=a+b\theta$), Mapa Celestial (órbitas keplerianas), Voronoi (Delaunay), Red de Fuerza (física de partículas Coulomb/Hooke), Ondas (Streamgraph con baselining central) y Dispersión/Burbujas (corrección perceptual $\sqrt{r}$ de Flannery).
+   - **Capítulo 4: Edición & Ética de Datos**: Postulado ético de Tufte y Cairo; anclaje `isPinned`; proyección en tiempo real del rastro fantasma cian (`#0284c7`); cálculo de distorsión $\Delta\%$; y manipulación de manetas tangentes de Bézier.
+   - **Capítulo 5: Iluminación & Fusión Serigráfica**: Pipeline de filtros SVG `<feGaussianBlur>` + `<feMerge>` (Glow) y modo `mix-blend-mode: multiply` que emula tinta sobre papel sin ensuciar capas.
+   - **Capítulo 6: Capas Semánticas, Lazo & Anotaciones Atadas**: Agrupaciones dimensionales en vez de vectores huérfanos; lazo contextual; y anclaje persistente de callouts al `node.id`.
+   - **Capítulo 7: Exportación e Imprenta**: Desglose paso a paso de la purga en `exportService.ts`; preservación de gradientes y textos; y recomendaciones técnicas para Adobe Illustrator, Figma y perfiles CMYK.
+   - **Capítulo 8: Rendimiento, Guardarraíl >10k Nodos & FAQ**: Interceptor de sobrecarga en el DOM; modo simplificado; resolución de geometrías incompatibles; y reseteo total de mutaciones.
+   - **Capítulo 9: Hoja de Trucos de Teclado**: Tabla de referencia rápida para operar con velocidad (<kbd>V</kbd>, <kbd>M</kbd>, <kbd>B</kbd>, <kbd>A</kbd>, <kbd>?</kbd>, <kbd>Esc</kbd>, Doble clic, Rueda, <kbd>Alt</kbd> + Arrastre).
+3. **Verificación Zero-Defect**:
+   - `bun test`: 19/19 tests unitarios aprobados en 190ms.
+   - `tsc -b`: 0 errores.
+   - `vite build`: Build de producción generado en 2.31s.
+   - `cargo check`: Crate `nectarine v0.1.0` compilado con éxito.
+   - Socket `http://127.0.0.1:5220`: Respondiendo `HTTP/1.1 200 OK`.
