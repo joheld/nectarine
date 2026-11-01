@@ -10,6 +10,24 @@ export interface EditorialPalette {
 
 export const EDITORIAL_PALETTES: EditorialPalette[] = [
   {
+    id: 'visual-cinnamon',
+    name: 'Visual Cinnamon & Cosmos',
+    subtitle: 'Inspirada en las obras cósmicas y florales de Nadieh Bremer',
+    blendMode: 'multiply',
+    colors: [
+      '#c2410c', // Canela Ceilán
+      '#1e3a8a', // Azul Celestial Profundo
+      '#f59e0b', // Oro Estelar
+      '#f43f5e', // Rosa Sakura
+      '#0d9488', // Aurora Boreal
+      '#7c3aed', // Amatista Cósmico
+      '#0284c7', // Celeste Puro
+      '#b45309', // Caramelo Tostado
+    ],
+    backgroundLight: '#fffdf9',
+    backgroundDark: '#0b0f19',
+  },
+  {
     id: 'editorial-swiss',
     name: 'Suiza Clásica',
     subtitle: 'Diseño editorial limpio con alto contraste',

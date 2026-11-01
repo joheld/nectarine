@@ -1,6 +1,15 @@
 import * as d3 from 'd3';
-import { BaseNode, ChartType } from './types';
+import {
+  BaseNode,
+  ChartType,
+  ChordRibbon,
+  SpiralTrack,
+  CelestialOrbit,
+  ConstellationLink,
+  CurvedTextPath,
+} from './types';
 import { createLinearScale, createBandScale, createSqrtScale } from './scales';
+import { colorService } from '../services/colorService';
 
 export interface LayoutBounds {
   width: number;
@@ -12,6 +21,11 @@ export interface ComputedLayoutResult {
   nodes: BaseNode[];
   voronoiPolygons?: Map<string, string>; // nodeId -> path d string
   streamPaths?: { category: string; d: string; color: string }[];
+  chordRibbons?: ChordRibbon[];
+  spiralTrack?: SpiralTrack;
+  celestialOrbits?: CelestialOrbit[];
+  constellationLinks?: ConstellationLink[];
+  curvedTextPaths?: CurvedTextPath[];
   axes: {
     xTicks: { value: string | number; x: number }[];
     yTicks: { value: string | number; y: number }[];
@@ -45,6 +59,11 @@ export function computeLayout(
   let xTicks: { value: string | number; x: number }[] = [];
   let yTicks: { value: string | number; y: number }[] = [];
   let voronoiMap: Map<string, string> | undefined;
+  let chordRibbons: ChordRibbon[] | undefined;
+  let spiralTrack: SpiralTrack[] | SpiralTrack | undefined;
+  let celestialOrbits: CelestialOrbit[] | undefined;
+  let constellationLinks: ConstellationLink[] | undefined;
+  let curvedTextPaths: CurvedTextPath[] | undefined;
 
   switch (chartType) {
     case 'bar': {
@@ -244,11 +263,282 @@ export function computeLayout(
       });
       break;
     }
+
+    case 'chord': {
+      const cx = width / 2;
+      const cy = height / 2;
+      const radius = Math.min(innerWidth, innerHeight) * 0.38;
+      const N = rows.length;
+
+      // Group and sort rows by category so categories form cohesive sectors
+      const sortedIndexedRows = rows
+        .map((r, originalIdx) => ({ r, originalIdx, cat: String(r[catKey] ?? 'General') }))
+        .sort((a, b) => a.cat.localeCompare(b.cat));
+
+      computedNodes = sortedIndexedRows.map((item, sortedIdx) => {
+        const { r, originalIdx, cat } = item;
+        const angle = (sortedIdx / Math.max(1, N)) * 2 * Math.PI - Math.PI / 2;
+        const mathX = cx + radius * Math.cos(angle);
+        const mathY = cy + radius * Math.sin(angle);
+        const yVal = yKey ? Number(r[yKey]) || 1 : 1;
+        const cleanLabel = r.pais || r.producto || r.name || r.title || r.label || `${cat} (#${sortedIdx})`;
+
+        return {
+          id: `node-${originalIdx}`,
+          rawIndex: originalIdx,
+          mathX,
+          mathY,
+          mathR: 6.5,
+          category: cat,
+          label: String(cleanLabel),
+          valueX: sortedIdx,
+          valueY: yVal,
+          metadata: r,
+        };
+      });
+
+      // Compute inner fluid Bézier chord ribbons connecting nodes in the same category
+      chordRibbons = [];
+      const catGroups = new Map<string, typeof computedNodes>();
+      computedNodes.forEach((n) => {
+        if (!catGroups.has(n.category)) catGroups.set(n.category, []);
+        catGroups.get(n.category)!.push(n);
+      });
+
+      let ribbonIdx = 0;
+      catGroups.forEach((groupNodes, category) => {
+        const catColor = colorService.getColorForCategory(category);
+        for (let i = 0; i < groupNodes.length; i++) {
+          const nextNode = groupNodes[(i + 1) % groupNodes.length];
+          if (groupNodes.length > 1 && nextNode.id !== groupNodes[i].id) {
+            const nA = groupNodes[i];
+            const nB = nextNode;
+            const pullFactor = 0.35;
+            const cpx = cx * (1 - pullFactor) + ((nA.mathX + nB.mathX) / 2) * pullFactor;
+            const cpy = cy * (1 - pullFactor) + ((nA.mathY + nB.mathY) / 2) * pullFactor;
+            const ribbonD = `M ${nA.mathX.toFixed(2)} ${nA.mathY.toFixed(2)} Q ${cpx.toFixed(2)} ${cpy.toFixed(2)} ${nB.mathX.toFixed(2)} ${nB.mathY.toFixed(2)}`;
+
+            chordRibbons!.push({
+              id: `ribbon-${ribbonIdx++}`,
+              sourceId: nA.id,
+              targetId: nB.id,
+              d: ribbonD,
+              color: catColor,
+              opacity: 0.45,
+            });
+          }
+        }
+      });
+
+      // Compute curved text paths (<textPath>) along outer arc for each category
+      curvedTextPaths = [];
+      let textPathIdx = 0;
+      catGroups.forEach((groupNodes, category) => {
+        if (groupNodes.length === 0) return;
+        const firstNode = groupNodes[0];
+        const lastNode = groupNodes[groupNodes.length - 1];
+        const a1 = Math.atan2(firstNode.mathY - cy, firstNode.mathX - cx);
+        const a2 = Math.atan2(lastNode.mathY - cy, lastNode.mathX - cx);
+        const textRadius = radius + 22;
+
+        const sx = cx + textRadius * Math.cos(a1);
+        const sy = cy + textRadius * Math.sin(a1);
+        const ex = cx + textRadius * Math.cos(a2);
+        const ey = cy + textRadius * Math.sin(a2);
+
+        const arcD = `M ${sx.toFixed(2)} ${sy.toFixed(2)} A ${textRadius.toFixed(2)} ${textRadius.toFixed(2)} 0 0 1 ${ex.toFixed(2)} ${ey.toFixed(2)}`;
+        curvedTextPaths!.push({
+          id: `textpath-${textPathIdx++}`,
+          pathD: arcD,
+          text: category.toUpperCase(),
+          offset: '50%',
+          fontSize: 10,
+          fill: colorService.getColorForCategory(category),
+        });
+      });
+
+      break;
+    }
+
+    case 'spiral': {
+      const cx = width / 2;
+      const cy = height / 2;
+      const totalTurns = 2.8;
+      const totalAngle = totalTurns * 2 * Math.PI;
+      const minR = 28;
+      const maxR = Math.min(innerWidth, innerHeight) * 0.42;
+      const N = rows.length;
+
+      const sortedRows = rows.slice().sort((a, b) => {
+        const valA = yKey ? Number(a[yKey]) || 0 : 0;
+        const valB = yKey ? Number(b[yKey]) || 0 : 0;
+        return valA - valB;
+      });
+
+      const yVals = sortedRows.map((r) => (yKey ? Number(r[yKey]) || 0 : 1));
+      const maxY = d3.max(yVals) || 10;
+
+      computedNodes = sortedRows.map((r, i) => {
+        const t = N > 1 ? i / (N - 1) : 0.5;
+        const theta = t * totalAngle;
+        const rPos = minR + t * (maxR - minR);
+        const mathX = cx + rPos * Math.cos(theta - Math.PI / 2);
+        const mathY = cy + rPos * Math.sin(theta - Math.PI / 2);
+        const yVal = yKey ? Number(r[yKey]) || 0 : 1;
+        const cat = String(r[catKey] ?? 'General');
+        const cleanLabel = r.pais || r.producto || r.name || r.title || r.label || `${cat} (#${i})`;
+        const mathR = 4.5 + (yVal / Math.max(1, maxY)) * 9;
+
+        return {
+          id: `node-${i}`,
+          rawIndex: i,
+          mathX,
+          mathY,
+          mathR,
+          category: cat,
+          label: String(cleanLabel),
+          valueX: i,
+          valueY: yVal,
+          metadata: r,
+        };
+      });
+
+      // Sample golden spiral track path
+      let spiralD = '';
+      const step = 0.05;
+      for (let a = 0; a <= totalAngle; a += step) {
+        const curT = a / totalAngle;
+        const curR = minR + curT * (maxR - minR);
+        const curX = cx + curR * Math.cos(a - Math.PI / 2);
+        const curY = cy + curR * Math.sin(a - Math.PI / 2);
+        if (a === 0) {
+          spiralD = `M ${curX.toFixed(2)} ${curY.toFixed(2)}`;
+        } else {
+          spiralD += ` L ${curX.toFixed(2)} ${curY.toFixed(2)}`;
+        }
+      }
+
+      spiralTrack = {
+        d: spiralD,
+        rings: [
+          { radius: minR + (maxR - minR) * 0.33, label: '33% Ciclo' },
+          { radius: minR + (maxR - minR) * 0.66, label: '66% Ciclo' },
+          { radius: maxR, label: '100% Cúspide' },
+        ],
+      };
+
+      break;
+    }
+
+    case 'celestial': {
+      const cx = width / 2;
+      const cy = height / 2;
+      const N = rows.length;
+
+      celestialOrbits = [
+        {
+          cx,
+          cy,
+          rx: innerWidth * 0.22,
+          ry: innerHeight * 0.15,
+          rotation: -18,
+          stroke: '#b44b10',
+          label: 'Órbita Primaria',
+        },
+        {
+          cx,
+          cy,
+          rx: innerWidth * 0.34,
+          ry: innerHeight * 0.24,
+          rotation: 14,
+          stroke: '#d97706',
+          label: 'Órbita Media',
+        },
+        {
+          cx,
+          cy,
+          rx: innerWidth * 0.44,
+          ry: innerHeight * 0.33,
+          rotation: -6,
+          stroke: '#9a3412',
+          label: 'Órbita Exterior',
+        },
+      ];
+
+      const yVals = rows.map((r) => (yKey ? Number(r[yKey]) || 0 : 1));
+      const maxY = d3.max(yVals) || 10;
+
+      computedNodes = rows.map((r, i) => {
+        const orbitIdx = i % celestialOrbits!.length;
+        const orbit = celestialOrbits![orbitIdx];
+        const itemsInOrbit = Math.ceil(N / celestialOrbits!.length);
+        const itemPos = Math.floor(i / celestialOrbits!.length);
+        const theta = (itemPos / Math.max(1, itemsInOrbit)) * 2 * Math.PI;
+
+        const bx = orbit.rx * Math.cos(theta);
+        const by = orbit.ry * Math.sin(theta);
+        const rotRad = (orbit.rotation * Math.PI) / 180;
+        const mathX = cx + bx * Math.cos(rotRad) - by * Math.sin(rotRad);
+        const mathY = cy + bx * Math.sin(rotRad) + by * Math.cos(rotRad);
+
+        const yVal = yKey ? Number(r[yKey]) || 0 : 1;
+        const cat = String(r[catKey] ?? 'General');
+        const cleanLabel = r.pais || r.producto || r.name || r.title || r.label || `${cat} (#${i})`;
+        const mathR = 5 + (yVal / Math.max(1, maxY)) * 7;
+
+        return {
+          id: `node-${i}`,
+          rawIndex: i,
+          mathX,
+          mathY,
+          mathR,
+          category: cat,
+          label: String(cleanLabel),
+          valueX: i,
+          valueY: yVal,
+          metadata: r,
+        };
+      });
+
+      constellationLinks = [];
+      const catStars = new Map<string, typeof computedNodes>();
+      computedNodes.forEach((n) => {
+        if (!catStars.has(n.category)) catStars.set(n.category, []);
+        catStars.get(n.category)!.push(n);
+      });
+
+      let linkIdx = 0;
+      catStars.forEach((stars, cat) => {
+        const catColor = colorService.getColorForCategory(cat);
+        for (let j = 0; j < stars.length - 1; j++) {
+          const s1 = stars[j];
+          const s2 = stars[j + 1];
+          constellationLinks!.push({
+            id: `constellation-${linkIdx++}`,
+            sourceId: s1.id,
+            targetId: s2.id,
+            x1: s1.mathX,
+            y1: s1.mathY,
+            x2: s2.mathX,
+            y2: s2.mathY,
+            stroke: catColor,
+            dashArray: '3,3',
+          });
+        }
+      });
+
+      break;
+    }
   }
 
   return {
     nodes: computedNodes,
     voronoiPolygons: voronoiMap,
+    chordRibbons,
+    spiralTrack: Array.isArray(spiralTrack) ? spiralTrack[0] : spiralTrack,
+    celestialOrbits,
+    constellationLinks,
+    curvedTextPaths,
     axes: { xTicks, yTicks },
   };
 }

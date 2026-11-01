@@ -176,3 +176,35 @@ El usuario criticó con razón el icono previo: un dibujo vectorial geométrico 
    - 15/15 tests automatizados pasando en Bun.
    - `tsc -b` con 0 errores y compilación limpia con Vite.
    - `cargo check` en `src-tauri` finalizado con éxito.
+
+
+---
+
+## Entrada 008 — Expansión a Visual Cinnamon: Geometrías Radiales, Espiral, Celestial & Resplandor SVG
+- **Fecha y Hora**: 2026-11-01
+- **Fase**: Motor Geométrico Artístico & Estética de Luz (Nadieh Bremer Standard)
+- **Arquitecto**: Antigravity Principal Software Architect
+
+### Motivación & Filosofía
+El usuario solicitó capacitar a **Cinnamon** para crear proyectos de la complejidad y belleza visual del portafolio de *Visual Cinnamon* (Nadieh Bremer, coautora de *Data Sketches*). El trabajo de Nadieh se caracteriza por abandonar los ejes cartesianos rectangulares en favor de geometrías no-euclidianas (radiales, espirales, celestiales), cintas fluidas con grosor variable, rotulación que abraza curvas orbitales y atmósferas de luz con filtros SVG.
+
+### Resoluciones & Nuevas Capacidades Implementadas
+1. **Diagramas Circulares de Cuerdas (`chord`)**:
+   - Algoritmo de distribución radial trigonométrica sobre circunferencia de radio controlado.
+   - Cintas fluidas Bézier que conectan entidades de la misma categoría o relación con tracción central (`Q cpx cpy`).
+   - Rotulación circular con `<textPath>` que sigue arcos exteriores concéntricos, permitiendo que los nombres de categorías dancen sobre el perímetro de la ilustración.
+2. **Espirales Áureas de Arquímedes (`spiral`)**:
+   - Función paramétrica `r(θ) = minR + t * (maxR - minR)` trazando 2.8 ciclos de evolución temporal o métrica.
+   - Generación analítica de la pista vectorial continua y anillos guía concéntricos (33%, 66%, 100% cúspide).
+3. **Mapas Astronómicos Celestiales (`celestial`)**:
+   - 3 órbitas elípticas inclinadas (`rx, ry, rotation`) con estilización de mapa estelar histórico.
+   - Nodos posicionados como estrellas en las órbitas y enlaces de constelación (*constellation links*) punteados uniendo astros por afinidad de datos.
+4. **Filtros SVG de Luz y Resplandor (`#celestial-glow` & `#ribbon-glow`)**:
+   - Capa de filtros nativos `<feGaussianBlur stdDeviation="3.6"/>` con `<feMerge>` para conferir a los nodos y cintas un halo estelar luminoso.
+   - Conmutador en la barra de herramientas ("Luz & Glow") con persistencia en `mutationStore.ts`.
+5. **Paleta "Visual Cinnamon & Cosmos"**:
+   - Incorporada en `colorService.ts`: Canela Ceilán (`#c2410c`), Azul Celestial Profundo (`#1e3a8a`), Oro Estelar (`#f59e0b`), Rosa Sakura (`#f43f5e`), Aurora Boreal (`#0d9488`), Amatista Cósmico (`#7c3aed`), con modos de fusión `multiply` y `screen`.
+6. **Verificación Zero-Defect**:
+   - 19/19 tests automatizados pasando en Bun (incluyendo validación matemática de cuerdas, espirales, órbitas y preservación en `exportService`).
+   - `tsc -b` con 0 errores y compilación de producción con Vite superada.
+   - `cargo check` en Tauri superado y socket escuchando en `http://127.0.0.1:5220`.

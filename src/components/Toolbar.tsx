@@ -15,6 +15,10 @@ import {
   Spline,
   MessageSquarePlus,
   RotateCcw,
+  Disc,
+  Orbit,
+  Sparkles,
+  SunMedium,
 } from 'lucide-react';
 import { useDataStore } from '../store/dataStore';
 import { useMutationStore } from '../store/mutationStore';
@@ -33,7 +37,7 @@ interface ToolbarProps {
 
 export const Toolbar: React.FC<ToolbarProps> = ({ onOpenProfiler, svgRef }) => {
   const { chartType, setChartType, profiledColumns, rawRows, loadDataset, recalculateLayout } = useDataStore();
-  const { activeTool, setActiveTool, resetAllMutations, mutations } = useMutationStore();
+  const { activeTool, setActiveTool, resetAllMutations, mutations, isGlowEnabled, toggleGlow } = useMutationStore();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const compatibilities = datasetProfiler.evaluateCompatibility(profiledColumns, rawRows.length);
@@ -112,6 +116,9 @@ export const Toolbar: React.FC<ToolbarProps> = ({ onOpenProfiler, svgRef }) => {
   const chartButtons: { type: ChartType; label: string; icon: React.ReactNode }[] = [
     { type: 'scatter', label: 'Dispersión', icon: <ScatterChart className="w-3.5 h-3.5" /> },
     { type: 'bubble', label: 'Burbujas', icon: <CircleDot className="w-3.5 h-3.5" /> },
+    { type: 'chord', label: 'Cuerdas', icon: <Disc className="w-3.5 h-3.5" /> },
+    { type: 'spiral', label: 'Espiral', icon: <Orbit className="w-3.5 h-3.5" /> },
+    { type: 'celestial', label: 'Celestial', icon: <Sparkles className="w-3.5 h-3.5" /> },
     { type: 'bar', label: 'Barras', icon: <BarChart3 className="w-3.5 h-3.5" /> },
     { type: 'voronoi', label: 'Mosaico', icon: <Share2 className="w-3.5 h-3.5" /> },
     { type: 'network', label: 'Red', icon: <Network className="w-3.5 h-3.5" /> },
@@ -220,8 +227,21 @@ export const Toolbar: React.FC<ToolbarProps> = ({ onOpenProfiler, svgRef }) => {
         </button>
       </div>
 
-      {/* Cinnamon Editorial Palette & Clean Export */}
+      {/* Cinnamon Editorial Palette, Glow & Clean Export */}
       <div className="flex items-center gap-2">
+        <button
+          onClick={toggleGlow}
+          className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md border transition-all ${
+            isGlowEnabled
+              ? 'bg-[#fffbeb] border-[#fde68a] text-[#b45309] font-medium shadow-xs'
+              : 'bg-white border-[#e6dcce] text-[#8c7664] hover:text-[#2c1a0e]'
+          }`}
+          title="Alternar resplandor estelar y halos de luz (Glow SVG)"
+        >
+          <SunMedium className={`w-3.5 h-3.5 ${isGlowEnabled ? 'text-[#d97706]' : 'text-[#8c7664]'}`} />
+          <span className="text-[11px] hidden xl:inline">Luz & Glow</span>
+        </button>
+
         <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-white border border-[#e6dcce] text-[#2c1a0e] shadow-xs">
           <Palette className="w-3.5 h-3.5 text-[#b44b10]" />
           <select

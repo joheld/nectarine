@@ -44,4 +44,33 @@ describe('ExportService SVG Purge Routine', () => {
     expect(purgedXml).not.toContain('anchor-pin');
     expect(purgedXml).not.toContain('bezier-handle');
   });
+
+  it('preserves Visual Cinnamon artistic elements (chords, ribbons, orbits, and textPaths) during export', () => {
+    const window = new Window();
+    const document = window.document;
+
+    const div = document.createElement('div');
+    div.innerHTML = `
+      <svg viewBox="0 0 800 600">
+        <defs>
+          <filter id="celestial-glow"><feGaussianBlur stdDeviation="3.6" /></filter>
+        </defs>
+        <g class="chord-ribbons-layer"><path d="M 10 10 Q 400 300 200 200" stroke="#c2410c" /></g>
+        <g class="curved-text-layer"><text><textPath href="#p1">EUROPA</textPath></text></g>
+        <g class="celestial-orbits"><ellipse rx="200" ry="100" /></g>
+        <circle id="star-node" cx="100" cy="100" r="6" filter="url(#celestial-glow)" />
+        <g class="selection-ring" data-editor-ui="true"><circle r="14" /></g>
+      </svg>
+    `;
+
+    const svgElement = div.querySelector('svg') as unknown as SVGSVGElement;
+    const purgedXml = exportService.cleanAndPurgeSVG(svgElement);
+
+    expect(purgedXml).toContain('chord-ribbons-layer');
+    expect(purgedXml).toContain('curved-text-layer');
+    expect(purgedXml).toContain('celestial-orbits');
+    expect(purgedXml).toContain('celestial-glow');
+    expect(purgedXml).toContain('star-node');
+    expect(purgedXml).not.toContain('selection-ring');
+  });
 });

@@ -35,6 +35,15 @@ describe('DatasetProfiler & Performance Guardrail', () => {
 
     const bar = compat.find((c) => c.type === 'bar');
     expect(bar?.isCompatible).toBe(true);
+
+    const chord = compat.find((c) => c.type === 'chord');
+    expect(chord?.isCompatible).toBe(true);
+
+    const spiral = compat.find((c) => c.type === 'spiral');
+    expect(spiral?.isCompatible).toBe(true);
+
+    const celestial = compat.find((c) => c.type === 'celestial');
+    expect(celestial?.isCompatible).toBe(true);
   });
 
   it('triggers performance guardrail when exceeding 10,000 nodes', () => {

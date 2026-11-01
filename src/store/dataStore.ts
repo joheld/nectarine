@@ -1,5 +1,14 @@
 import { create } from 'zustand';
-import { BaseNode, ChartType, ProfiledColumn } from '../engine/types';
+import {
+  BaseNode,
+  ChartType,
+  ProfiledColumn,
+  ChordRibbon,
+  SpiralTrack,
+  CelestialOrbit,
+  ConstellationLink,
+  CurvedTextPath,
+} from '../engine/types';
 import { computeLayout, LayoutBounds } from '../engine/layoutEngine';
 import { datasetProfiler, GuardrailCheck } from '../services/profiler';
 
@@ -17,6 +26,11 @@ interface DataState {
   };
   baseNodes: BaseNode[];
   voronoiCells: Map<string, string>;
+  chordRibbons: ChordRibbon[];
+  spiralTrack: SpiralTrack | null;
+  celestialOrbits: CelestialOrbit[];
+  constellationLinks: ConstellationLink[];
+  curvedTextPaths: CurvedTextPath[];
   axes: {
     xTicks: { value: string | number; x: number }[];
     yTicks: { value: string | number; y: number }[];
@@ -58,6 +72,11 @@ export const useDataStore = create<DataState>((set, get) => ({
   },
   baseNodes: [],
   voronoiCells: new Map(),
+  chordRibbons: [],
+  spiralTrack: null,
+  celestialOrbits: [],
+  constellationLinks: [],
+  curvedTextPaths: [],
   axes: { xTicks: [], yTicks: [] },
   layoutBounds: DEFAULT_BOUNDS,
   guardrailCheck: null,
@@ -128,6 +147,11 @@ export const useDataStore = create<DataState>((set, get) => ({
     set({
       baseNodes: result.nodes,
       voronoiCells: result.voronoiPolygons || new Map(),
+      chordRibbons: result.chordRibbons || [],
+      spiralTrack: result.spiralTrack || null,
+      celestialOrbits: result.celestialOrbits || [],
+      constellationLinks: result.constellationLinks || [],
+      curvedTextPaths: result.curvedTextPaths || [],
       axes: result.axes,
     });
   },

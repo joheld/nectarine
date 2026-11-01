@@ -10,7 +10,61 @@ export interface ProfiledColumn {
   sampleValues: (string | number | boolean)[];
 }
 
-export type ChartType = 'scatter' | 'bubble' | 'bar' | 'network' | 'voronoi' | 'stream';
+export type ChartType =
+  | 'scatter'
+  | 'bubble'
+  | 'bar'
+  | 'network'
+  | 'voronoi'
+  | 'stream'
+  | 'chord'
+  | 'spiral'
+  | 'celestial';
+
+export interface ChordRibbon {
+  id: string;
+  sourceId: string;
+  targetId: string;
+  d: string;
+  color: string;
+  opacity: number;
+}
+
+export interface SpiralTrack {
+  d: string;
+  rings: { radius: number; label: string }[];
+}
+
+export interface CelestialOrbit {
+  cx: number;
+  cy: number;
+  rx: number;
+  ry: number;
+  rotation: number;
+  stroke: string;
+  label?: string;
+}
+
+export interface ConstellationLink {
+  id: string;
+  sourceId: string;
+  targetId: string;
+  x1: number;
+  y1: number;
+  x2: number;
+  y2: number;
+  stroke: string;
+  dashArray?: string;
+}
+
+export interface CurvedTextPath {
+  id: string;
+  pathD: string;
+  text: string;
+  offset: string;
+  fontSize?: number;
+  fill?: string;
+}
 
 export interface ChartCompatibility {
   type: ChartType;

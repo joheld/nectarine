@@ -24,6 +24,9 @@ interface MutationState {
   resetMutation: (id: string) => void;
   resetAllMutations: () => void;
 
+  isGlowEnabled: boolean;
+  toggleGlow: () => void;
+
   // Distortion evaluation helper
   calculateDistortion: (baseNode: BaseNode) => DistortionMetric;
 }
@@ -33,6 +36,11 @@ export const useMutationStore = create<MutationState>((set, get) => ({
   selectedNodeIds: [],
   activeTool: 'select',
   hoveredNodeId: null,
+  isGlowEnabled: true,
+
+  toggleGlow: () => {
+    set((state) => ({ isGlowEnabled: !state.isGlowEnabled }));
+  },
 
   selectNode: (id, multiSelect = false) => {
     set((state) => {

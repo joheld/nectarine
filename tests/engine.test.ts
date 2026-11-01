@@ -48,4 +48,59 @@ describe('Decoupled Mathematical Engine (D3 without DOM)', () => {
     expect(midPoint.x).toBeGreaterThan(0);
     expect(euclideanDistance({ x: 0, y: 0 }, { x: 3, y: 4 })).toBe(5);
   });
+
+  it('computes Visual Cinnamon radial chord layout with fluid ribbons and curved text', () => {
+    const result = computeLayout('chord', rows, { category: 'group', y: 'yVal' }, bounds);
+    expect(result.nodes.length).toBe(3);
+
+    // Nodes are distributed on a circle around center (400, 300)
+    const cx = bounds.width / 2;
+    const cy = bounds.height / 2;
+    result.nodes.forEach((n) => {
+      const dist = Math.hypot(n.mathX - cx, n.mathY - cy);
+      expect(dist).toBeGreaterThan(150);
+      expect(dist).toBeLessThan(250);
+    });
+
+    // Chord ribbons connect nodes of the same group (Alpha & Beta in G1)
+    expect(result.chordRibbons).toBeDefined();
+    expect(result.chordRibbons!.length).toBeGreaterThan(0);
+    expect(result.chordRibbons![0].d).toContain('M');
+    expect(result.chordRibbons![0].d).toContain('Q');
+
+    // Curved text paths exist for categories
+    expect(result.curvedTextPaths).toBeDefined();
+    expect(result.curvedTextPaths!.length).toBeGreaterThan(0);
+    expect(result.curvedTextPaths![0].pathD).toContain('A');
+  });
+
+  it('computes Visual Cinnamon golden spiral coordinates and spiral track', () => {
+    const result = computeLayout('spiral', rows, { category: 'group', y: 'yVal' }, bounds);
+    expect(result.nodes.length).toBe(3);
+    expect(result.spiralTrack).toBeDefined();
+    expect(result.spiralTrack!.d).toContain('M');
+    expect(result.spiralTrack!.d).toContain('L');
+    expect(result.spiralTrack!.rings.length).toBe(3);
+
+    // Radii of nodes increase along spiral
+    const cx = bounds.width / 2;
+    const cy = bounds.height / 2;
+    const dist0 = Math.hypot(result.nodes[0].mathX - cx, result.nodes[0].mathY - cy);
+    const distLast = Math.hypot(result.nodes[2].mathX - cx, result.nodes[2].mathY - cy);
+    expect(distLast).toBeGreaterThan(dist0);
+  });
+
+  it('computes Visual Cinnamon celestial orbits and constellation links', () => {
+    const result = computeLayout('celestial', rows, { category: 'group', y: 'yVal' }, bounds);
+    expect(result.nodes.length).toBe(3);
+    expect(result.celestialOrbits).toBeDefined();
+    expect(result.celestialOrbits!.length).toBe(3);
+    expect(result.celestialOrbits![0].rx).toBeGreaterThan(0);
+    expect(result.celestialOrbits![0].rotation).toBeDefined();
+
+    // Constellation links connect stars in group G1
+    expect(result.constellationLinks).toBeDefined();
+    expect(result.constellationLinks!.length).toBeGreaterThan(0);
+    expect(result.constellationLinks![0].dashArray).toBe('3,3');
+  });
 });

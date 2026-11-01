@@ -12,8 +12,20 @@ interface CanvasProps {
 }
 
 export const Canvas: React.FC<CanvasProps> = ({ svgRef }) => {
-  const { baseNodes, voronoiCells, axes, layoutBounds, chartType, setLayoutBounds } = useDataStore();
-  const { clearSelection } = useMutationStore();
+  const {
+    baseNodes,
+    voronoiCells,
+    chordRibbons,
+    spiralTrack,
+    celestialOrbits,
+    constellationLinks,
+    curvedTextPaths,
+    axes,
+    layoutBounds,
+    chartType,
+    setLayoutBounds,
+  } = useDataStore();
+  const { clearSelection, isGlowEnabled } = useMutationStore();
   const containerRef = useRef<HTMLDivElement>(null);
 
   const [zoom, setZoom] = useState(1);
@@ -148,6 +160,23 @@ export const Canvas: React.FC<CanvasProps> = ({ svgRef }) => {
           <pattern id="grid-dots" width="24" height="24" patternUnits="userSpaceOnUse">
             <circle cx="12" cy="12" r="0.8" fill="#e5dacd" />
           </pattern>
+
+          {/* Nadieh Bremer / Visual Cinnamon Starlight & Aurora Glow Filters */}
+          <filter id="celestial-glow" x="-60%" y="-60%" width="220%" height="220%">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="3.6" result="blur" />
+            <feMerge>
+              <feMergeNode in="blur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+
+          <filter id="ribbon-glow" x="-30%" y="-30%" width="160%" height="160%">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="2.2" result="blur" />
+            <feMerge>
+              <feMergeNode in="blur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
         </defs>
 
         <g transform={`translate(${pan.x}, ${pan.y}) scale(${zoom})`}>
@@ -160,40 +189,172 @@ export const Canvas: React.FC<CanvasProps> = ({ svgRef }) => {
             className="pointer-events-none"
           />
 
-          <g className="axes-group select-none" data-editor-ui="true">
-            {axes.xTicks.map((t, idx) => (
-              <g key={`xtick-${idx}`} transform={`translate(${t.x}, ${layoutBounds.height - layoutBounds.padding.bottom})`}>
-                <line y1="0" y2="6" stroke="#c4b5a5" />
-                <line y1="0" y2={-(layoutBounds.height - layoutBounds.padding.bottom - layoutBounds.padding.top)} stroke="#ede3d7" strokeDasharray="3 3" />
-                <text
-                  y="18"
-                  textAnchor="middle"
-                  fill="#78716c"
-                  fontSize="9.5"
-                  fontFamily="SF Mono, monospace"
-                >
-                  {typeof t.value === 'number' ? t.value.toLocaleString() : t.value}
-                </text>
-              </g>
-            ))}
+          {/* Cartesian Axes: only for Cartesian charts */}
+          {chartType !== 'chord' && chartType !== 'spiral' && chartType !== 'celestial' && chartType !== 'network' && (
+            <g className="axes-group select-none" data-editor-ui="true">
+              {axes.xTicks.map((t, idx) => (
+                <g key={`xtick-${idx}`} transform={`translate(${t.x}, ${layoutBounds.height - layoutBounds.padding.bottom})`}>
+                  <line y1="0" y2="6" stroke="#c4b5a5" />
+                  <line y1="0" y2={-(layoutBounds.height - layoutBounds.padding.bottom - layoutBounds.padding.top)} stroke="#ede3d7" strokeDasharray="3 3" />
+                  <text
+                    y="18"
+                    textAnchor="middle"
+                    fill="#78716c"
+                    fontSize="9.5"
+                    fontFamily="SF Mono, monospace"
+                  >
+                    {typeof t.value === 'number' ? t.value.toLocaleString() : t.value}
+                  </text>
+                </g>
+              ))}
 
-            {axes.yTicks.map((t, idx) => (
-              <g key={`ytick-${idx}`} transform={`translate(${layoutBounds.padding.left}, ${t.y})`}>
-                <line x1="-6" x2="0" stroke="#c4b5a5" />
-                <line x1="0" x2={layoutBounds.width - layoutBounds.padding.left - layoutBounds.padding.right} stroke="#ede3d7" strokeDasharray="3 3" />
-                <text
-                  x="-10"
-                  y="3"
-                  textAnchor="end"
-                  fill="#78716c"
-                  fontSize="9.5"
-                  fontFamily="SF Mono, monospace"
-                >
-                  {typeof t.value === 'number' ? t.value.toLocaleString() : t.value}
-                </text>
+              {axes.yTicks.map((t, idx) => (
+                <g key={`ytick-${idx}`} transform={`translate(${layoutBounds.padding.left}, ${t.y})`}>
+                  <line x1="-6" x2="0" stroke="#c4b5a5" />
+                  <line x1="0" x2={layoutBounds.width - layoutBounds.padding.left - layoutBounds.padding.right} stroke="#ede3d7" strokeDasharray="3 3" />
+                  <text
+                    x="-10"
+                    y="3"
+                    textAnchor="end"
+                    fill="#78716c"
+                    fontSize="9.5"
+                    fontFamily="SF Mono, monospace"
+                  >
+                    {typeof t.value === 'number' ? t.value.toLocaleString() : t.value}
+                  </text>
+                </g>
+              ))}
+            </g>
+          )}
+
+          {/* Visual Cinnamon: Chord Ribbons & Curved Outer Labels */}
+          {chartType === 'chord' && (
+            <>
+              <g className="chord-ribbons-layer" style={{ mixBlendMode: currentBlendMode as any }}>
+                {chordRibbons.map((ribbon) => (
+                  <path
+                    key={ribbon.id}
+                    d={ribbon.d}
+                    fill="none"
+                    stroke={ribbon.color}
+                    strokeWidth="2"
+                    strokeOpacity={ribbon.opacity}
+                    filter={isGlowEnabled ? 'url(#ribbon-glow)' : undefined}
+                    className="transition-all"
+                  />
+                ))}
               </g>
-            ))}
-          </g>
+
+              {/* Text on Curved Trajectory (textPath) */}
+              <g className="curved-text-layer select-none">
+                {curvedTextPaths.map((tp) => (
+                  <g key={tp.id}>
+                    <path id={tp.id} d={tp.pathD} fill="none" stroke="none" />
+                    <text
+                      fill={tp.fill || '#b44b10'}
+                      fontSize={tp.fontSize || 10}
+                      fontWeight="600"
+                      letterSpacing="0.08em"
+                    >
+                      <textPath href={`#${tp.id}`} startOffset={tp.offset} textAnchor="middle">
+                        {tp.text}
+                      </textPath>
+                    </text>
+                  </g>
+                ))}
+              </g>
+            </>
+          )}
+
+          {/* Visual Cinnamon: Golden Spiral Track & Rings */}
+          {chartType === 'spiral' && spiralTrack && (
+            <g className="spiral-layer">
+              <g className="spiral-rings select-none" opacity="0.35">
+                {spiralTrack.rings.map((ring, idx) => (
+                  <g key={`ring-${idx}`}>
+                    <circle
+                      cx={layoutBounds.width / 2}
+                      cy={layoutBounds.height / 2}
+                      r={ring.radius}
+                      fill="none"
+                      stroke="#b44b10"
+                      strokeWidth="0.8"
+                      strokeDasharray="4 4"
+                    />
+                    <text
+                      x={layoutBounds.width / 2 + ring.radius + 4}
+                      y={layoutBounds.height / 2 + 3}
+                      fill="#8c7664"
+                      fontSize="9"
+                      fontFamily="monospace"
+                    >
+                      {ring.label}
+                    </text>
+                  </g>
+                ))}
+              </g>
+              <path
+                d={spiralTrack.d}
+                fill="none"
+                stroke="#c2410c"
+                strokeWidth="1.6"
+                strokeOpacity="0.75"
+                filter={isGlowEnabled ? 'url(#ribbon-glow)' : undefined}
+                strokeLinecap="round"
+              />
+            </g>
+          )}
+
+          {/* Visual Cinnamon: Celestial Orbits & Constellation Links */}
+          {chartType === 'celestial' && (
+            <g className="celestial-layer">
+              <g className="celestial-orbits select-none" opacity="0.45">
+                {celestialOrbits.map((orb, idx) => (
+                  <g key={`orbit-${idx}`}>
+                    <ellipse
+                      cx={orb.cx}
+                      cy={orb.cy}
+                      rx={orb.rx}
+                      ry={orb.ry}
+                      transform={`rotate(${orb.rotation} ${orb.cx} ${orb.cy})`}
+                      fill="none"
+                      stroke={orb.stroke}
+                      strokeWidth="1"
+                      strokeDasharray="5 4"
+                    />
+                    {orb.label && (
+                      <text
+                        x={orb.cx}
+                        y={orb.cy - orb.ry - 6}
+                        textAnchor="middle"
+                        fill="#8c7664"
+                        fontSize="9.5"
+                        fontFamily="monospace"
+                      >
+                        {orb.label}
+                      </text>
+                    )}
+                  </g>
+                ))}
+              </g>
+
+              <g className="constellation-links" opacity="0.6">
+                {constellationLinks.map((link) => (
+                  <line
+                    key={link.id}
+                    x1={link.x1}
+                    y1={link.y1}
+                    x2={link.x2}
+                    y2={link.y2}
+                    stroke={link.stroke}
+                    strokeWidth="1.2"
+                    strokeDasharray={link.dashArray}
+                    filter={isGlowEnabled ? 'url(#ribbon-glow)' : undefined}
+                  />
+                ))}
+              </g>
+            </g>
+          )}
 
           {chartType === 'voronoi' && (
             <g className="voronoi-mesh" opacity="0.45">

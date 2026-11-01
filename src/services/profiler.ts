@@ -159,6 +159,39 @@ class DatasetProfiler {
           y: numericCols[0]?.name,
         },
       },
+      {
+        type: 'chord',
+        name: 'Cuerdas Radiales (Visual Cinnamon)',
+        description: 'Relaciones circulares complejas unidas por cintas fluidas con texto en trayectoria.',
+        isCompatible: rowCount >= 2,
+        reason: rowCount < 2 ? 'Requiere al menos 2 registros.' : undefined,
+        suggestedMappings: {
+          category: bestCategoryCol,
+          y: numericCols[0]?.name,
+        },
+      },
+      {
+        type: 'spiral',
+        name: 'Espiral Áurea (Spiraling Time)',
+        description: 'Evolución cíclica continua de Arquímedes con radio y ángulo métricos.',
+        isCompatible: rowCount >= 3,
+        reason: rowCount < 3 ? 'Requiere al menos 3 registros para trazar el espiral.' : undefined,
+        suggestedMappings: {
+          category: bestCategoryCol,
+          y: numericCols[0]?.name,
+        },
+      },
+      {
+        type: 'celestial',
+        name: 'Mapa Celestial & Constelaciones',
+        description: 'Órbitas elípticas inclinadas con estrellas relucientes y enlaces constelares.',
+        isCompatible: rowCount >= 2,
+        reason: rowCount < 2 ? 'Requiere al menos 2 registros.' : undefined,
+        suggestedMappings: {
+          category: bestCategoryCol,
+          y: numericCols[0]?.name,
+        },
+      },
     ];
 
     return charts;

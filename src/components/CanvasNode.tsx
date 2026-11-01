@@ -21,6 +21,7 @@ export const CanvasNode: React.FC<CanvasNodeProps> = ({ node, blendMode }) => {
     activeTool,
     calculateDistortion,
     togglePin,
+    isGlowEnabled,
   } = useMutationStore();
 
   const { layerOverrides } = useLayerStore();
@@ -194,6 +195,7 @@ export const CanvasNode: React.FC<CanvasNodeProps> = ({ node, blendMode }) => {
             fillOpacity="0.88"
             stroke="rgba(0,0,0,0.15)"
             strokeWidth="1"
+            filter={isGlowEnabled ? 'url(#celestial-glow)' : undefined}
             style={{ mixBlendMode: blendMode as any }}
           />
         ) : (
@@ -203,6 +205,7 @@ export const CanvasNode: React.FC<CanvasNodeProps> = ({ node, blendMode }) => {
             fillOpacity="0.9"
             stroke="rgba(0,0,0,0.15)"
             strokeWidth={isSelected ? 2 : 1}
+            filter={isGlowEnabled ? 'url(#celestial-glow)' : undefined}
             style={{ mixBlendMode: blendMode as any }}
           />
         )}
