@@ -60,66 +60,66 @@ export const DataProfilerModal: React.FC<DataProfilerModalProps> = ({ isOpen, on
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm select-none p-4 animate-in fade-in duration-150">
-      <div className="w-full max-w-2xl bg-mac-surface border border-mac-border rounded-xl shadow-macos flex flex-col overflow-hidden text-xs">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm select-none p-4 animate-in fade-in duration-150">
+      <div className="w-full max-w-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-2xl flex flex-col overflow-hidden text-xs text-slate-800 dark:text-slate-100">
         {/* Header */}
-        <div className="h-11 px-4 border-b border-mac-border flex items-center justify-between bg-mac-panel/50">
+        <div className="h-11 px-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-800/50">
           <div className="flex items-center gap-2">
             <Sliders className="w-4 h-4 text-mac-accent" />
-            <span className="font-semibold text-gray-100 text-sm">Asistente Estructural & Transformaciones</span>
+            <span className="font-semibold text-slate-900 dark:text-slate-100 text-sm">Filtros y Resumen de Columnas</span>
           </div>
           <button
             onClick={onClose}
-            className="p-1 rounded hover:bg-white/10 text-gray-400 hover:text-white"
+            className="p-1 rounded hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-400 hover:text-slate-700"
           >
             <X className="w-4 h-4" />
           </button>
         </div>
 
         {/* Tab Navigation */}
-        <div className="flex items-center gap-1 px-4 pt-2 border-b border-mac-border/60 bg-mac-bg/40">
+        <div className="flex items-center gap-1 px-4 pt-2 border-b border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900">
           <button
             onClick={() => setActiveTab('profile')}
             className={`px-3 py-1.5 border-b-2 font-medium transition-colors ${
               activeTab === 'profile'
-                ? 'border-mac-accent text-white'
-                : 'border-transparent text-gray-400 hover:text-gray-200'
+                ? 'border-mac-accent text-mac-accent font-semibold'
+                : 'border-transparent text-slate-500 hover:text-slate-800'
             }`}
           >
-            Perfil de Columnas ({profiledColumns.length})
+            Columnas ({profiledColumns.length})
           </button>
           <button
             onClick={() => setActiveTab('filter')}
             className={`px-3 py-1.5 border-b-2 font-medium transition-colors flex items-center gap-1.5 ${
               activeTab === 'filter'
-                ? 'border-mac-accent text-white'
-                : 'border-transparent text-gray-400 hover:text-gray-200'
+                ? 'border-mac-accent text-mac-accent font-semibold'
+                : 'border-transparent text-slate-500 hover:text-slate-800'
             }`}
           >
             <Filter className="w-3.5 h-3.5" />
-            Filtro sin SQL
+            Filtrar Datos
           </button>
           <button
             onClick={() => setActiveTab('groupby')}
             className={`px-3 py-1.5 border-b-2 font-medium transition-colors flex items-center gap-1.5 ${
               activeTab === 'groupby'
-                ? 'border-mac-accent text-white'
-                : 'border-transparent text-gray-400 hover:text-gray-200'
+                ? 'border-mac-accent text-mac-accent font-semibold'
+                : 'border-transparent text-slate-500 hover:text-slate-800'
             }`}
           >
             <BarChart className="w-3.5 h-3.5" />
-            Agrupación Categórica
+            Agrupar por Categoría
           </button>
           <button
             onClick={() => setActiveTab('topn')}
             className={`px-3 py-1.5 border-b-2 font-medium transition-colors flex items-center gap-1.5 ${
               activeTab === 'topn'
-                ? 'border-mac-accent text-white'
-                : 'border-transparent text-gray-400 hover:text-gray-200'
+                ? 'border-mac-accent text-mac-accent font-semibold'
+                : 'border-transparent text-slate-500 hover:text-slate-800'
             }`}
           >
             <ArrowDownNarrowWide className="w-3.5 h-3.5" />
-            Top N Registros
+            Top Registros
           </button>
         </div>
 
@@ -127,36 +127,36 @@ export const DataProfilerModal: React.FC<DataProfilerModalProps> = ({ isOpen, on
         <div className="p-4 max-h-[420px] overflow-y-auto">
           {activeTab === 'profile' && (
             <div className="space-y-2">
-              <div className="flex justify-between text-gray-400 pb-1 border-b border-mac-border font-mono text-[11px]">
+              <div className="flex justify-between text-slate-400 pb-1 border-b border-slate-100 dark:border-slate-800 font-mono text-[11px]">
                 <span>COLUMNA / TIPO</span>
-                <span>DISTINTOS / NULOS</span>
-                <span>RANGO / MUESTRA</span>
+                <span>ÚNICOS / NULOS</span>
+                <span>RANGO O MUESTRA</span>
               </div>
               {profiledColumns.map((col) => (
                 <div
                   key={col.name}
-                  className="p-2 rounded bg-mac-panel/60 border border-mac-border/50 flex items-center justify-between hover:border-mac-border"
+                  className="p-2.5 rounded-lg bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-800 flex items-center justify-between"
                 >
                   <div className="flex items-center gap-2">
-                    <span className="font-semibold text-gray-200">{col.name}</span>
+                    <span className="font-semibold text-slate-800 dark:text-slate-200">{col.name}</span>
                     <span
                       className={`text-[10px] font-mono px-1.5 py-0.2 rounded border ${
                         col.type === 'number'
-                          ? 'bg-blue-500/10 border-blue-500/30 text-blue-400'
+                          ? 'bg-blue-50 border-blue-200 text-blue-700'
                           : col.type === 'string'
-                          ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400'
-                          : 'bg-purple-500/10 border-purple-500/30 text-purple-400'
+                          ? 'bg-emerald-50 border-emerald-200 text-emerald-700'
+                          : 'bg-purple-50 border-purple-200 text-purple-700'
                       }`}
                     >
-                      {col.type}
+                      {col.type === 'number' ? 'número' : col.type === 'string' ? 'texto' : col.type}
                     </span>
                   </div>
 
-                  <div className="font-mono text-gray-400 text-[11px]">
-                    {col.distinctCount} únicos | {col.nullCount} nulos
+                  <div className="font-mono text-slate-500 text-[11px]">
+                    {col.distinctCount} únicos | {col.nullCount} vacíos
                   </div>
 
-                  <div className="font-mono text-gray-300 text-[11px] max-w-[220px] truncate text-right">
+                  <div className="font-mono text-slate-600 dark:text-slate-300 text-[11px] max-w-[220px] truncate text-right">
                     {col.type === 'number' && col.min !== undefined && col.max !== undefined
                       ? `[${col.min.toLocaleString()} ... ${col.max.toLocaleString()}]`
                       : col.sampleValues.slice(0, 3).join(', ')}
@@ -168,30 +168,30 @@ export const DataProfilerModal: React.FC<DataProfilerModalProps> = ({ isOpen, on
 
           {activeTab === 'filter' && (
             <div className="space-y-4 py-2">
-              <p className="text-gray-300">
-                Aplica un filtro visual directo sobre los datos sin escribir sentencias SQL:
+              <p className="text-slate-600 dark:text-slate-300">
+                Filtra los datos para ver solo los que cumplan una condición:
               </p>
               <div className="grid grid-cols-3 gap-3">
                 <div>
-                  <label className="block text-gray-400 mb-1">Columna</label>
+                  <label className="block text-slate-500 mb-1 font-medium">Columna</label>
                   <select
                     value={filterCol}
                     onChange={(e) => setFilterCol(e.target.value)}
-                    className="w-full bg-mac-panel border border-mac-border rounded p-2 text-gray-200"
+                    className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded p-2 text-slate-800 dark:text-slate-200"
                   >
                     {profiledColumns.map((c) => (
                       <option key={c.name} value={c.name}>
-                        {c.name} ({c.type})
+                        {c.name}
                       </option>
                     ))}
                   </select>
                 </div>
                 <div>
-                  <label className="block text-gray-400 mb-1">Operador</label>
+                  <label className="block text-slate-500 mb-1 font-medium">Condición</label>
                   <select
                     value={filterOp}
                     onChange={(e) => setFilterOp(e.target.value as any)}
-                    className="w-full bg-mac-panel border border-mac-border rounded p-2 text-gray-200"
+                    className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded p-2 text-slate-800 dark:text-slate-200"
                   >
                     <option value=">">Mayor que (&gt;)</option>
                     <option value="<">Menor que (&lt;)</option>
@@ -200,13 +200,13 @@ export const DataProfilerModal: React.FC<DataProfilerModalProps> = ({ isOpen, on
                   </select>
                 </div>
                 <div>
-                  <label className="block text-gray-400 mb-1">Valor Umbral</label>
+                  <label className="block text-slate-500 mb-1 font-medium">Valor</label>
                   <input
                     type="text"
                     value={filterVal}
                     onChange={(e) => setFilterVal(e.target.value)}
                     placeholder="Ej. 40000"
-                    className="w-full bg-mac-panel border border-mac-border rounded p-2 text-gray-200 focus:outline-none focus:border-mac-accent"
+                    className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded p-2 text-slate-800 dark:text-slate-200 focus:outline-none focus:border-mac-accent"
                   />
                 </div>
               </div>
@@ -224,16 +224,16 @@ export const DataProfilerModal: React.FC<DataProfilerModalProps> = ({ isOpen, on
 
           {activeTab === 'groupby' && (
             <div className="space-y-4 py-2">
-              <p className="text-gray-300">
-                Agrupa las observaciones por una categoría ordinal/nominal calculando su métrica:
+              <p className="text-slate-600 dark:text-slate-300">
+                Calcula totales o promedios agrupando por una categoría:
               </p>
               <div className="grid grid-cols-3 gap-3">
                 <div>
-                  <label className="block text-gray-400 mb-1">Dimensión Categórica</label>
+                  <label className="block text-slate-500 mb-1 font-medium">Agrupar por</label>
                   <select
                     value={groupCol}
                     onChange={(e) => setGroupCol(e.target.value)}
-                    className="w-full bg-mac-panel border border-mac-border rounded p-2 text-gray-200"
+                    className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded p-2 text-slate-800 dark:text-slate-200"
                   >
                     {profiledColumns.map((c) => (
                       <option key={c.name} value={c.name}>
@@ -243,11 +243,11 @@ export const DataProfilerModal: React.FC<DataProfilerModalProps> = ({ isOpen, on
                   </select>
                 </div>
                 <div>
-                  <label className="block text-gray-400 mb-1">Métrica Cuantitativa</label>
+                  <label className="block text-slate-500 mb-1 font-medium">Métrica</label>
                   <select
                     value={metricCol}
                     onChange={(e) => setMetricCol(e.target.value)}
-                    className="w-full bg-mac-panel border border-mac-border rounded p-2 text-gray-200"
+                    className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded p-2 text-slate-800 dark:text-slate-200"
                   >
                     {profiledColumns
                       .filter((c) => c.type === 'number')
@@ -259,17 +259,17 @@ export const DataProfilerModal: React.FC<DataProfilerModalProps> = ({ isOpen, on
                   </select>
                 </div>
                 <div>
-                  <label className="block text-gray-400 mb-1">Operación</label>
+                  <label className="block text-slate-500 mb-1 font-medium">Cálculo</label>
                   <select
                     value={aggOp}
                     onChange={(e) => setAggOp(e.target.value as any)}
-                    className="w-full bg-mac-panel border border-mac-border rounded p-2 text-gray-200"
+                    className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded p-2 text-slate-800 dark:text-slate-200"
                   >
-                    <option value="mean">Media Aritmética (AVG)</option>
-                    <option value="sum">Suma Total (SUM)</option>
-                    <option value="count">Recuento de Filas (COUNT)</option>
-                    <option value="max">Valor Máximo (MAX)</option>
-                    <option value="min">Valor Mínimo (MIN)</option>
+                    <option value="mean">Promedio</option>
+                    <option value="sum">Suma Total</option>
+                    <option value="count">Cantidad de Elementos</option>
+                    <option value="max">Valor Máximo</option>
+                    <option value="min">Valor Mínimo</option>
                   </select>
                 </div>
               </div>
@@ -287,16 +287,16 @@ export const DataProfilerModal: React.FC<DataProfilerModalProps> = ({ isOpen, on
 
           {activeTab === 'topn' && (
             <div className="space-y-4 py-2">
-              <p className="text-gray-300">
-                Selecciona los registros líderes ordenados por la dimensión cuantitativa seleccionada:
+              <p className="text-slate-600 dark:text-slate-300">
+                Muestra únicamente los elementos con mayor valor:
               </p>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-gray-400 mb-1">Métrica de Ordenamiento</label>
+                  <label className="block text-slate-500 mb-1 font-medium">Columna a ordenar</label>
                   <select
                     value={topCol}
                     onChange={(e) => setTopCol(e.target.value)}
-                    className="w-full bg-mac-panel border border-mac-border rounded p-2 text-gray-200"
+                    className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded p-2 text-slate-800 dark:text-slate-200"
                   >
                     {profiledColumns
                       .filter((c) => c.type === 'number')
@@ -308,14 +308,14 @@ export const DataProfilerModal: React.FC<DataProfilerModalProps> = ({ isOpen, on
                   </select>
                 </div>
                 <div>
-                  <label className="block text-gray-400 mb-1">Cantidad (N)</label>
+                  <label className="block text-slate-500 mb-1 font-medium">¿Cuántos mostrar?</label>
                   <input
                     type="number"
                     min="1"
                     max="1000"
                     value={topCount}
                     onChange={(e) => setTopCount(Number(e.target.value))}
-                    className="w-full bg-mac-panel border border-mac-border rounded p-2 text-gray-200"
+                    className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded p-2 text-slate-800 dark:text-slate-200"
                   />
                 </div>
               </div>
@@ -325,7 +325,7 @@ export const DataProfilerModal: React.FC<DataProfilerModalProps> = ({ isOpen, on
                   onClick={handleApplyTopN}
                   className="px-4 py-2 bg-mac-accent hover:bg-mac-accentHover text-white rounded-md font-medium"
                 >
-                  Extraer Top N
+                  Mostrar Top {topCount}
                 </button>
               </div>
             </div>
@@ -333,20 +333,20 @@ export const DataProfilerModal: React.FC<DataProfilerModalProps> = ({ isOpen, on
         </div>
 
         {/* Footer */}
-        <div className="h-12 px-4 border-t border-mac-border flex items-center justify-between bg-mac-panel/40">
+        <div className="h-12 px-4 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-800/40">
           <button
             onClick={handleReset}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded text-gray-400 hover:text-amber-400 hover:bg-white/5 transition-colors"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded text-slate-600 dark:text-slate-400 hover:text-amber-600 hover:bg-black/5 dark:hover:bg-white/5 transition-colors font-medium"
           >
             <RotateCcw className="w-3.5 h-3.5" />
-            <span>Restablecer Transformaciones ({activeRows.length} de {rawRows.length} filas activas)</span>
+            <span>Restablecer ({activeRows.length} de {rawRows.length} filas activas)</span>
           </button>
 
           <button
             onClick={onClose}
-            className="px-4 py-1.5 rounded bg-white/10 hover:bg-white/15 text-white font-medium"
+            className="px-4 py-1.5 rounded bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-800 dark:text-white font-medium"
           >
-            Cerrar
+            Listo
           </button>
         </div>
       </div>

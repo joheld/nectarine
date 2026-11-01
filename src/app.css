@@ -3,15 +3,41 @@
 @tailwind utilities;
 
 @layer base {
+  /* LIGHT THEME (DEFAULT) — macOS Clean Paper & Pearl Artboard */
   :root {
     --titlebar-height: 38px;
     --mac-font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Helvetica Neue", sans-serif;
+    
+    --mac-bg: #f5f6f8;
+    --mac-surface: #ffffff;
+    --mac-panel: #ffffff;
+    --mac-card: #f9fafb;
+    --mac-border: rgba(0, 0, 0, 0.09);
+    --mac-border-subtle: rgba(0, 0, 0, 0.04);
+    --mac-border-hover: rgba(0, 0, 0, 0.16);
+    --mac-text: #1e293b;
+    --mac-text-secondary: #475569;
+    --mac-text-muted: #94a3b8;
+  }
+
+  /* DARK THEME (OPTIONAL VIA TOGGLE) */
+  html.dark {
+    --mac-bg: #0c0e14;
+    --mac-surface: #161922;
+    --mac-panel: #1c212d;
+    --mac-card: #222736;
+    --mac-border: rgba(255, 255, 255, 0.08);
+    --mac-border-subtle: rgba(255, 255, 255, 0.04);
+    --mac-border-hover: rgba(255, 255, 255, 0.16);
+    --mac-text: #f1f5f9;
+    --mac-text-secondary: #cbd5e1;
+    --mac-text-muted: #64748b;
   }
 
   body {
     font-family: var(--mac-font);
-    background-color: #0c0e14;
-    color: #e2e8f0;
+    background-color: var(--mac-bg);
+    color: var(--mac-text);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     user-select: none;
@@ -30,26 +56,19 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(0, 0, 0, 0.12);
   border-radius: 9999px;
 }
 
+html.dark ::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.12);
+}
+
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.24);
+  background: rgba(0, 0, 0, 0.25);
 }
 
-/* Subpixel Rim Light & Native Glass */
-.mac-rim {
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
-}
-
-.mac-panel {
-  background: rgba(22, 25, 34, 0.85);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-}
-
+/* Native Glass & TitleBar */
 .mac-titlebar {
   -webkit-app-region: drag;
 }

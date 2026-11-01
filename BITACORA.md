@@ -80,3 +80,23 @@ Se concibe **Vectura** como un atelier de diseño y analítica nativo para macOS
    - `Vectura Studio.app` (`/Users/joe/Desktop/Vectura Studio.app`): Applet nativo de macOS compilado con `osacompile` que incluye el icono de alta resolución `icon.icns` y firma de código.
    - `Vectura Studio.command` (`/Users/joe/Desktop/Vectura Studio.command`): Script ejecutable para terminal con permisos `+x`.
 3. **Portabilidad Multi-Máquina**: Cero rutas absolutas estáticas (`$HOME` dinámico).
+
+
+---
+
+## Entrada 004 — Rebranding a Lienzo, Modo Claro por Defecto y Ergonomía Accesible
+- **Fecha y Hora**: 2026-11-01
+- **Fase**: Experiencia de Usuario & Rebranding
+- **Arquitecto**: Antigravity Principal Software Architect
+
+### Cambios Implementados en Respuesta al Feedback
+1. **Nuevo Nombre ("Lienzo")**:
+   - Se sustituye el nombre por **Lienzo** (*Taller de Datos & Arte Vectorial*), un nombre en español, cálido, poético y directamente asociado a la creatividad y al diseño artesanal.
+   - Accesos directos de escritorio regenerados: `Lienzo Studio.app` y `Lienzo Studio.command`.
+2. **Tema Claro Nativo por Defecto**:
+   - Se reestructuraron las variables de diseño de Tailwind CSS en `app.css` y `tailwind.config.js`. El tema claro es ahora el predeterminado con fondo perla `#f5f6f8`, lienzo estilo papel `#fafbfc`, bordes sutiles y tipografía con contraste descansado.
+   - Se integró un conmutador instantáneo Sol/Luna en la barra de título para alternar entre modo claro y oscuro cuando el usuario lo desee.
+3. **Ergonomía para Principiantes**:
+   - **Barra de Inicio Rápido (`QuickStartBar.tsx`)**: Permite con un solo clic cargar datasets demostrativos precargados ("Países y Economía" o "Ventas de Tecnología"), sin obligar al usuario a tener archivos Parquet/CSV listos.
+   - **Inspector Lateral de Puntos (`NodeInspector.tsx`)**: Al hacer clic en cualquier punto del lienzo, se abre un panel lateral amigable que muestra los valores en lenguaje natural, permite cambiar el color con paletas circulares de 1 clic, ajustar el tamaño con un deslizador y regresar el punto a su coordenada exacta con un solo botón ("Regresar a su posición exacta").
+   - **Terminología Simplificada**: Se reemplazó la jerga técnica por explicaciones cotidianas ("Grupos de Datos", "Puntos", "Rastro guía al origen").

@@ -18,7 +18,6 @@ export const TetheredAnnotations: React.FC = () => {
 
   return (
     <g className="tethered-annotations-group">
-      {/* SVG Marker definition for organic arrows */}
       <defs>
         <marker
           id="editorial-arrow"
@@ -29,7 +28,7 @@ export const TetheredAnnotations: React.FC = () => {
           markerHeight="5"
           orient="auto-start-reverse"
         >
-          <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#aab2c0" />
+          <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#64748b" />
         </marker>
       </defs>
 
@@ -89,7 +88,7 @@ export const TetheredAnnotations: React.FC = () => {
             <path
               d={arrowPath}
               fill="none"
-              stroke="#868e9e"
+              stroke="#64748b"
               strokeWidth="1.2"
               strokeDasharray="2 2"
               markerEnd="url(#editorial-arrow)"
@@ -112,25 +111,24 @@ export const TetheredAnnotations: React.FC = () => {
                 }
               }}
             >
-              {/* Background badge pill */}
               <rect
                 x={-6}
                 y={-14}
                 width={Math.max(120, ann.text.length * 6.5 + 16)}
                 height={22}
                 rx={4}
-                fill="rgba(22, 25, 34, 0.95)"
-                stroke="rgba(255, 255, 255, 0.15)"
-                strokeWidth="0.8"
-                className="filter drop-shadow-md"
+                fill="#ffffff"
+                stroke="rgba(0, 0, 0, 0.15)"
+                strokeWidth="1"
+                className="filter drop-shadow-sm"
               />
               <text
                 x={4}
                 y={2}
-                fill="#f1f5f9"
+                fill="#0f172a"
                 fontSize="10"
                 fontFamily="-apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif"
-                fontWeight="500"
+                fontWeight="600"
               >
                 {ann.text}
               </text>

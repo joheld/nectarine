@@ -58,7 +58,6 @@ export const Canvas: React.FC<CanvasProps> = ({ svgRef }) => {
   };
 
   const handlePointerDown = (e: React.PointerEvent) => {
-    // If middle click or spacebar held or click on empty canvas
     if (e.button === 1 || e.altKey) {
       setIsPanning(true);
       panStartRef.current = { x: e.clientX - pan.x, y: e.clientY - pan.y };
@@ -108,7 +107,7 @@ export const Canvas: React.FC<CanvasProps> = ({ svgRef }) => {
   return (
     <div
       ref={containerRef}
-      className="flex-1 h-full relative overflow-hidden bg-mac-bg select-none cursor-crosshair"
+      className="flex-1 h-full relative overflow-hidden bg-[#fafbfc] dark:bg-[#0c0e14] select-none cursor-default transition-colors"
       onWheel={handleWheel}
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
@@ -116,28 +115,28 @@ export const Canvas: React.FC<CanvasProps> = ({ svgRef }) => {
       onContextMenu={handleContextMenu}
     >
       {/* Dynamic View Controls Overlay */}
-      <div className="absolute bottom-4 right-4 z-30 flex items-center gap-1.5 bg-mac-panel/80 backdrop-blur-md p-1 rounded-lg border border-mac-border shadow-macos text-xs text-gray-300">
+      <div className="absolute bottom-4 right-4 z-20 flex items-center gap-1.5 bg-white/90 dark:bg-mac-panel/90 backdrop-blur-md p-1 rounded-lg border border-mac-border shadow-macos text-xs text-mac-text">
         <button
           onClick={() => setZoom((z) => Math.min(z * 1.2, 5))}
-          className="p-1.5 rounded hover:bg-white/10"
-          title="Zoom In"
+          className="p-1.5 rounded hover:bg-black/5 dark:hover:bg-white/10"
+          title="Acercar (Zoom In)"
         >
           <ZoomIn className="w-3.5 h-3.5" />
         </button>
-        <span className="font-mono text-[10px] w-12 text-center">
+        <span className="font-mono text-[10px] w-12 text-center text-mac-textSecondary">
           {Math.round(zoom * 100)}%
         </span>
         <button
           onClick={() => setZoom((z) => Math.max(z / 1.2, 0.3))}
-          className="p-1.5 rounded hover:bg-white/10"
-          title="Zoom Out"
+          className="p-1.5 rounded hover:bg-black/5 dark:hover:bg-white/10"
+          title="Alejar (Zoom Out)"
         >
           <ZoomOut className="w-3.5 h-3.5" />
         </button>
         <button
           onClick={resetView}
-          className="p-1.5 rounded hover:bg-white/10"
-          title="Restablecer Encuadre"
+          className="p-1.5 rounded hover:bg-black/5 dark:hover:bg-white/10"
+          title="Centrar y restablecer vista"
         >
           <Maximize2 className="w-3.5 h-3.5" />
         </button>
@@ -150,9 +149,9 @@ export const Canvas: React.FC<CanvasProps> = ({ svgRef }) => {
         viewBox={`0 0 ${layoutBounds.width} ${layoutBounds.height}`}
       >
         <defs>
-          {/* Subtle subpixel blueprint dot pattern */}
+          {/* Subtle blueprint dot pattern adapted for light and dark */}
           <pattern id="grid-dots" width="24" height="24" patternUnits="userSpaceOnUse">
-            <circle cx="12" cy="12" r="0.6" fill="rgba(255, 255, 255, 0.12)" />
+            <circle cx="12" cy="12" r="0.75" className="fill-slate-300 dark:fill-white/15" />
           </pattern>
         </defs>
 
@@ -173,12 +172,12 @@ export const Canvas: React.FC<CanvasProps> = ({ svgRef }) => {
             {/* X-Axis Ticks */}
             {axes.xTicks.map((t, idx) => (
               <g key={`xtick-${idx}`} transform={`translate(${t.x}, ${layoutBounds.height - layoutBounds.padding.bottom})`}>
-                <line y1="0" y2="6" stroke="rgba(255, 255, 255, 0.2)" />
-                <line y1="0" y2={-(layoutBounds.height - layoutBounds.padding.bottom - layoutBounds.padding.top)} stroke="rgba(255, 255, 255, 0.04)" strokeDasharray="3 3" />
+                <line y1="0" y2="6" stroke="rgba(100, 116, 139, 0.4)" />
+                <line y1="0" y2={-(layoutBounds.height - layoutBounds.padding.bottom - layoutBounds.padding.top)} stroke="rgba(100, 116, 139, 0.12)" strokeDasharray="3 3" />
                 <text
                   y="18"
                   textAnchor="middle"
-                  fill="#868e9e"
+                  className="fill-slate-500 dark:fill-slate-400"
                   fontSize="9.5"
                   fontFamily="SF Mono, monospace"
                 >
@@ -190,13 +189,13 @@ export const Canvas: React.FC<CanvasProps> = ({ svgRef }) => {
             {/* Y-Axis Ticks */}
             {axes.yTicks.map((t, idx) => (
               <g key={`ytick-${idx}`} transform={`translate(${layoutBounds.padding.left}, ${t.y})`}>
-                <line x1="-6" x2="0" stroke="rgba(255, 255, 255, 0.2)" />
-                <line x1="0" x2={layoutBounds.width - layoutBounds.padding.left - layoutBounds.padding.right} stroke="rgba(255, 255, 255, 0.04)" strokeDasharray="3 3" />
+                <line x1="-6" x2="0" stroke="rgba(100, 116, 139, 0.4)" />
+                <line x1="0" x2={layoutBounds.width - layoutBounds.padding.left - layoutBounds.padding.right} stroke="rgba(100, 116, 139, 0.12)" strokeDasharray="3 3" />
                 <text
                   x="-10"
                   y="3"
                   textAnchor="end"
-                  fill="#868e9e"
+                  className="fill-slate-500 dark:fill-slate-400"
                   fontSize="9.5"
                   fontFamily="SF Mono, monospace"
                 >
@@ -214,7 +213,7 @@ export const Canvas: React.FC<CanvasProps> = ({ svgRef }) => {
                   key={`voronoi-${nodeId}`}
                   d={pathD}
                   fill="none"
-                  stroke="#457b9d"
+                  stroke="#3b82f6"
                   strokeWidth="0.8"
                   strokeDasharray="2 2"
                 />

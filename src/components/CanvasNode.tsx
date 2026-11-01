@@ -33,14 +33,12 @@ export const CanvasNode: React.FC<CanvasNodeProps> = ({ node, blendMode }) => {
   const isSelected = selectedNodeIds.includes(node.id);
   const layerOverride = layerOverrides[node.category];
 
-  // If layer is hidden, do not render
   if (layerOverride?.isVisible === false) {
     return null;
   }
 
   const isLocked = layerOverride?.isLocked || false;
 
-  // Compute resolved coordinates and styling
   const currentX = mut?.customX ?? node.mathX;
   const currentY = mut?.customY ?? node.mathY;
   const scale = mut?.manualScale ?? 1.0;
@@ -58,7 +56,6 @@ export const CanvasNode: React.FC<CanvasNodeProps> = ({ node, blendMode }) => {
   const cp2x = mut?.cp2x ?? radius * 1.5;
   const cp2y = mut?.cp2y ?? radius * 0.8;
 
-  // Drag handlers
   const handlePointerDown = (e: React.PointerEvent) => {
     if (isLocked) return;
     e.stopPropagation();
@@ -90,7 +87,6 @@ export const CanvasNode: React.FC<CanvasNodeProps> = ({ node, blendMode }) => {
     }
   };
 
-  // Bézier CP1 dragging
   const handleCp1PointerDown = (e: React.PointerEvent) => {
     e.stopPropagation();
     setIsDraggingCp1(true);
@@ -115,7 +111,6 @@ export const CanvasNode: React.FC<CanvasNodeProps> = ({ node, blendMode }) => {
     }
   };
 
-  // Bézier CP2 dragging
   const handleCp2PointerDown = (e: React.PointerEvent) => {
     e.stopPropagation();
     setIsDraggingCp2(true);
@@ -140,7 +135,6 @@ export const CanvasNode: React.FC<CanvasNodeProps> = ({ node, blendMode }) => {
     }
   };
 
-  // Render organic Bézier petals if edited, otherwise circle
   const hasCustomBezier = mut?.cp1x !== undefined || mut?.cp2x !== undefined;
 
   return (
@@ -157,27 +151,25 @@ export const CanvasNode: React.FC<CanvasNodeProps> = ({ node, blendMode }) => {
       {/* 1. Ghost Trace & Mathematical Anchor Phantom (Purged on export) */}
       {showGhost && (
         <g className="ghost-trace pointer-events-none" data-editor-ui="true">
-          {/* Dashed projection line */}
           <line
             x1={currentX}
             y1={currentY}
             x2={node.mathX}
             y2={node.mathY}
-            stroke="#00ffff"
-            strokeWidth="1.2"
+            stroke="#0284c7"
+            strokeWidth="1.5"
             strokeDasharray="3 3"
-            strokeOpacity="0.6"
+            strokeOpacity="0.75"
           />
-          {/* Ghost phantom node at exact mathematical location */}
           <circle
             cx={node.mathX}
             cy={node.mathY}
             r={node.mathR}
             fill="none"
-            stroke="#00ffff"
-            strokeWidth="1"
+            stroke="#0284c7"
+            strokeWidth="1.2"
             strokeDasharray="2 2"
-            strokeOpacity="0.5"
+            strokeOpacity="0.6"
             className="ghost-node"
           />
         </g>
@@ -199,20 +191,18 @@ export const CanvasNode: React.FC<CanvasNodeProps> = ({ node, blendMode }) => {
               { x: radius, y: 0 }
             )}
             fill={fill}
-            fillOpacity="0.85"
-            stroke="#ffffff"
-            strokeWidth="1.5"
-            strokeOpacity="0.4"
+            fillOpacity="0.88"
+            stroke="rgba(0,0,0,0.15)"
+            strokeWidth="1"
             style={{ mixBlendMode: blendMode as any }}
           />
         ) : (
           <circle
             r={radius}
             fill={fill}
-            fillOpacity="0.88"
-            stroke="#ffffff"
+            fillOpacity="0.9"
+            stroke="rgba(0,0,0,0.15)"
             strokeWidth={isSelected ? 2 : 1}
-            strokeOpacity={isSelected ? 0.9 : 0.3}
             style={{ mixBlendMode: blendMode as any }}
           />
         )}
@@ -223,8 +213,8 @@ export const CanvasNode: React.FC<CanvasNodeProps> = ({ node, blendMode }) => {
             cx={radius * 0.7}
             cy={-radius * 0.7}
             r={3.5}
-            fill="#ff9f0a"
-            stroke="#0e1117"
+            fill="#f59e0b"
+            stroke="#ffffff"
             strokeWidth="1"
             className="anchor-pin"
             data-editor-ui="true"
@@ -236,8 +226,8 @@ export const CanvasNode: React.FC<CanvasNodeProps> = ({ node, blendMode }) => {
           <circle
             r={radius + 4}
             fill="none"
-            stroke="#0a84ff"
-            strokeWidth="1.8"
+            stroke="#0066cc"
+            strokeWidth="2"
             strokeDasharray="4 2"
             className="selection-ring"
             data-editor-ui="true"
@@ -258,8 +248,8 @@ export const CanvasNode: React.FC<CanvasNodeProps> = ({ node, blendMode }) => {
             width={58}
             height={15}
             rx={3}
-            fill="rgba(255, 69, 58, 0.9)"
-            stroke="rgba(255, 255, 255, 0.3)"
+            fill="rgba(239, 68, 68, 0.95)"
+            stroke="rgba(255, 255, 255, 0.5)"
             strokeWidth="0.8"
           />
           <text
@@ -278,13 +268,12 @@ export const CanvasNode: React.FC<CanvasNodeProps> = ({ node, blendMode }) => {
       {/* 4. Bézier Interactive Handles (Purged on export) */}
       {isSelected && activeTool === 'bezier' && (
         <g className="bezier-handles" data-editor-ui="true">
-          {/* CP1 handle line and control node */}
           <line
             x1={currentX}
             y1={currentY}
             x2={currentX + cp1x}
             y2={currentY + cp1y}
-            stroke="#0a84ff"
+            stroke="#0066cc"
             strokeWidth="1"
             className="bezier-line"
           />
@@ -292,7 +281,7 @@ export const CanvasNode: React.FC<CanvasNodeProps> = ({ node, blendMode }) => {
             cx={currentX + cp1x}
             cy={currentY + cp1y}
             r={4.5}
-            fill="#0a84ff"
+            fill="#0066cc"
             stroke="#ffffff"
             strokeWidth="1.5"
             className="bezier-handle cursor-grab active:cursor-grabbing"
@@ -301,7 +290,6 @@ export const CanvasNode: React.FC<CanvasNodeProps> = ({ node, blendMode }) => {
             onPointerUp={handleCp1PointerUp}
           />
 
-          {/* CP2 handle line and control node */}
           <line
             x1={currentX}
             y1={currentY}

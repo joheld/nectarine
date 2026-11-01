@@ -11,7 +11,6 @@ class DuckDBManager {
 
     this.initPromise = (async () => {
       try {
-        // Attempt local offline bundle loading first
         const workerUrl = '/duckdb/duckdb-browser-eh.worker.js';
         const wasmUrl = '/duckdb/duckdb-eh.wasm';
 
@@ -25,7 +24,6 @@ class DuckDBManager {
         return db;
       } catch (localErr) {
         console.warn('Local DuckDB WASM load failed, falling back to CDN bundles:', localErr);
-        // Fallback to official CDN bundle
         const JSDELIVR_BUNDLES = duckdb.getJsDelivrBundles();
         const bundle = await duckdb.selectBundle(JSDELIVR_BUNDLES);
 
@@ -57,9 +55,6 @@ class DuckDBManager {
     return this.conn;
   }
 
-  /**
-   * Ingests CSV content into an in-memory table named 'dataset'
-   */
   public async ingestCSV(filename: string, text: string): Promise<Record<string, any>[]> {
     const db = await this.getDB();
     const conn = await this.getConnection();
@@ -71,9 +66,6 @@ class DuckDBManager {
     return this.query('SELECT * FROM dataset LIMIT 15000;');
   }
 
-  /**
-   * Ingests JSON text content
-   */
   public async ingestJSON(filename: string, text: string): Promise<Record<string, any>[]> {
     const db = await this.getDB();
     const conn = await this.getConnection();
@@ -85,9 +77,6 @@ class DuckDBManager {
     return this.query('SELECT * FROM dataset LIMIT 15000;');
   }
 
-  /**
-   * Ingests Parquet binary buffer
-   */
   public async ingestParquet(filename: string, buffer: Uint8Array): Promise<Record<string, any>[]> {
     const db = await this.getDB();
     const conn = await this.getConnection();
@@ -99,14 +88,10 @@ class DuckDBManager {
     return this.query('SELECT * FROM dataset LIMIT 15000;');
   }
 
-  /**
-   * Executes arbitrary SQL query and returns JS objects
-   */
   public async query(sql: string): Promise<Record<string, any>[]> {
     const conn = await this.getConnection();
     const result = await conn.query(sql);
 
-    // Convert Arrow table to JSON rows
     const rows: Record<string, any>[] = [];
     const fields = result.schema.fields.map((f) => f.name);
 
@@ -114,7 +99,6 @@ class DuckDBManager {
       const row: Record<string, any> = {};
       for (const field of fields) {
         const val = result.getChild(field)?.get(i);
-        // Handle BigInt / timestamps serializable to number/string
         row[field] = typeof val === 'bigint' ? Number(val) : val;
       }
       rows.push(row);
@@ -123,42 +107,63 @@ class DuckDBManager {
   }
 
   /**
-   * Generates a rich default sample dataset with realistic multi-dimensional analytics
+   * Sample 1: Países y Economía
    */
   public async loadDefaultDataset(): Promise<Record<string, any>[]> {
-    const sampleCSV = `country,region,gdp_per_capita,life_expectancy,carbon_emissions,population_millions,innovation_index
-Switzerland,Western Europe,87500,83.8,4.2,8.7,65.8
-Norway,Nordic,82100,83.2,7.3,5.4,56.4
-Singapore,Southeast Asia,72800,83.6,8.5,5.9,61.5
-United States,North America,70200,77.3,14.4,333.3,61.8
-Denmark,Nordic,67800,81.4,5.1,5.9,59.3
-Netherlands,Western Europe,58200,81.7,8.2,17.7,58.7
-Germany,Western Europe,51200,80.9,7.9,83.2,57.2
-Japan,East Asia,39300,84.6,8.6,125.1,53.8
-United Kingdom,Western Europe,46500,81.2,5.2,67.3,59.8
-France,Western Europe,43600,82.5,4.6,67.9,54.2
-South Korea,East Asia,35000,83.5,11.8,51.7,59.3
-Italy,Southern Europe,35600,82.9,5.3,58.9,46.1
-Spain,Southern Europe,30100,83.3,5.1,47.4,45.8
-Chile,South America,15400,79.5,4.3,19.5,33.8
-Costa Rica,Central America,12500,80.4,1.6,5.2,31.2
-Uruguay,South America,17300,78.2,2.0,3.4,30.5
-Botswana,Sub-Saharan Africa,7700,61.1,3.2,2.6,23.1
-Rwanda,Sub-Saharan Africa,960,66.1,0.1,13.8,21.5
-Ghana,Sub-Saharan Africa,2440,63.8,0.6,33.5,19.8
-Vietnam,Southeast Asia,4160,73.6,3.0,98.2,38.3
-India,South Asia,2380,70.2,1.9,1417.2,36.6
-Brazil,South America,8920,72.8,2.1,215.3,32.5
-Mexico,North America,11090,70.2,3.6,128.5,31.0
-Canada,North America,52700,82.7,14.3,38.9,53.1
-Australia,Oceania,64500,83.2,15.1,25.7,51.5
-New Zealand,Oceania,48800,82.5,6.6,5.1,47.0
-Finland,Nordic,53600,82.0,6.8,5.5,58.4
-Sweden,Nordic,56400,83.2,3.4,10.5,61.6
-Austria,Western Europe,53300,81.6,7.1,8.9,53.9
-Ireland,Western Europe,104000,82.1,7.2,5.1,50.7`;
+    const sampleCSV = `pais,region,ingreso_anual,esperanza_vida,co2_por_persona,habitantes_millones
+Suiza,Europa,87500,83.8,4.2,8.7
+Noruega,Europa,82100,83.2,7.3,5.4
+Singapur,Asia,72800,83.6,8.5,5.9
+Estados Unidos,América,70200,77.3,14.4,333.3
+Dinamarca,Europa,67800,81.4,5.1,5.9
+Países Bajos,Europa,58200,81.7,8.2,17.7
+Alemania,Europa,51200,80.9,7.9,83.2
+Japón,Asia,39300,84.6,8.6,125.1
+Reino Unido,Europa,46500,81.2,5.2,67.3
+Francia,Europa,43600,82.5,4.6,67.9
+Corea del Sur,Asia,35000,83.5,11.8,51.7
+Italia,Europa,35600,82.9,5.3,58.9
+España,Europa,30100,83.3,5.1,47.4
+Chile,América,15400,79.5,4.3,19.5
+Costa Rica,América,12500,80.4,1.6,5.2
+Uruguay,América,17300,78.2,2.0,3.4
+Botsuana,África,7700,61.1,3.2,2.6
+Ruanda,África,960,66.1,0.1,13.8
+Ghana,África,2440,63.8,0.6,33.5
+Vietnam,Asia,4160,73.6,3.0,98.2
+India,Asia,2380,70.2,1.9,1417.2
+Brasil,América,8920,72.8,2.1,215.3
+México,América,11090,70.2,3.6,128.5
+Canadá,América,52700,82.7,14.3,38.9
+Australia,Oceanía,64500,83.2,15.1,25.7
+Nueva Zelanda,Oceanía,48800,82.5,6.6,5.1
+Finlandia,Europa,53600,82.0,6.8,5.5
+Suecia,Europa,56400,83.2,3.4,10.5
+Austria,Europa,53300,81.6,7.1,8.9
+Irlanda,Europa,104000,82.1,7.2,5.1`;
 
-    return this.ingestCSV('world_development.csv', sampleCSV);
+    return this.ingestCSV('paises_y_desarrollo.csv', sampleCSV);
+  }
+
+  /**
+   * Sample 2: Ventas de Productos
+   */
+  public async loadSalesDataset(): Promise<Record<string, any>[]> {
+    const sampleCSV = `producto,categoria,precio,unidades_vendidas,satisfaccion
+Laptop Pro,Computación,1450,320,4.8
+Monitor 4K,Periféricos,480,850,4.6
+Teclado Mecánico,Periféricos,120,2400,4.9
+Mouse Inalámbrico,Periféricos,75,3100,4.5
+Tablet Touch,Móvil,650,1100,4.3
+Teléfono Max,Móvil,980,1850,4.7
+Auriculares ANC,Audio,250,2900,4.8
+Parlante Portátil,Audio,110,1950,4.4
+Cámara 4K,Video,850,420,4.5
+Micrófono Estudio,Audio,160,1350,4.7
+Mochila Tech,Accesorios,85,2200,4.8
+Hub USB-C,Accesorios,45,4100,4.2`;
+
+    return this.ingestCSV('ventas_tecnologia.csv', sampleCSV);
   }
 }
 

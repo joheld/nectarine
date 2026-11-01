@@ -4,69 +4,74 @@ export interface EditorialPalette {
   subtitle: string;
   blendMode: 'normal' | 'multiply' | 'screen' | 'overlay' | 'color-dodge';
   colors: string[];
-  background: string;
+  backgroundLight: string;
+  backgroundDark: string;
 }
 
 export const EDITORIAL_PALETTES: EditorialPalette[] = [
   {
-    id: 'swiss-editorial',
-    name: 'Swiss International',
-    subtitle: 'High-contrast modernist print aesthetic',
-    blendMode: 'multiply',
+    id: 'editorial-swiss',
+    name: 'Suiza Clásica',
+    subtitle: 'Diseño editorial limpio con alto contraste',
+    blendMode: 'normal',
     colors: [
-      '#e63946', // Swiss vermilion
-      '#1d3557', // Deep prussian blue
-      '#457b9d', // Steel slate
-      '#2a9d8f', // Alpine pine
-      '#f4a261', // Warm ochre
-      '#e76f51', // Burnt terracotta
+      '#e63946', // Vermellón
+      '#1d3557', // Azul Marino
+      '#2a9d8f', // Turquesa Pino
+      '#e76f51', // Terracota
+      '#457b9d', // Acero Suave
+      '#7b2cbf', // Violeta Real
     ],
-    background: '#0e1117',
+    backgroundLight: '#ffffff',
+    backgroundDark: '#0e1117',
   },
   {
     id: 'risograph',
-    name: 'Risograph Workshop',
-    subtitle: 'Vibrant overlapping semi-translucent inks',
+    name: 'Taller Risografía',
+    subtitle: 'Tintas orgánicas semitranslúcidas tipo imprenta',
     blendMode: 'multiply',
     colors: [
-      '#ff2a85', // Riso Fluro Pink
-      '#0078bf', // Medium Blue
-      '#ffe800', // Yellow
-      '#00a95c', // Spearmint
-      '#ff6600', // Orange
-      '#925bb0', // Orchid
+      '#ff2a85', // Rosa Flúor
+      '#0078bf', // Azul Riso
+      '#f59e0b', // Amarillo Dorado
+      '#10b981', // Menta
+      '#f97316', // Naranja Vivo
+      '#8b5cf6', // Lavanda
     ],
-    background: '#0d1017',
+    backgroundLight: '#fafafa',
+    backgroundDark: '#0d1017',
   },
   {
-    id: 'cyber-slate',
-    name: 'Cybernetic Slate',
-    subtitle: 'Luminous phosphors on titanium alloy',
-    blendMode: 'screen',
+    id: 'nordic-minimal',
+    name: 'Nórdico Calmo',
+    subtitle: 'Tonos naturales y relajantes para lectura prolongada',
+    blendMode: 'normal',
     colors: [
-      '#00f0ff', // Electric Cyan
-      '#7928ca', // Violet Laser
-      '#00dfa2', // Neon Mint
-      '#ff007f', // Deep Fuchsia
-      '#f5a623', // Amber Ion
-      '#50e3c2', // Ice Aurora
+      '#3b82f6', // Azul Cielo
+      '#14b8a6', // Jade
+      '#84cc16', // Lima Suave
+      '#f43f5e', // Coral
+      '#a855f7', // Amatista
+      '#64748b', // Pizarra
     ],
-    background: '#0b0c10',
+    backgroundLight: '#f8fafc',
+    backgroundDark: '#0f172a',
   },
   {
     id: 'monospaced-amber',
-    name: 'Monospaced Terminal',
-    subtitle: 'Phosphor cathode monitors and telemetry dials',
-    blendMode: 'screen',
+    name: 'Laboratorio',
+    subtitle: 'Paleta técnica de alta visibilidad',
+    blendMode: 'normal',
     colors: [
-      '#ffb000', // Amber Phosphor
-      '#33ff33', // P1 Green
-      '#00ffff', // Cyan Telemetry
-      '#ff3333', // Alert Red
-      '#ffff33', // Solar Yellow
-      '#3399ff', // Deep Radar
+      '#d97706', // Ámbar
+      '#059669', // Esmeralda
+      '#2563eb', // Cobalto
+      '#dc2626', // Rubí
+      '#7c3aed', // Púrpura
+      '#0891b2', // Cian
     ],
-    background: '#0a0d0a',
+    backgroundLight: '#ffffff',
+    backgroundDark: '#0a0d0a',
   },
 ];
 
@@ -85,9 +90,6 @@ class ColorService {
     return this.currentPalette;
   }
 
-  /**
-   * Deterministically maps a category string to an editorial color
-   */
   public getColorForCategory(category: string, indexOffset = 0): string {
     const colors = this.currentPalette.colors;
     let hash = 0;

@@ -1,6 +1,6 @@
-# PROJECT_MAP.md — Vectura Studio (macOS Native Vector & Analytics Atelier)
+# PROJECT_MAP.md — Lienzo Studio (Taller de Datos & Arte Vectorial para macOS)
 
-> Arquitectura de software, grafo de versiones y flujo reactivo para Vectura: la estación de trabajo nativa de macOS que fusiona analítica local en memoria con edición artística de vectores y respeto irrestricto a la integridad de los datos.
+> Arquitectura de software, grafo de versiones y flujo reactivo para Lienzo: la estación de trabajo nativa de macOS con tema claro por defecto, pensada para que cualquier persona pueda convertir datos locales en ilustraciones vectoriales con facilidad.
 
 ---
 
@@ -17,6 +17,7 @@ gitGraph
     commit id: "canvas-semantic-layers"
     commit id: "lasso-tethered-annotations"
     commit id: "export-clean-purge" tag: "v1.0.0"
+    commit id: "rebrand-lienzo-light-ergonomics" tag: "v1.1.0"
 ```
 
 ---
@@ -36,7 +37,8 @@ gitGraph
 | **CP-08** | Fase 4: Anotaciones Atadas | Callouts, flechas y texto en trayectoria anclados al `node_id` que viajan con los datos. | **Completado** |
 | **CP-09** | Fase 5: Purga DOM & Exportación SVG | Limpieza estricta de gizmos/fantasmas en `exportService.ts` y guardado nativo con Tauri Dialog/FS. | **Completado** |
 | **CP-10** | Verificación Zero-Defect | Batería en 5 frentes: typecheck (0 errores), tests (15/15 pasados), build de producción y socket liveness (HTTP 200 en puerto 5220). | **Completado** |
-| **CP-11** | Lanzadores de Escritorio macOS | Accesos directos creados: `Vectura Studio.app` y `Vectura Studio.command` en el Escritorio con resolución portable de paths y socket liveness. | **Completado** |
+| **CP-11** | Lanzadores de Escritorio macOS | Accesos directos creados: `Lienzo Studio.app` y `Lienzo Studio.command` en el Escritorio con resolución portable de paths y socket liveness. | **Completado** |
+| **CP-12** | Rediseño Ergonómico & Modo Claro | Rebranding a **Lienzo**, tema claro limpio estilo papel por defecto, conmutador Sol/Luna, barra de inicio rápido y panel inspector de puntos. | **Completado** |
 
 ---
 

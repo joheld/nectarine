@@ -1,12 +1,12 @@
 [package]
-name = "vectura"
+name = "lienzo"
 version = "0.1.0"
-description = "Vectura — macOS Native Vector & Analytics Atelier"
+description = "Lienzo — Taller de Datos y Arte Vectorial para macOS"
 authors = ["Antigravity Architecture"]
 edition = "2021"
 
 [lib]
-name = "vectura_lib"
+name = "lienzo_lib"
 crate-type = ["staticlib", "cdylib", "rlib"]
 
 [build-dependencies]

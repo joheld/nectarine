@@ -1,8 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { TitleBar } from './components/TitleBar';
 import { Toolbar } from './components/Toolbar';
+import { QuickStartBar } from './components/QuickStartBar';
 import { SemanticLayersPanel } from './components/SemanticLayersPanel';
 import { Canvas } from './components/Canvas';
+import { NodeInspector } from './components/NodeInspector';
 import { DataProfilerModal } from './components/DataProfilerModal';
 import { GuardrailWarning } from './components/GuardrailWarning';
 import { useDataStore } from './store/dataStore';
@@ -21,7 +23,7 @@ export const App: React.FC = () => {
       try {
         const rows = await duckdbService.loadDefaultDataset();
         if (mounted) {
-          loadDataset('world_development.csv', rows);
+          loadDataset('paises_y_desarrollo.csv', rows);
           setIsLoading(false);
         }
       } catch (err) {
@@ -36,29 +38,33 @@ export const App: React.FC = () => {
   }, [loadDataset]);
 
   return (
-    <div className="flex flex-col h-screen w-screen bg-mac-bg text-gray-100 overflow-hidden font-sans">
-      {/* 1. macOS Native Window TitleBar */}
+    <div className="flex flex-col h-screen w-screen bg-mac-bg text-mac-text overflow-hidden font-sans transition-colors">
+      {/* 1. macOS Native Window TitleBar with Light/Dark Mode Switcher */}
       <TitleBar />
 
       {/* 2. Analytical & Vector Tools Bar */}
       <Toolbar onOpenProfiler={() => setIsProfilerOpen(true)} svgRef={svgRef} />
 
-      {/* 3. Main Workbench (Semantic Layers + Interactive Canvas) */}
+      {/* 3. Beginner-Friendly Quick Start Bar */}
+      <QuickStartBar />
+
+      {/* 4. Main Workbench (Groups + Canvas + Node Inspector) */}
       <main className="flex-1 flex overflow-hidden relative">
         {isLoading ? (
-          <div className="flex-1 flex flex-col items-center justify-center gap-3 bg-mac-bg text-gray-400">
+          <div className="flex-1 flex flex-col items-center justify-center gap-3 bg-mac-bg text-mac-textSecondary">
             <div className="w-6 h-6 border-2 border-mac-accent border-t-transparent rounded-full animate-spin" />
-            <span className="font-mono text-xs">Inicializando motor local DuckDB WASM...</span>
+            <span className="font-mono text-xs">Preparando motor de datos en memoria...</span>
           </div>
         ) : (
           <>
             <SemanticLayersPanel />
             <Canvas svgRef={svgRef} />
+            <NodeInspector />
           </>
         )}
       </main>
 
-      {/* 4. Modals and Guardrails */}
+      {/* 5. Modals and Guardrails */}
       <DataProfilerModal isOpen={isProfilerOpen} onClose={() => setIsProfilerOpen(false)} />
       <GuardrailWarning />
     </div>

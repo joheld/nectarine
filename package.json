@@ -1,7 +1,8 @@
 {
-  "name": "vectura",
+  "name": "lienzo",
   "private": true,
   "version": "0.1.0",
+  "description": "Lienzo — Taller de Datos y Arte Vectorial para macOS",
   "type": "module",
   "scripts": {
     "dev": "vite",
