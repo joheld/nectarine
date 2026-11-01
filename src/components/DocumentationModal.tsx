@@ -126,39 +126,58 @@ const GhostTraceDiagram: React.FC = () => (
 );
 
 const GeometryCard: React.FC<{
+  number: number;
   title: string;
+  category: 'cartesian' | 'network' | 'cinnamon';
   badge: string;
   desc: string;
   formula?: string;
   bestFor: string;
+  avoidWhen?: string;
   svgPreview: React.ReactNode;
-}> = ({ title, badge, desc, formula, bestFor, svgPreview }) => (
+}> = ({ number, title, badge, desc, formula, bestFor, avoidWhen, svgPreview }) => (
   <div className="p-4 rounded-xl bg-[#fbf8f3] border border-[#e6dcce] flex flex-col md:flex-row gap-4 items-start shadow-2xs">
     <div className="w-28 h-28 bg-white border border-[#ebd9c8] rounded-lg shrink-0 flex items-center justify-center overflow-hidden">
       {svgPreview}
     </div>
-    <div className="flex-1 min-w-0 space-y-1.5">
-      <div className="flex items-center justify-between flex-wrap gap-1">
-        <h3 className="font-semibold text-xs text-[#2c1a0e]">{title}</h3>
-        <span className="text-[9.5px] font-mono bg-[#ebd9c8] text-[#5e4634] px-1.5 py-0.5 rounded">
+    <div className="flex-1 min-w-0 space-y-2">
+      <div className="flex items-center justify-between flex-wrap gap-1.5">
+        <div className="flex items-center gap-2">
+          <span className="w-5 h-5 rounded-md bg-[#2c1a0e] text-white text-[10.5px] font-mono font-bold flex items-center justify-center">
+            {number}
+          </span>
+          <h3 className="font-semibold text-xs text-[#2c1a0e]">{title}</h3>
+        </div>
+        <span className="text-[9.5px] font-mono bg-[#ebd9c8] text-[#5e4634] px-1.5 py-0.5 rounded font-medium">
           {badge}
         </span>
       </div>
+
       <p className="text-xs text-[#5e4634] leading-relaxed">{desc}</p>
+
       {formula && (
         <div className="text-[10px] font-mono bg-white px-2 py-1 rounded border border-[#dfd2c4] text-[#8c7664]">
-          <strong>Fórmula/Fundamento:</strong> {formula}
+          <strong>Fundamento Matemático:</strong> {formula}
         </div>
       )}
-      <p className="text-[11px] text-[#8c7664]">
-        <strong>Ideal para:</strong> {bestFor}
-      </p>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-[11px]">
+        <div className="p-2 rounded bg-white/70 border border-[#ebd9c8]">
+          <strong className="text-[#059669]">Ideal para:</strong> <span className="text-[#5e4634]">{bestFor}</span>
+        </div>
+        {avoidWhen && (
+          <div className="p-2 rounded bg-white/70 border border-[#ebd9c8]">
+            <strong className="text-[#be123c]">Evitar cuando:</strong> <span className="text-[#8c7664]">{avoidWhen}</span>
+          </div>
+        )}
+      </div>
     </div>
   </div>
 );
 
 export const DocumentationModal: React.FC<DocumentationModalProps> = ({ isOpen, onClose }) => {
   const [activeChapter, setActiveChapter] = useState<ChapterId>('quickstart');
+  const [geometryFilter, setGeometryFilter] = useState<'all' | 'cartesian' | 'network' | 'cinnamon'>('all');
 
   if (!isOpen) return null;
 
@@ -178,7 +197,7 @@ export const DocumentationModal: React.FC<DocumentationModalProps> = ({ isOpen, 
     {
       id: 'geometries',
       title: '3. Las 9 Geometrías Maestras',
-      subtitle: 'Catálogo exhaustivo de diagramas y arte visual',
+      subtitle: 'Catálogo exhaustivo de las 9 vistas con miniaturas SVG',
       icon: <Compass className="w-4 h-4 text-[#f97316]" />,
     },
     {
@@ -313,7 +332,7 @@ export const DocumentationModal: React.FC<DocumentationModalProps> = ({ isOpen, 
                         <h4 className="font-semibold text-xs text-[#2c1a0e]">Importa tus Datos</h4>
                       </div>
                       <p className="text-[11.5px] text-[#5e4634] leading-relaxed">
-                        Arrastra cualquier archivo CSV, JSON o Parquet. DuckDB WASM perfila las columnas en microsegundos y determina cuáles son métricas y cuáles dimensiones.
+                        Arrastra cualquier archivo CSV, JSON o Parquet. DuckDB WASM perfila las columnas en microsegundos y determina cuáles son métricas continuas y cuáles dimensiones categóricas.
                       </p>
                     </div>
 
@@ -323,7 +342,7 @@ export const DocumentationModal: React.FC<DocumentationModalProps> = ({ isOpen, 
                         <h4 className="font-semibold text-xs text-[#2c1a0e]">Escoge la Geometría</h4>
                       </div>
                       <p className="text-[11.5px] text-[#5e4634] leading-relaxed">
-                        Elige entre 9 geometrías en la barra superior. Nectarine ilumina automáticamente los diagramas compatibles según las columnas disponibles.
+                        Elige entre <strong>las 9 geometrías disponibles</strong> en la barra superior. Nectarine ilumina automáticamente los diagramas compatibles según las columnas disponibles.
                       </p>
                     </div>
 
@@ -333,7 +352,7 @@ export const DocumentationModal: React.FC<DocumentationModalProps> = ({ isOpen, 
                         <h4 className="font-semibold text-xs text-[#2c1a0e]">Compón & Modifica</h4>
                       </div>
                       <p className="text-[11.5px] text-[#5e4634] leading-relaxed">
-                        Mueve puntos (<kbd className="font-mono text-[10px] bg-white px-1 rounded border">M</kbd>), curva aristas con manetas de Bézier (<kbd className="font-mono text-[10px] bg-white px-1 rounded border">B</kbd>) y añade anotaciones (<kbd className="font-mono text-[10px] bg-white px-1 rounded border">A</kbd>). El monitor ético auditará tus cambios.
+                        Mueve puntos (<kbd className="font-mono text-[10px] bg-white px-1 rounded border">M</kbd>), curva aristas con manetas de Bézier (<kbd className="font-mono text-[10px] bg-white px-1 rounded border">B</kbd>) y añade anotaciones (<kbd className="font-mono text-[10px] bg-white px-1 rounded border">A</kbd>). El monitor ético auditará tus cambios en tiempo real.
                       </p>
                     </div>
 
@@ -343,7 +362,7 @@ export const DocumentationModal: React.FC<DocumentationModalProps> = ({ isOpen, 
                         <h4 className="font-semibold text-xs text-[#2c1a0e]">Purga & Exporta</h4>
                       </div>
                       <p className="text-[11.5px] text-[#5e4634] leading-relaxed">
-                        Toca «Exportar SVG». El motor purgará cajas y gizmos de selección, entregando un archivo vectorial limpio listo para Illustrator o imprenta.
+                        Toca «Exportar SVG». El motor purgará cajas y gizmos de selección, entregando un archivo vectorial limpio listo para Illustrator, Figma o imprenta.
                       </p>
                     </div>
                   </div>
@@ -379,18 +398,41 @@ export const DocumentationModal: React.FC<DocumentationModalProps> = ({ isOpen, 
                   </p>
                 </div>
 
-                <div className="p-4 rounded-xl bg-[#fffbeb] border border-[#fef3c7] space-y-2">
-                  <h3 className="font-semibold text-xs text-[#92400e]">Formatos Soportados & Detección de Esquemas</h3>
-                  <div className="space-y-2 text-xs text-[#78350f]">
-                    <p>
-                      <strong>1. Archivos CSV (.csv):</strong> Separados por coma, punto y coma o tabulación. Nectarine infiere automáticamente si los campos son números con coma o punto decimal y detecta encabezados.
-                    </p>
-                    <p>
-                      <strong>2. Archivos JSON (.json):</strong> Matrices planas de objetos (ej: <code className="font-mono bg-white px-1 rounded">[&#123; "pais": "Chile", "pib": 15000 &#125;]</code>).
-                    </p>
-                    <p>
-                      <strong>3. Archivos Parquet (.parquet):</strong> Estándar analítico columnar de alto rendimiento. Lee millones de celdas en milisegundos con compresión Snappy/ZSTD.
-                    </p>
+                <div className="p-4 rounded-xl bg-[#fffbeb] border border-[#fef3c7] space-y-3">
+                  <h3 className="font-semibold text-xs text-[#92400e]">Formatos Soportados & Ejemplos de Estructura</h3>
+                  <div className="space-y-3 text-xs text-[#78350f]">
+                    <div>
+                      <p className="font-semibold">1. Archivos CSV (.csv):</p>
+                      <p className="text-[11px] text-[#92400e] mt-0.5">
+                        Separados por coma o punto y coma con encabezados limpios:
+                      </p>
+                      <pre className="mt-1 bg-white/90 p-2 rounded border border-[#fed7aa] font-mono text-[10px] text-[#7c2d12] overflow-x-auto">
+{`pais,pib_per_capita,esperanza_vida,continente
+Suiza,87500.0,83.8,Europa
+Noruega,82100.0,83.2,Europa
+Singapur,72800.0,83.6,Asia`}
+                      </pre>
+                    </div>
+
+                    <div>
+                      <p className="font-semibold">2. Archivos JSON (.json):</p>
+                      <p className="text-[11px] text-[#92400e] mt-0.5">
+                        Matrices planas de objetos con claves consistentes:
+                      </p>
+                      <pre className="mt-1 bg-white/90 p-2 rounded border border-[#fed7aa] font-mono text-[10px] text-[#7c2d12] overflow-x-auto">
+{`[
+  { "entidad": "Jupiter", "distancia": 778.5, "radio": 69911, "tipo": "Gaseoso" },
+  { "entidad": "Saturno", "distancia": 1434.0, "radio": 58232, "tipo": "Gaseoso" }
+]`}
+                      </pre>
+                    </div>
+
+                    <div>
+                      <p className="font-semibold">3. Archivos Parquet (.parquet):</p>
+                      <p className="text-[11px] text-[#92400e] mt-0.5 leading-relaxed">
+                        Estándar analítico columnar de alto rendimiento. Lee millones de celdas en milisegundos con compresión Snappy/ZSTD preservando tipos nativos sin errores de parseo de texto.
+                      </p>
+                    </div>
                   </div>
                 </div>
 
@@ -433,168 +475,303 @@ export const DocumentationModal: React.FC<DocumentationModalProps> = ({ isOpen, 
               </div>
             )}
 
-            {/* 3. GEOMETRIES */}
+            {/* 3. GEOMETRIES (ALL 9 INDEPENDENT MASTERCLASS ENTRIES) */}
             {activeChapter === 'geometries' && (
               <div className="space-y-6 max-w-2xl">
                 <div>
                   <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-[#f97316]">Capítulo 3</span>
-                  <h2 className="text-2xl font-bold tracking-tight text-[#2c1a0e] mt-1">
-                    Enciclopedia Exhaustiva de las 9 Geometrías
-                  </h2>
+                  <div className="flex items-center justify-between mt-1 flex-wrap gap-2">
+                    <h2 className="text-2xl font-bold tracking-tight text-[#2c1a0e]">
+                      Las 9 Geometrías Maestras de Nectarine
+                    </h2>
+                    <span className="text-xs font-mono bg-[#ebd9c8] text-[#5e4634] px-2 py-0.5 rounded font-semibold">
+                      9 de 9 disponibles
+                    </span>
+                  </div>
                   <p className="text-sm text-[#5e4634] mt-2 leading-relaxed">
-                    Cada geometría matemática resuelve un desafío perceptual diferente. Nectarine incluye tanto las proyecciones analíticas cartesianas como las geometrías estelares y fluidas inspiradas en <em>Visual Cinnamon</em> (Nadieh Bremer).
+                    Cada una de las <strong>9 geometrías implementadas</strong> resuelve un dilema visual y analítico específico. A continuación se desglosa el catálogo íntegro con su formulación matemática, miniatura SVG y directrices de uso editorial.
                   </p>
                 </div>
 
+                {/* Filter Selector */}
+                <div className="flex items-center bg-[#ede5db] p-1 rounded-xl border border-[#dfd2c4] gap-1 text-xs">
+                  <button
+                    onClick={() => setGeometryFilter('all')}
+                    className={`px-3 py-1 rounded-lg font-medium transition-all cursor-pointer ${
+                      geometryFilter === 'all'
+                        ? 'bg-white text-[#2c1a0e] shadow-xs'
+                        : 'text-[#5e4634] hover:text-[#2c1a0e]'
+                    }`}
+                  >
+                    Todas (9)
+                  </button>
+                  <button
+                    onClick={() => setGeometryFilter('cartesian')}
+                    className={`px-3 py-1 rounded-lg font-medium transition-all cursor-pointer ${
+                      geometryFilter === 'cartesian'
+                        ? 'bg-white text-[#2c1a0e] shadow-xs'
+                        : 'text-[#5e4634] hover:text-[#2c1a0e]'
+                    }`}
+                  >
+                    Cartesianas (3)
+                  </button>
+                  <button
+                    onClick={() => setGeometryFilter('network')}
+                    className={`px-3 py-1 rounded-lg font-medium transition-all cursor-pointer ${
+                      geometryFilter === 'network'
+                        ? 'bg-white text-[#2c1a0e] shadow-xs'
+                        : 'text-[#5e4634] hover:text-[#2c1a0e]'
+                    }`}
+                  >
+                    Redes & Partición (3)
+                  </button>
+                  <button
+                    onClick={() => setGeometryFilter('cinnamon')}
+                    className={`px-3 py-1 rounded-lg font-medium transition-all cursor-pointer ${
+                      geometryFilter === 'cinnamon'
+                        ? 'bg-white text-[#2c1a0e] shadow-xs'
+                        : 'text-[#5e4634] hover:text-[#2c1a0e]'
+                    }`}
+                  >
+                    Visual Cinnamon (3)
+                  </button>
+                </div>
+
+                {/* The 9 Geometries */}
                 <div className="space-y-4">
-                  {/* Cuerdas */}
-                  <GeometryCard
-                    title="1. Cuerdas Radiales (Radial Chord Diagrams)"
-                    badge="Relaciones & Flujos"
-                    desc="Distribuye las entidades sobre una circunferencia perimetral y proyecta cintas fluidas de Bézier cúbico hacia el centro que comunican los puntos afines. Las etiquetas rotan suavemente sobre la circunferencia exterior mediante arcos SVG (<textPath>)."
-                    formula="Distribución polar θ = 2π(i / N) con punto de control central Q(cx, cy)"
-                    bestFor="Redes de comercio internacional, genealogías, ecosistemas tecnológicos o taxonomías."
-                    svgPreview={
-                      <svg width="100" height="100" viewBox="0 0 100 100">
-                        <circle cx="50" cy="50" r="40" fill="none" stroke="#e6dcce" strokeWidth="1" />
-                        <path d="M 22 22 Q 50 50 78 78" fill="none" stroke="#e11d48" strokeWidth="2.5" opacity="0.6" />
-                        <path d="M 78 22 Q 50 50 22 78" fill="none" stroke="#f97316" strokeWidth="2" opacity="0.6" />
-                        <path d="M 50 10 Q 50 50 50 90" fill="none" stroke="#0d9488" strokeWidth="1.5" opacity="0.5" />
-                        <circle cx="22" cy="22" r="3.5" fill="#e11d48" />
-                        <circle cx="78" cy="22" r="3.5" fill="#f97316" />
-                        <circle cx="78" cy="78" r="3.5" fill="#e11d48" />
-                        <circle cx="22" cy="78" r="3.5" fill="#f97316" />
-                        <circle cx="50" cy="10" r="3" fill="#0d9488" />
-                        <circle cx="50" cy="90" r="3" fill="#0d9488" />
-                      </svg>
-                    }
-                  />
+                  {/* 1. DISPERSIÓN (SCATTER) */}
+                  {(geometryFilter === 'all' || geometryFilter === 'cartesian') && (
+                    <GeometryCard
+                      number={1}
+                      title="Dispersión (Scatter Plot)"
+                      category="cartesian"
+                      badge="Correlación Bivariada"
+                      desc="Proyecta cada entidad en un plano de dos dimensiones cartesianas ortogonales (X e Y). Permite detectar instantáneamente si dos métricas continuas guardan relación lineal, exponencial o dispersión estocástica."
+                      formula="x = scaleLinear(val_x), y = scaleLinear(val_y)"
+                      bestFor="Correlaciones directas (PIB vs Longevidad, Gasto publicitario vs Ventas, Temperatura vs Presión)."
+                      avoidWhen="Cuando solo tengas categorías cualitativas o una única columna métrica."
+                      svgPreview={
+                        <svg width="100" height="100" viewBox="0 0 100 100">
+                          <line x1="15" y1="85" x2="90" y2="85" stroke="#cbd5e1" strokeWidth="1" />
+                          <line x1="15" y1="85" x2="15" y2="15" stroke="#cbd5e1" strokeWidth="1" />
+                          <circle cx="30" cy="70" r="3.5" fill="#e11d48" />
+                          <circle cx="45" cy="55" r="3.5" fill="#f97316" />
+                          <circle cx="60" cy="40" r="3.5" fill="#f59e0b" />
+                          <circle cx="75" cy="30" r="3.5" fill="#0d9488" />
+                          <circle cx="85" cy="20" r="3.5" fill="#1e3a8a" />
+                          <line x1="25" y1="75" x2="88" y2="18" stroke="#e11d48" strokeWidth="0.8" strokeDasharray="2 2" opacity="0.6" />
+                        </svg>
+                      }
+                    />
+                  )}
 
-                  {/* Espiral */}
-                  <GeometryCard
-                    title="2. Espiral Áurea de Arquímedes"
-                    badge="Tiempo Cíclico"
-                    desc="Plantea una trayectoria matemática continua que se expande hacia el exterior a lo largo de 2.8 ciclos. El radio y el diámetro de cada nodo aumentan en proporción a la magnitud del dato, acompañados de 3 anillos concéntricos guía (33%, 66% y 100%)."
-                    formula="r(θ) = r_min + t * (r_max - r_min) donde θ ∈ [0, 5.6π]"
-                    bestFor="Series temporales cíclicas (estaciones, meses, crisis económicas periódicas, calentamiento global)."
-                    svgPreview={
-                      <svg width="100" height="100" viewBox="0 0 100 100">
-                        <circle cx="50" cy="50" r="16" fill="none" stroke="#ede5db" strokeWidth="1" strokeDasharray="2 2" />
-                        <circle cx="50" cy="50" r="32" fill="none" stroke="#ede5db" strokeWidth="1" strokeDasharray="2 2" />
-                        <path
-                          d="M 50 50 A 6 6 0 0 1 56 50 A 12 12 0 0 1 44 50 A 20 20 0 0 1 64 50 A 28 28 0 0 1 36 50 A 36 36 0 0 1 76 50"
-                          fill="none"
-                          stroke="#f97316"
-                          strokeWidth="1.2"
-                        />
-                        <circle cx="50" cy="50" r="2" fill="#f97316" />
-                        <circle cx="56" cy="50" r="2.5" fill="#f97316" />
-                        <circle cx="44" cy="50" r="3" fill="#f97316" />
-                        <circle cx="64" cy="50" r="3.5" fill="#e11d48" />
-                        <circle cx="36" cy="50" r="4" fill="#e11d48" />
-                        <circle cx="76" cy="50" r="4.5" fill="#be123c" />
-                      </svg>
-                    }
-                  />
+                  {/* 2. BURBUJAS (BUBBLE) */}
+                  {(geometryFilter === 'all' || geometryFilter === 'cartesian') && (
+                    <GeometryCard
+                      number={2}
+                      title="Burbujas Multivariables (Bubble Chart)"
+                      category="cartesian"
+                      badge="3 Dimensiones Métricas"
+                      desc="Extiende el diagrama de dispersión incorporando una tercera magnitud numérica codificada en el tamaño del disco. Nectarine aplica obligatoriamente la calibración perceptual de Flannery (área proporcional por raíz cuadrada) para que el ojo humano perciba el volumen real sin distorsión óptica."
+                      formula="A = πr² ⟹ r ∝ √(val_z) (Ley perceptual de Flannery)"
+                      bestFor="Visualizar simultáneamente X (riqueza), Y (salud) y Tamaño (población total)."
+                      avoidWhen="Cuando el dataset tenga más de 500 puntos con tamaños muy dispares (genera oclusión excesiva)."
+                      svgPreview={
+                        <svg width="100" height="100" viewBox="0 0 100 100">
+                          <line x1="15" y1="85" x2="90" y2="85" stroke="#cbd5e1" strokeWidth="1" />
+                          <line x1="15" y1="85" x2="15" y2="15" stroke="#cbd5e1" strokeWidth="1" />
+                          <circle cx="32" cy="65" r="5" fill="#e11d48" opacity="0.85" />
+                          <circle cx="52" cy="50" r="11" fill="#f97316" opacity="0.75" />
+                          <circle cx="75" cy="32" r="15" fill="#0d9488" opacity="0.75" />
+                          <circle cx="85" cy="60" r="6" fill="#7c3aed" opacity="0.8" />
+                        </svg>
+                      }
+                    />
+                  )}
 
-                  {/* Celestial */}
-                  <GeometryCard
-                    title="3. Mapa Celestial & Constelaciones"
-                    badge="Astrolabio Kepleriano"
-                    desc="Proyecta 3 planos orbitales elípticos inclinados con estética de carta estelar histórica. Los puntos se posicionan como estrellas relucientes con magnitud proporcional a sus valores y se trazan constelaciones punteadas uniendo elementos de la misma categoría."
-                    formula="Elipses de Kepler con rotación angular α_k y semiejes (rx, ry)"
-                    bestFor="Portadas editoriales, storytelling científico, mapas de innovación y astronomía."
-                    svgPreview={
-                      <svg width="100" height="100" viewBox="0 0 100 100">
-                        <ellipse cx="50" cy="50" rx="42" ry="20" fill="none" stroke="#dfd2c4" strokeWidth="1" transform="rotate(-20 50 50)" />
-                        <ellipse cx="50" cy="50" rx="36" ry="14" fill="none" stroke="#ebd9c8" strokeWidth="1" transform="rotate(35 50 50)" />
-                        <line x1="30" y1="35" x2="65" y2="25" stroke="#f59e0b" strokeWidth="0.8" strokeDasharray="2 2" />
-                        <line x1="65" y1="25" x2="70" y2="60" stroke="#f59e0b" strokeWidth="0.8" strokeDasharray="2 2" />
-                        <circle cx="30" cy="35" r="3" fill="#f59e0b" />
-                        <circle cx="65" cy="25" r="3.5" fill="#e11d48" />
-                        <circle cx="70" cy="60" r="3" fill="#1e3a8a" />
-                        <circle cx="25" cy="65" r="2.5" fill="#0d9488" />
-                        <circle cx="50" cy="50" r="4" fill="#be123c" />
-                      </svg>
-                    }
-                  />
+                  {/* 3. BARRAS CATEGÓRICAS (BAR) */}
+                  {(geometryFilter === 'all' || geometryFilter === 'cartesian') && (
+                    <GeometryCard
+                      number={3}
+                      title="Barras Categóricas (Bar Chart)"
+                      category="cartesian"
+                      badge="Comparación Ordinal"
+                      desc="La referencia estándar para rankings discretos. Distribuye bandas equidistantes a lo largo del eje categórico con alturas proporcionales al valor acumulado o individual, con esquinas redondeadas táctiles y espaciado proporcional."
+                      formula="scaleBand() con padding interior de 0.25 y escala métrica lineal"
+                      bestFor="Comparar ventas por trimestre, presupuestos por departamento o emisiones por país."
+                      avoidWhen="Para series temporales densas continuas (en su lugar prefiere Ondas continuas)."
+                      svgPreview={
+                        <svg width="100" height="100" viewBox="0 0 100 100">
+                          <line x1="12" y1="85" x2="92" y2="85" stroke="#cbd5e1" strokeWidth="1" />
+                          <rect x="18" y="55" width="12" height="30" rx="2" fill="#e11d48" />
+                          <rect x="36" y="35" width="12" height="50" rx="2" fill="#f97316" />
+                          <rect x="54" y="20" width="12" height="65" rx="2" fill="#f59e0b" />
+                          <rect x="72" y="42" width="12" height="43" rx="2" fill="#0d9488" />
+                        </svg>
+                      }
+                    />
+                  )}
 
-                  {/* Voronoi */}
-                  <GeometryCard
-                    title="4. Mosaico de Voronoi (Delaunay Tessellation)"
-                    badge="Partición Espacial"
-                    desc="Divide el espacio continuo en polígonos orgánicos donde cada celda engloba la región del lienzo más cercana a su dato generador. Cada polígono se colorea y responde a la interacción como una tesela de vitral moderno."
-                    formula="Celdas de Voronoi V(p_i) = {x : d(x, p_i) ≤ d(x, p_j) ∀j≠i}"
-                    bestFor="Cobertura territorial, segmentación de mercados, mapas de influencia y arte abstracto."
-                    svgPreview={
-                      <svg width="100" height="100" viewBox="0 0 100 100">
-                        <polygon points="5,5 55,5 45,45 5,35" fill="#fee2e2" stroke="#f43f5e" strokeWidth="0.8" />
-                        <polygon points="55,5 95,5 95,50 45,45" fill="#ffedd5" stroke="#f97316" strokeWidth="0.8" />
-                        <polygon points="5,35 45,45 35,95 5,95" fill="#fef3c7" stroke="#f59e0b" strokeWidth="0.8" />
-                        <polygon points="45,45 95,50 95,95 35,95" fill="#ccfbf1" stroke="#0d9488" strokeWidth="0.8" />
-                        <circle cx="25" cy="20" r="2.5" fill="#e11d48" />
-                        <circle cx="70" cy="25" r="2.5" fill="#ea580c" />
-                        <circle cx="20" cy="65" r="2.5" fill="#d97706" />
-                        <circle cx="65" cy="70" r="2.5" fill="#0f766e" />
-                      </svg>
-                    }
-                  />
+                  {/* 4. MOSAICO DE VORONOI */}
+                  {(geometryFilter === 'all' || geometryFilter === 'network') && (
+                    <GeometryCard
+                      number={4}
+                      title="Mosaico de Voronoi (Delaunay Tessellation)"
+                      category="network"
+                      badge="Partición Espacial Orgánica"
+                      desc="Calcula la triangulación de Delaunay para dividir el lienzo en polígonos orgánicos contiguos sin huecos ni solapamientos. Cada celda engloba la región espacial más próxima a su centroide de datos, permitiendo colorear y seleccionar teselas como en un vitral moderno."
+                      formula="V(p_i) = {x ∈ ℝ² : d(x, p_i) ≤ d(x, p_j) ∀j ≠ i}"
+                      bestFor="Mapas de calor territoriales, influencia de tiendas/hospitales, partición de mercados y diseño abstracto."
+                      avoidWhen="Cuando se requiera leer con precisión milimétrica coordenadas de ejes numéricos convencionales."
+                      svgPreview={
+                        <svg width="100" height="100" viewBox="0 0 100 100">
+                          <polygon points="5,5 55,5 45,45 5,35" fill="#fee2e2" stroke="#f43f5e" strokeWidth="0.8" />
+                          <polygon points="55,5 95,5 95,50 45,45" fill="#ffedd5" stroke="#f97316" strokeWidth="0.8" />
+                          <polygon points="5,35 45,45 35,95 5,95" fill="#fef3c7" stroke="#f59e0b" strokeWidth="0.8" />
+                          <polygon points="45,45 95,50 95,95 35,95" fill="#ccfbf1" stroke="#0d9488" strokeWidth="0.8" />
+                          <circle cx="25" cy="20" r="2.5" fill="#e11d48" />
+                          <circle cx="70" cy="25" r="2.5" fill="#ea580c" />
+                          <circle cx="20" cy="65" r="2.5" fill="#d97706" />
+                          <circle cx="65" cy="70" r="2.5" fill="#0f766e" />
+                        </svg>
+                      }
+                    />
+                  )}
 
-                  {/* Red de Fuerza */}
-                  <GeometryCard
-                    title="5. Red de Fuerza (Force-Directed Graph)"
-                    badge="Física de Partículas"
-                    desc="Modela los datos como partículas en suspensión sometidas a fuerzas de repulsión electrostática de Coulomb (para evitar solapamientos) y enlaces de tensión elástica de Hooke entre entidades de la misma familia."
-                    formula="F_rep = k / d², F_atr = -c * d (Simulación numérica de Verlet)"
-                    bestFor="Grafos de conocimiento, redes neuronales, interacción de proteínas y sistemas complejos."
-                    svgPreview={
-                      <svg width="100" height="100" viewBox="0 0 100 100">
-                        <line x1="50" y1="50" x2="25" y2="30" stroke="#cbd5e1" strokeWidth="1" />
-                        <line x1="50" y1="50" x2="75" y2="30" stroke="#cbd5e1" strokeWidth="1" />
-                        <line x1="50" y1="50" x2="30" y2="75" stroke="#cbd5e1" strokeWidth="1" />
-                        <line x1="50" y1="50" x2="70" y2="75" stroke="#cbd5e1" strokeWidth="1" />
-                        <circle cx="50" cy="50" r="5" fill="#e11d48" />
-                        <circle cx="25" cy="30" r="3.5" fill="#f97316" />
-                        <circle cx="75" cy="30" r="3.5" fill="#f97316" />
-                        <circle cx="30" cy="75" r="3.5" fill="#0d9488" />
-                        <circle cx="70" cy="75" r="3.5" fill="#0d9488" />
-                      </svg>
-                    }
-                  />
+                  {/* 5. RED DE FUERZA (FORCE-DIRECTED) */}
+                  {(geometryFilter === 'all' || geometryFilter === 'network') && (
+                    <GeometryCard
+                      number={5}
+                      title="Red de Fuerza (Force-Directed Graph)"
+                      category="network"
+                      badge="Física de Partículas"
+                      desc="Modela los datos como partículas en suspensión sometidas a dos fuerzas físicas contrapuestas: repulsión electrostática de Coulomb (para evitar que los nodos se amontonen) y tensión elástica de Hooke (para atraer elementos de la misma categoría o conexión)."
+                      formula="F_rep = k / d² (Coulomb), F_atr = -c · d (Hooke) con integración de Verlet"
+                      bestFor="Grafos de relaciones, redes sociales, ecosistemas de software, afinidades y clústeres no lineales."
+                      avoidWhen="Para datasets estrictamente tabulares sin ninguna dimensión relacional o de agrupación."
+                      svgPreview={
+                        <svg width="100" height="100" viewBox="0 0 100 100">
+                          <line x1="50" y1="50" x2="25" y2="30" stroke="#cbd5e1" strokeWidth="1" />
+                          <line x1="50" y1="50" x2="75" y2="30" stroke="#cbd5e1" strokeWidth="1" />
+                          <line x1="50" y1="50" x2="30" y2="75" stroke="#cbd5e1" strokeWidth="1" />
+                          <line x1="50" y1="50" x2="70" y2="75" stroke="#cbd5e1" strokeWidth="1" />
+                          <circle cx="50" cy="50" r="6" fill="#e11d48" />
+                          <circle cx="25" cy="30" r="4" fill="#f97316" />
+                          <circle cx="75" cy="30" r="4" fill="#f97316" />
+                          <circle cx="30" cy="75" r="4" fill="#0d9488" />
+                          <circle cx="70" cy="75" r="4" fill="#0d9488" />
+                        </svg>
+                      }
+                    />
+                  )}
 
-                  {/* Ondas Fluidas */}
-                  <GeometryCard
-                    title="6. Ondas Continuas (Streamgraph)"
-                    badge="Flujos Apilados"
-                    desc="Representa la masa acumulada de diferentes categorías a lo largo de un eje continuo mediante cintas orgánicas Bézier apiladas alrededor de un eje central ondulante."
-                    formula="Apilamiento centrado (Baseline Silhouette: y0 = -0.5 ∑ y_i)"
-                    bestFor="Tendencias históricas de ventas, evolución demográfica y flujos de tráfico digital."
-                    svgPreview={
-                      <svg width="100" height="100" viewBox="0 0 100 100">
-                        <path d="M 5 50 C 25 30 50 65 75 45 C 85 38 95 42 95 42 L 95 62 C 80 58 55 78 25 58 L 5 65 Z" fill="#fee2e2" stroke="#e11d48" strokeWidth="0.8" />
-                        <path d="M 5 65 C 25 58 55 78 80 62 L 95 68 L 95 85 L 5 85 Z" fill="#fed7aa" stroke="#f97316" strokeWidth="0.8" />
-                      </svg>
-                    }
-                  />
+                  {/* 6. ONDAS CONTINUAS (STREAMGRAPH) */}
+                  {(geometryFilter === 'all' || geometryFilter === 'network') && (
+                    <GeometryCard
+                      number={6}
+                      title="Ondas Continuas (Streamgraph / Waves)"
+                      category="network"
+                      badge="Flujos Apilados Suaves"
+                      desc="Modela la evolución acumulada de diferentes corrientes de datos alrededor de un eje central ondulante. Utiliza curvas cúbicas de Bézier con baselining centrado (*Silhouette*) para conferir a la ilustración una estética fluvial de flujo orgánico continuo."
+                      formula="Baseline Silhouette: y₀(t) = -0.5 ∑ y_i(t) con interpolación cúbica C"
+                      bestFor="Evolución temporal de ventas multicanal, tendencias de música/cine, tráfico web y demografía."
+                      avoidWhen="Si necesitas leer con precisión matemática el valor individual absoluto de una categoría interna."
+                      svgPreview={
+                        <svg width="100" height="100" viewBox="0 0 100 100">
+                          <path d="M 5 50 C 25 30 50 65 75 45 C 85 38 95 42 95 42 L 95 62 C 80 58 55 78 25 58 L 5 65 Z" fill="#fee2e2" stroke="#e11d48" strokeWidth="0.8" />
+                          <path d="M 5 65 C 25 58 55 78 80 62 L 95 68 L 95 85 L 5 85 Z" fill="#fed7aa" stroke="#f97316" strokeWidth="0.8" />
+                          <path d="M 5 35 C 25 20 50 45 75 25 L 95 35 L 95 42 C 85 38 75 45 50 65 C 25 30 5 50 5 50 Z" fill="#ccfbf1" stroke="#0d9488" strokeWidth="0.8" />
+                        </svg>
+                      }
+                    />
+                  )}
 
-                  {/* Dispersión & Burbujas */}
-                  <GeometryCard
-                    title="7. Dispersión, Burbujas & Barras Cartesiana"
-                    badge="Estándar Analítico"
-                    desc="Los pilares de la estadística cuantitativa. Dispersión para correlaciones bivariadas; Burbujas para 3 dimensiones métricas (con escala de radio corregida por raíz cuadrada √r según la ley de Flannery); y Barras para comparaciones discretas precisas."
-                    formula="Área del círculo A = πr² ⟹ r ∝ √valor_métrica"
-                    bestFor="Econometría, benchmarks de rendimiento, análisis clínico y reportes científicos."
-                    svgPreview={
-                      <svg width="100" height="100" viewBox="0 0 100 100">
-                        <line x1="15" y1="85" x2="90" y2="85" stroke="#cbd5e1" strokeWidth="1" />
-                        <line x1="15" y1="85" x2="15" y2="15" stroke="#cbd5e1" strokeWidth="1" />
-                        <circle cx="30" cy="70" r="4" fill="#e11d48" />
-                        <circle cx="50" cy="55" r="7" fill="#f97316" opacity="0.8" />
-                        <circle cx="75" cy="30" r="9" fill="#0d9488" opacity="0.8" />
-                        <circle cx="85" cy="20" r="3.5" fill="#7c3aed" />
-                      </svg>
-                    }
-                  />
+                  {/* 7. CUERDAS RADIALES (CHORD) */}
+                  {(geometryFilter === 'all' || geometryFilter === 'cinnamon') && (
+                    <GeometryCard
+                      number={7}
+                      title="Cuerdas Radiales (Radial Chord Diagrams)"
+                      category="cinnamon"
+                      badge="Relaciones Circulares (Bremer)"
+                      desc="Distribuye las entidades a lo largo de una circunferencia perimetral y proyecta cintas fluidas de Bézier cúbico hacia el centro que comunican los puntos afines. Las etiquetas rotan suavemente sobre la circunferencia exterior mediante arcos SVG nativos (<textPath>)."
+                      formula="θ_i = 2π(i / N) con punto de inflexión focal central Q(cx, cy)"
+                      bestFor="Redes de comercio internacional, genealogías, ecosistemas tecnológicos o taxonomías."
+                      avoidWhen="Para datasets con categorías sin relaciones intrínsecas (las cintas no tendrían sentido)."
+                      svgPreview={
+                        <svg width="100" height="100" viewBox="0 0 100 100">
+                          <circle cx="50" cy="50" r="40" fill="none" stroke="#e6dcce" strokeWidth="1" />
+                          <path d="M 22 22 Q 50 50 78 78" fill="none" stroke="#e11d48" strokeWidth="2.5" opacity="0.6" />
+                          <path d="M 78 22 Q 50 50 22 78" fill="none" stroke="#f97316" strokeWidth="2" opacity="0.6" />
+                          <path d="M 50 10 Q 50 50 50 90" fill="none" stroke="#0d9488" strokeWidth="1.5" opacity="0.5" />
+                          <circle cx="22" cy="22" r="3.5" fill="#e11d48" />
+                          <circle cx="78" cy="22" r="3.5" fill="#f97316" />
+                          <circle cx="78" cy="78" r="3.5" fill="#e11d48" />
+                          <circle cx="22" cy="78" r="3.5" fill="#f97316" />
+                          <circle cx="50" cy="10" r="3" fill="#0d9488" />
+                          <circle cx="50" cy="90" r="3" fill="#0d9488" />
+                        </svg>
+                      }
+                    />
+                  )}
+
+                  {/* 8. ESPIRAL ÁUREA (SPIRAL) */}
+                  {(geometryFilter === 'all' || geometryFilter === 'cinnamon') && (
+                    <GeometryCard
+                      number={8}
+                      title="Espiral Áurea de Arquímedes (Golden Spiral)"
+                      category="cinnamon"
+                      badge="Tiempo Cíclico & Evolución"
+                      desc="Plantea una trayectoria matemática continua que se expande hacia el exterior a lo largo de 2.8 ciclos periódicos. El radio polar y el diámetro de cada nodo aumentan en proporción a la magnitud del dato, acompañados de 3 anillos concéntricos guía (33%, 66% y 100%)."
+                      formula="r(θ) = r_min + t · (r_max - r_min) donde θ ∈ [0, 5.6π]"
+                      bestFor="Series temporales cíclicas (estaciones, meses, calentamiento global, ciclos de crisis económicas)."
+                      avoidWhen="Cuando el tiempo no sea una variable continua o secuencialmente ordenada."
+                      svgPreview={
+                        <svg width="100" height="100" viewBox="0 0 100 100">
+                          <circle cx="50" cy="50" r="16" fill="none" stroke="#ede5db" strokeWidth="1" strokeDasharray="2 2" />
+                          <circle cx="50" cy="50" r="32" fill="none" stroke="#ede5db" strokeWidth="1" strokeDasharray="2 2" />
+                          <path
+                            d="M 50 50 A 6 6 0 0 1 56 50 A 12 12 0 0 1 44 50 A 20 20 0 0 1 64 50 A 28 28 0 0 1 36 50 A 36 36 0 0 1 76 50"
+                            fill="none"
+                            stroke="#f97316"
+                            strokeWidth="1.2"
+                          />
+                          <circle cx="50" cy="50" r="2" fill="#f97316" />
+                          <circle cx="56" cy="50" r="2.5" fill="#f97316" />
+                          <circle cx="44" cy="50" r="3" fill="#f97316" />
+                          <circle cx="64" cy="50" r="3.5" fill="#e11d48" />
+                          <circle cx="36" cy="50" r="4" fill="#e11d48" />
+                          <circle cx="76" cy="50" r="4.5" fill="#be123c" />
+                        </svg>
+                      }
+                    />
+                  )}
+
+                  {/* 9. MAPA CELESTIAL (CELESTIAL) */}
+                  {(geometryFilter === 'all' || geometryFilter === 'cinnamon') && (
+                    <GeometryCard
+                      number={9}
+                      title="Mapa Celestial & Astrolabio (Keplerian Orbits)"
+                      category="cinnamon"
+                      badge="Cartografía Estelar"
+                      desc="Proyecta 3 planos orbitales elípticos inclinados con estética de carta celeste del siglo XVII. Los puntos se posicionan como estrellas relucientes con magnitud proporcional a sus valores y se trazan constelaciones punteadas uniendo elementos afines."
+                      formula="Elipses keplerianas: (x'/a)² + (y'/b)² = 1 con rotación angular α_k"
+                      bestFor="Portadas de libros, infografías de divulgación científica, mapas de innovación y arte de gala."
+                      avoidWhen="Informes corporativos áridos que requieran estrictamente tablas o barras rectangulares."
+                      svgPreview={
+                        <svg width="100" height="100" viewBox="0 0 100 100">
+                          <ellipse cx="50" cy="50" rx="42" ry="20" fill="none" stroke="#dfd2c4" strokeWidth="1" transform="rotate(-20 50 50)" />
+                          <ellipse cx="50" cy="50" rx="36" ry="14" fill="none" stroke="#ebd9c8" strokeWidth="1" transform="rotate(35 50 50)" />
+                          <line x1="30" y1="35" x2="65" y2="25" stroke="#f59e0b" strokeWidth="0.8" strokeDasharray="2 2" />
+                          <line x1="65" y1="25" x2="70" y2="60" stroke="#f59e0b" strokeWidth="0.8" strokeDasharray="2 2" />
+                          <circle cx="30" cy="35" r="3" fill="#f59e0b" />
+                          <circle cx="65" cy="25" r="3.5" fill="#e11d48" />
+                          <circle cx="70" cy="60" r="3" fill="#1e3a8a" />
+                          <circle cx="25" cy="65" r="2.5" fill="#0d9488" />
+                          <circle cx="50" cy="50" r="4" fill="#be123c" />
+                        </svg>
+                      }
+                    />
+                  )}
                 </div>
               </div>
             )}
@@ -696,6 +873,45 @@ export const DocumentationModal: React.FC<DocumentationModalProps> = ({ isOpen, 
                     <p className="text-xs text-[#5e4634] leading-relaxed">
                       La paleta oficial <strong>Nectarine & Melocotón</strong> opera en modo <code className="font-mono text-[11px] bg-[#ede5db] px-1 py-0.5 rounded">mix-blend-mode: multiply</code>. Al cruzarse dos cintas o esferas, no se tapan toscamente como plásticos opacos: sus tintas se fusionan multiplicativamente generando un tercer color más profundo, tal como sucede en la imprenta serigráfica tradicional.
                     </p>
+                  </div>
+
+                  {/* Swatches Table */}
+                  <div className="p-4 rounded-xl bg-white border border-[#e6dcce] space-y-2.5 shadow-2xs">
+                    <h3 className="font-semibold text-xs text-[#2c1a0e]">Muestrario Oficial de Tintas Nectarine</h3>
+                    <div className="grid grid-cols-4 gap-2 text-[10.5px]">
+                      <div className="p-2 rounded border border-[#e6dcce] flex items-center gap-2">
+                        <div className="w-4 h-4 rounded-full bg-[#e11d48]" />
+                        <span className="font-mono">#e11d48 Rubí</span>
+                      </div>
+                      <div className="p-2 rounded border border-[#e6dcce] flex items-center gap-2">
+                        <div className="w-4 h-4 rounded-full bg-[#f97316]" />
+                        <span className="font-mono">#f97316 Melocotón</span>
+                      </div>
+                      <div className="p-2 rounded border border-[#e6dcce] flex items-center gap-2">
+                        <div className="w-4 h-4 rounded-full bg-[#f59e0b]" />
+                        <span className="font-mono">#f59e0b Néctar</span>
+                      </div>
+                      <div className="p-2 rounded border border-[#e6dcce] flex items-center gap-2">
+                        <div className="w-4 h-4 rounded-full bg-[#1e3a8a]" />
+                        <span className="font-mono">#1e3a8a Zafiro</span>
+                      </div>
+                      <div className="p-2 rounded border border-[#e6dcce] flex items-center gap-2">
+                        <div className="w-4 h-4 rounded-full bg-[#0d9488]" />
+                        <span className="font-mono">#0d9488 Menta</span>
+                      </div>
+                      <div className="p-2 rounded border border-[#e6dcce] flex items-center gap-2">
+                        <div className="w-4 h-4 rounded-full bg-[#7c3aed]" />
+                        <span className="font-mono">#7c3aed Amatista</span>
+                      </div>
+                      <div className="p-2 rounded border border-[#e6dcce] flex items-center gap-2">
+                        <div className="w-4 h-4 rounded-full bg-[#be123c]" />
+                        <span className="font-mono">#be123c Grosella</span>
+                      </div>
+                      <div className="p-2 rounded border border-[#e6dcce] flex items-center gap-2">
+                        <div className="w-4 h-4 rounded-full bg-[#22c55e]" />
+                        <span className="font-mono">#22c55e Hoja</span>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>

@@ -312,3 +312,36 @@ El usuario solicitó erradicar cualquier vestigio de "código vibecodificado" (A
    - `vite build`: Build de producción generado en 2.31s.
    - `cargo check`: Crate `nectarine v0.1.0` compilado con éxito.
    - Socket `http://127.0.0.1:5220`: Respondiendo `HTTP/1.1 200 OK`.
+
+---
+
+## Entrada 012 — Desglose Íntegro Individual de las 9 Geometrías Maestras
+- **Fecha y Hora**: 2026-11-01
+- **Fase**: Rigor Editorial en Documentación & Completitud Exhaustiva
+- **Arquitecto**: Antigravity Principal Software Architect
+
+### Diagnóstico de Brechas (En respuesta al feedback del usuario)
+El usuario detectó con precisión que el manual anunciaba "9 geometrías" pero agrupaba varias en una sola ficha (Dispersión, Burbujas y Barras estaban comprimidas en una única tarjeta), resultando en solo 6 o 7 tarjetas visibles y transmitiendo una sensación de incompletitud.
+
+### Resoluciones Aplicadas
+1. **Desglose Individual de las 9 de 9 Geometrías (`DocumentationModal.tsx`)**:
+   - Se crearon **9 fichas independientes numeradas estrictamente del 1 al 9**, cada una con:
+     * **1. Dispersión (Scatter Plot)**: Escalas lineales continuas, correlación de Pearson y detección de patrones bivariados. Miniatura SVG con ejes, puntos y línea de tendencia.
+     * **2. Burbujas Multivariables (Bubble Chart)**: Codificación de 3 dimensiones métricas con calibración de área de Flannery ($\sqrt{v}$) para evitar distorsión perceptual. Miniatura SVG con burbujas de radio calibrado y modo multiply.
+     * **3. Barras Categóricas (Bar Chart)**: Escala discreta `scaleBand` con padding del 25% para rankings ordinales. Miniatura SVG con 4 barras táctiles redondeadas.
+     * **4. Mosaico de Voronoi (Delaunay Tessellation)**: Partición geométrica continua del plano sin huecos ni solapamientos. Miniatura SVG con celdas poligonales contiguas y centroides.
+     * **5. Red de Fuerza (Force-Directed Graph)**: Simulación de física de partículas de Coulomb (repulsión electrostática) y Hooke (tensión elástica). Miniatura SVG con nodo central y enlaces articulados.
+     * **6. Ondas Continuas (Streamgraph / Waves)**: Cintas orgánicas Bézier apiladas alrededor de un eje central ondulante con baselining *Silhouette*. Miniatura SVG con 3 corrientes sinusoidales.
+     * **7. Cuerdas Radiales (Radial Chord Diagrams)**: Geometría polar trigonométrica con cintas Bézier hacia el centro y rotulación perimetral en arco `<textPath>`. Miniatura SVG circular con cintas cruzadas.
+     * **8. Espiral Áurea de Arquímedes (Golden Spiral)**: Trayectoria polar paramétrica continua a lo largo de 2.8 ciclos con 3 anillos concéntricos guía (33%, 66%, 100%). Miniatura SVG espiral con esferas crecientes.
+     * **9. Mapa Celestial & Astrolabio (Keplerian Constellations)**: 3 planos orbitales elípticos inclinados con estrellas de magnitud lumínica y enlaces de constelación punteados. Miniatura SVG astronómica con elipses keplerianas.
+2. **Selector Interactivo por Categoría**:
+   - Se incorporó un control segmentado en la cabecera del Capítulo 3: `[Todas (9)]`, `[Cartesianas (3)]`, `[Redes & Partición (3)]` y `[Visual Cinnamon (3)]`, con contador explícito `9 de 9 disponibles`.
+3. **Secciones de 'Ideal para' y 'Evitar cuando'**:
+   - Cada una de las 9 geometrías incluye ahora directrices claras de cuándo utilizarla y en qué escenarios evitarla para prevenir gráficos ineficaces o saturados.
+4. **Verificación Zero-Defect**:
+   - `bun test`: 19/19 tests unitarios aprobados en 215ms.
+   - `tsc -b`: 0 errores.
+   - `vite build`: Build de producción generado en 2.39s.
+   - `cargo check`: Superado limpiamente para `nectarine v0.1.0`.
+   - Socket `http://127.0.0.1:5220`: Respondiendo `HTTP/1.1 200 OK`.

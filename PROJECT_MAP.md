@@ -21,6 +21,7 @@ gitGraph
     commit id: "rebrand-nectarine-ux-deslop" tag: "v1.3.0"
     commit id: "docs-center-visual-diagrams" tag: "v1.4.0"
     commit id: "docs-masterclass-single-entrypoint" tag: "v1.5.0"
+    commit id: "docs-9-of-9-geometries-complete" tag: "v1.6.0"
 ```
 
 ---
@@ -48,7 +49,8 @@ gitGraph
 | **CP-16** | Expansión Visual Cinnamon: Radial, Espiral, Celestial & Resplandor SVG | Cuerdas radiales, espirales áureas, cartas celestiales y filtros de luz `<feGaussianBlur>`. | **Completado** |
 | **CP-17** | Rebranding a Nectarine, Desahogo UX/UI & Iconografía Esculpida | Renombrado oficial a **Nectarine** (`com.nectarine.studio`), icono 3D de fruta fresca, purga de 'DuckDB Local' y 'Atelier Gráfico & Analítico', barra aireada con etiquetas contextuales y paleta *Nectarine & Melocotón*. | **Completado** |
 | **CP-18** | Centro de Documentación Integral & Diagramas Visuales Paso a Paso | Módulo `DocumentationModal.tsx` de 7 capítulos con explicaciones en lenguaje claro, capturas esquemáticas vectoriales incrustadas, acceso inicial y atajo `<kbd>?</kbd>`. | **Completado** |
-| **CP-19** | Unificación de Acceso al Manual & Expansión Enciclopédica Masterclass | Eliminación del botón duplicado en `Toolbar.tsx` liberando espacio horizontal. Expansión exhaustiva de `DocumentationModal.tsx` a 9 capítulos profundos (Ingesta DuckDB WASM en RAM, catálogo exhaustivo de 9 geometrías con fórmulas y teoría, ética vectorial con cálculo $\Delta\%$, física de Coulomb/Hooke, serigrafía multiply, guardarraíl >10k nodos, consejos para Illustrator/Figma/prensa y hoja completa de atajos). | **Completado** |
+| **CP-19** | Unificación de Acceso al Manual & Expansión Enciclopédica Masterclass | Eliminación del botón duplicado en `Toolbar.tsx` liberando espacio horizontal. Expansión exhaustiva de `DocumentationModal.tsx` a 9 capítulos profundos. | **Completado** |
+| **CP-20** | Desglose Individual Íntegro de las 9 de 9 Geometrías Maestras | Separación rigurosa de las 9 geometrías en 9 fichas individuales independientes numeradas del 1 al 9 (Dispersión, Burbujas, Barras, Voronoi, Red de Fuerza, Ondas, Cuerdas Radiales, Espiral Áurea, Mapa Celestial), cada una con su propia miniatura SVG vectorial, fundamento matemático, directrices de 'Ideal para' y 'Evitar cuando', más selector interactivo por categoría (Todas, Cartesianas, Redes, Visual Cinnamon). | **Completado** |
 
 ---
 
