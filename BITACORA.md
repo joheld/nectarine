@@ -151,3 +151,28 @@ El usuario presentó una captura de pantalla demostrando un fallo estético inne
    - 15/15 tests automatizados pasando en Bun.
    - `tsc -b` con 0 errores y compilación limpia con Vite.
    - `cargo check` en `src-tauri` finalizado con éxito.
+
+
+---
+
+## Entrada 007 — Rediseño de Iconografía de Alta Gama & Compilación con `iconutil`
+- **Fecha y Hora**: 2026-11-01
+- **Fase**: Identidad Visual & Diseño de Producto
+- **Arquitecto**: Antigravity Principal Software Architect
+
+### Diagnóstico Crítico (En respuesta al feedback del icono)
+El usuario criticó con razón el icono previo: un dibujo vectorial geométrico tosco encerrado en un círculo con trazo naranja que, escalado a 20px en la barra de título, parecía una mancha marrón sucia y fuera de lugar con respecto a una aplicación profesional para macOS.
+
+### Resoluciones Aplicadas
+1. **Icono Nativo de macOS en Squircle 3D de Alta Fidelidad**:
+   - Se diseñó un icono de aplicación con lenguaje visual de macOS Sonoma/Big Sur: baldosín squircle en papel de archivo marfil con bisel subpíxel, sombra ambiental y renderizado 3D de quills de canela de Ceilán enrollados con hilo natural en tonos terracota y ámbar cálido.
+   - Procesamiento con máscara de transparencia suave y compilación del conjunto completo `.iconset` con `/usr/bin/iconutil` para generar el archivo maestro `src-tauri/icons/icon.icns` (16x16 hasta 512x512@2x).
+   - Actualización del bundle del escritorio `/Users/joe/Desktop/Cinnamon.app` con el nuevo `.icns`.
+2. **Logo en Barra de Título**:
+   - `CinnamonLogo.tsx` ahora renderiza el squircle oficial de la app con esquinas redondeadas continuas (`rounded-[4.5px]`), sombra sutil y borde subpíxel, idéntico a los iconos proxy de documentos en macOS (Pages, Keynote, Pixelmator).
+3. **Glifo Vectorial SVG Puro Rehecho**:
+   - Se rediseñó `public/cinnamon-logo.svg` y la variante vectorial de `CinnamonLogo.tsx` eliminando el tosco círculo exterior y dibujando curvas de Bézier fluidas con espirales concéntricas de corteza de canela y amarre de rafia.
+4. **Verificación Zero-Defect**:
+   - 15/15 tests automatizados pasando en Bun.
+   - `tsc -b` con 0 errores y compilación limpia con Vite.
+   - `cargo check` en `src-tauri` finalizado con éxito.
