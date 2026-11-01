@@ -242,3 +242,41 @@ El usuario solicitó capacitar a **Cinnamon** para crear proyectos de la complej
    - 19/19 tests automatizados pasando en Bun.
    - `tsc -b` con 0 errores y compilación limpia con Vite.
    - `cargo check` en `src-tauri` para el nuevo crate `nectarine v0.1.0` superado con éxito.
+
+---
+
+## Entrada 010 — Centro de Documentación Paso a Paso & Des-Vibecodificación con Diagramas Vectoriales
+- **Fecha y Hora**: 2026-11-01
+- **Fase**: Educación de Usuario, Manual Interactivo & Arquitectura Anti-Slop
+- **Arquitecto**: Antigravity Principal Software Architect
+
+### Motivación & Requerimientos del Usuario
+El usuario solicitó erradicar cualquier vestigio de "código vibecodificado" (AI slop) y exigió una documentación completa, exhaustiva pero en un lenguaje sumamente comprensible, estructurada paso a paso, accesible desde la interfaz mediante un botón visible, con ejemplos prácticos y capturas visuales para explicar en profundidad cómo sacarle el máximo jugo a la herramienta.
+
+### Resoluciones & Mejoras Técnicas Implementadas
+1. **Módulo de Documentación Integral (`DocumentationModal.tsx`)**:
+   - Estructurado en 7 capítulos monográficos con navegación lateral:
+     * **Capítulo 1: Inicio Rápido**: Flujo de 3 pasos (Ingesta local en RAM -> Geometría D3 -> Edición Bézier y exportación).
+     * **Capítulo 2: Catálogo de las 9 Geometrías**: Explicación técnica y conceptual de cuándo utilizar Cuerdas Radiales, Espiral Áurea, Mapa Celestial, Voronoi, Ondas, Dispersión y Burbujas.
+     * **Capítulo 3: Edición Plástica & Ética de Datos**: Cómo manipular puntos con manetas de Bézier sin falsear información, cómo opera el anclaje (`pin`), el rastro fantasma proyectado hacia la coordenada matemática original y el monitor de distorsión porcentual ($\Delta\%$).
+     * **Capítulo 4: Iluminación, Resplandor & Fusión**: Explicación del filtro SVG compuesto `<feGaussianBlur>` + `<feMerge>` (Glow) y el modo de fusión `multiply` para superposición serigráfica.
+     * **Capítulo 5: Capas Semánticas & Anotaciones Atadas**: Agrupaciones automáticas por dimensiones categóricas y callouts vinculados al `node_id` que viajan con los datos.
+     * **Capítulo 6: Exportación e Imprenta**: Rutina quirúrgica de purga SVG en `exportService.ts` que elimina gizmos, cajas y pines, entregando un archivo estándar para Illustrator o Figma.
+     * **Capítulo 7: Atajos de Teclado**: Hoja de trucos con tabla de atajos rápidos (`V`, `M`, `B`, `A`, `?`, `Esc`, Doble Clic, Rueda de ratón, Alt + Arrastre).
+2. **Capturas Esquemáticas Vectoriales Incrustadas (Zero-Pixelation)**:
+   - En lugar de capturas rasterizadas pesadas o propensas a romperse, se diseñaron componentes SVG puros integrados directamente en el manual:
+     * `PipelineDiagram`: Flujo interactivo de 4 estaciones (DuckDB -> D3 -> Bézier -> Purga).
+     * `GeometryCard`: 4 tarjetas visuales con mini-ilustraciones SVG de cuerdas radiales con cintas Bézier, espiral áurea con círculos concéntricos, carta celestial con órbitas y constelaciones, y mosaico/ondas fluidas.
+     * `GhostTraceDiagram`: Captura esquemática del principio ético mostrando el dato matemático en azul, la línea guía discontinua, el nodo arrastrado con maneta de Bézier y la insignia de distorsión $\Delta +28\%$.
+     * `Annotation Visual Diagram`: Muestra de un nodo vinculado a una tarjeta flotante mediante una flecha arqueada continua.
+     * `Before / After Purge Visual`: Comparador visual que contrasta el árbol de trabajo en pantalla (con cajas de selección y tiradores) frente al SVG purgado entregado a disco.
+3. **Puntos de Entrada y Ergonomía en la Interfaz**:
+   - Botón `[?] Manual` en la barra de título (`TitleBar.tsx`) con insignia de atajo `<kbd>?</kbd>`.
+   - Botón `Manual` en la barra de herramientas (`Toolbar.tsx`) con icono `BookOpen`.
+   - Enlace `Consultar manual de taller` en la franja de inicio rápido (`QuickStartBar.tsx`).
+   - Atajo de teclado global: Presionar <kbd>?</kbd> (Shift + /) abre o cierra el modal instantáneamente. Tecla <kbd>Esc</kbd> cierra el modal.
+4. **Verificación Zero-Defect**:
+   - `bun test`: 19/19 tests unitarios aprobados en 174ms.
+   - `tsc -b`: 0 advertencias y 0 errores de tipado estricto.
+   - `vite build`: Build de producción generado en 2.32s.
+   - `curl -I http://127.0.0.1:5220`: Servidor activo y respondiendo `HTTP/1.1 200 OK`.

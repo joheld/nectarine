@@ -1,9 +1,13 @@
 import React, { useState } from 'react';
-import { Sparkles, Globe2, ShoppingBag, Info, X } from 'lucide-react';
+import { Globe2, ShoppingBag, X } from 'lucide-react';
 import { useDataStore } from '../store/dataStore';
 import { duckdbService } from '../services/duckdb';
 
-export const QuickStartBar: React.FC = () => {
+interface QuickStartBarProps {
+  onOpenDocs?: () => void;
+}
+
+export const QuickStartBar: React.FC<QuickStartBarProps> = ({ onOpenDocs }) => {
   const { loadDataset } = useDataStore();
   const [isVisible, setIsVisible] = useState(true);
 
@@ -20,29 +24,26 @@ export const QuickStartBar: React.FC = () => {
   };
 
   return (
-    <div className="bg-gradient-to-r from-rose-50/85 via-orange-50/75 to-amber-50/85 border-b border-[#ebd9c8] px-5 py-2.5 flex items-center justify-between text-xs select-none backdrop-blur-sm z-30 transition-all">
-      <div className="flex items-center gap-3.5">
-        <div className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-rose-500/10 text-rose-900 font-semibold">
-          <Sparkles className="w-3.5 h-3.5 text-[#e11d48]" />
-          <span>Inicio Rápido</span>
-        </div>
-
-        <span className="text-stone-600 text-[11px] hidden md:inline">
-          Prueba con datos listos para usar en un clic:
+    <div className="bg-[#f6f2ea] border-b border-[#e6dcce] px-4 py-2 flex items-center justify-between text-xs select-none z-30 transition-all">
+      <div className="flex items-center gap-3">
+        <span className="text-[10px] font-mono uppercase tracking-[0.16em] text-[#8c7664] font-medium">
+          Muestras:
         </span>
 
         <div className="flex items-center gap-2">
           <button
             onClick={handleLoadCountries}
-            className="flex items-center gap-1.5 px-3 py-1 rounded-lg bg-white hover:bg-rose-50/70 text-[#2c1a0e] border border-[#ebd9c8] font-medium shadow-2xs transition-colors text-[11px]"
+            className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-white hover:bg-[#faf7f2] text-[#2c1a0e] border border-[#e6dcce] font-medium shadow-2xs transition-all active:translate-y-px text-[11px]"
+            title="Cargar dataset de 30 países con PIB, esperanza de vida y región"
           >
             <Globe2 className="w-3.5 h-3.5 text-[#e11d48]" />
-            <span>Países y Economía</span>
+            <span>Países & Economía</span>
           </button>
 
           <button
             onClick={handleLoadSales}
-            className="flex items-center gap-1.5 px-3 py-1 rounded-lg bg-white hover:bg-orange-50/70 text-[#2c1a0e] border border-[#ebd9c8] font-medium shadow-2xs transition-colors text-[11px]"
+            className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-white hover:bg-[#faf7f2] text-[#2c1a0e] border border-[#e6dcce] font-medium shadow-2xs transition-all active:translate-y-px text-[11px]"
+            title="Cargar dataset de ventas de hardware y tecnología por trimestre"
           >
             <ShoppingBag className="w-3.5 h-3.5 text-[#f97316]" />
             <span>Ventas de Tecnología</span>
@@ -50,18 +51,24 @@ export const QuickStartBar: React.FC = () => {
         </div>
       </div>
 
-      <div className="flex items-center gap-3 text-stone-500 text-[11px]">
-        <div className="hidden lg:flex items-center gap-1.5">
-          <Info className="w-3.5 h-3.5 text-[#e11d48]" />
-          <span>
-            <strong>Pista:</strong> Arrastra cualquier punto en el lienzo para retocarlo artísticamente.
-          </span>
+      <div className="flex items-center gap-3 text-[#8c7664] text-[11px]">
+        <div className="hidden lg:flex items-center gap-2">
+          <span className="font-mono text-[10.5px]">Arrastra cualquier punto en el lienzo para retocarlo artísticamente</span>
         </div>
+
+        {onOpenDocs && (
+          <button
+            onClick={onOpenDocs}
+            className="text-[#e11d48] hover:text-[#be123c] underline font-medium text-[11px] cursor-pointer"
+          >
+            Ver guía paso a paso
+          </button>
+        )}
 
         <button
           onClick={() => setIsVisible(false)}
-          className="p-1 rounded-md hover:bg-rose-100/60 text-stone-400 hover:text-stone-700"
-          title="Ocultar barra de inicio rápido"
+          className="p-1 rounded hover:bg-[#ede5db] text-[#8c7664] hover:text-[#2c1a0e] transition-colors"
+          title="Ocultar barra de muestras"
         >
           <X className="w-3.5 h-3.5" />
         </button>

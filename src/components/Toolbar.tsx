@@ -19,6 +19,7 @@ import {
   Orbit,
   Sparkles,
   SunMedium,
+  BookOpen,
 } from 'lucide-react';
 import { useDataStore } from '../store/dataStore';
 import { useMutationStore } from '../store/mutationStore';
@@ -32,10 +33,11 @@ import { readTextFile, readFile } from '@tauri-apps/plugin-fs';
 
 interface ToolbarProps {
   onOpenProfiler: () => void;
+  onOpenDocs?: () => void;
   svgRef: React.RefObject<SVGSVGElement | null>;
 }
 
-export const Toolbar: React.FC<ToolbarProps> = ({ onOpenProfiler, svgRef }) => {
+export const Toolbar: React.FC<ToolbarProps> = ({ onOpenProfiler, onOpenDocs, svgRef }) => {
   const { chartType, setChartType, profiledColumns, rawRows, loadDataset, recalculateLayout } = useDataStore();
   const { activeTool, setActiveTool, resetAllMutations, mutations, isGlowEnabled, toggleGlow } = useMutationStore();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -153,6 +155,17 @@ export const Toolbar: React.FC<ToolbarProps> = ({ onOpenProfiler, svgRef }) => {
           <SlidersHorizontal className="w-3.5 h-3.5 text-[#f97316]" />
           <span>Filtros</span>
         </button>
+
+        {onOpenDocs && (
+          <button
+            onClick={onOpenDocs}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white hover:bg-[#faf7f2] text-[#2c1a0e] border border-[#e6dcce] transition-colors font-medium shadow-2xs"
+            title="Abrir Manual y Documentación Paso a Paso (Atajo: ?)"
+          >
+            <BookOpen className="w-3.5 h-3.5 text-[#e11d48]" />
+            <span className="hidden xl:inline">Manual</span>
+          </button>
+        )}
       </div>
 
       <div className="h-5 w-px bg-[#e6dcce] shrink-0" />
@@ -176,7 +189,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({ onOpenProfiler, svgRef }) => {
               }
               className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg transition-all ${
                 isSelected
-                  ? 'bg-gradient-to-r from-[#e11d48] to-[#f97316] text-white shadow-xs font-semibold'
+                  ? 'bg-[#e11d48] text-white shadow-xs font-semibold'
                   : isCompatible
                   ? 'text-[#5e4634] hover:text-[#2c1a0e] hover:bg-white/80'
                   : 'text-[#8c7664] opacity-35 cursor-not-allowed'
@@ -275,7 +288,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({ onOpenProfiler, svgRef }) => {
 
         <button
           onClick={handleExport}
-          className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-gradient-to-r from-[#e11d48] to-[#f97316] hover:opacity-95 text-white font-medium shadow-xs transition-opacity"
+          className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-[#e11d48] hover:bg-[#be123c] active:translate-y-px text-white font-medium shadow-[0_1px_2px_rgba(225,29,72,0.35),inset_0_1px_0_rgba(255,255,255,0.2)] transition-all"
           title="Descargar ilustración vectorial pura en formato SVG"
         >
           <Download className="w-3.5 h-3.5" />

@@ -1,10 +1,14 @@
 import React from 'react';
-import { ShieldCheck, Activity } from 'lucide-react';
+import { ShieldCheck, Activity, BookOpen } from 'lucide-react';
 import { useDataStore } from '../store/dataStore';
 import { useMutationStore } from '../store/mutationStore';
 import { NectarineLogo } from './NectarineLogo';
 
-export const TitleBar: React.FC = () => {
+interface TitleBarProps {
+  onOpenDocs?: () => void;
+}
+
+export const TitleBar: React.FC<TitleBarProps> = ({ onOpenDocs }) => {
   const { datasetName, baseNodes } = useDataStore();
   const { mutations } = useMutationStore();
   const pinnedCount = Object.values(mutations).filter((m) => m.isPinned).length;
@@ -26,8 +30,18 @@ export const TitleBar: React.FC = () => {
         </span>
       </div>
 
-      {/* Right Telemetry */}
+      {/* Right Controls: Manual & Telemetry */}
       <div className="flex items-center gap-2.5 no-drag text-[11px]">
+        <button
+          onClick={onOpenDocs}
+          className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-white hover:bg-[#faf7f2] border border-[#e6dcce] text-[#5e4634] hover:text-[#2c1a0e] transition-colors font-medium shadow-2xs cursor-pointer"
+          title="Abrir Manual de Documentación y Guía Paso a Paso (Atajo: ?)"
+        >
+          <BookOpen className="w-3.5 h-3.5 text-[#e11d48]" />
+          <span>Manual</span>
+          <kbd className="font-mono text-[9.5px] bg-[#ede5db] text-[#5e4634] px-1 rounded border border-[#dfd2c4]">?</kbd>
+        </button>
+
         <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-[#f0e7dc] border border-[#e2d5c5] text-[#5e4634] font-mono">
           <Activity className="w-3.5 h-3.5 text-[#e11d48]" />
           <span>{baseNodes.length} nodos</span>
