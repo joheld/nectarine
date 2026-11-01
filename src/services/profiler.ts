@@ -80,6 +80,15 @@ class DatasetProfiler {
     const numericCols = columns.filter((c) => c.type === 'number');
     const categoricalCols = columns.filter((c) => c.type === 'string' || c.type === 'boolean');
 
+    // Pick best grouping category column (prioritize low cardinality like 'region', 'categoria', 'cluster')
+    const bestCategoryCol =
+      categoricalCols
+        .slice()
+        .sort((a, b) => a.distinctCount - b.distinctCount)
+        .find((c) => c.distinctCount >= 2 && c.distinctCount <= Math.max(2, rowCount * 0.7))?.name ||
+      categoricalCols[1]?.name ||
+      categoricalCols[0]?.name;
+
     const charts: ChartCompatibility[] = [
       {
         type: 'scatter',
@@ -90,7 +99,7 @@ class DatasetProfiler {
         suggestedMappings: {
           x: numericCols[0]?.name,
           y: numericCols[1]?.name,
-          category: categoricalCols[0]?.name,
+          category: bestCategoryCol,
         },
       },
       {
@@ -103,7 +112,7 @@ class DatasetProfiler {
           x: numericCols[0]?.name,
           y: numericCols[1]?.name,
           size: numericCols[2]?.name || numericCols[0]?.name,
-          category: categoricalCols[0]?.name,
+          category: bestCategoryCol,
         },
       },
       {
@@ -113,7 +122,7 @@ class DatasetProfiler {
         isCompatible: categoricalCols.length >= 1,
         reason: categoricalCols.length < 1 ? 'Requiere al menos una columna categórica para agrupar.' : undefined,
         suggestedMappings: {
-          category: categoricalCols[0]?.name,
+          category: bestCategoryCol,
           y: numericCols[0]?.name,
         },
       },
@@ -126,7 +135,7 @@ class DatasetProfiler {
         suggestedMappings: {
           x: numericCols[0]?.name,
           y: numericCols[1]?.name,
-          category: categoricalCols[0]?.name,
+          category: bestCategoryCol,
         },
       },
       {
@@ -136,7 +145,7 @@ class DatasetProfiler {
         isCompatible: rowCount >= 2,
         reason: rowCount < 2 ? 'Requiere al menos 2 registros.' : undefined,
         suggestedMappings: {
-          category: categoricalCols[0]?.name || columns[0]?.name,
+          category: bestCategoryCol,
         },
       },
       {
@@ -146,7 +155,7 @@ class DatasetProfiler {
         isCompatible: categoricalCols.length >= 1 && numericCols.length >= 1,
         reason: categoricalCols.length < 1 || numericCols.length < 1 ? 'Requiere dimensión categórica y métrica cuantitativa.' : undefined,
         suggestedMappings: {
-          category: categoricalCols[0]?.name,
+          category: bestCategoryCol,
           y: numericCols[0]?.name,
         },
       },

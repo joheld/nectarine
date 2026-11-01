@@ -10,38 +10,38 @@ export const TitleBar: React.FC = () => {
   const pinnedCount = Object.values(mutations).filter((m) => m.isPinned).length;
 
   return (
-    <header className="h-[38px] min-h-[38px] bg-mac-surface border-b border-mac-border flex items-center justify-between px-3 mac-titlebar select-none z-50">
+    <header className="h-[38px] min-h-[38px] bg-[#f8f5ee] border-b border-[#e6dcce] flex items-center justify-between px-3 mac-titlebar select-none z-50">
       {/* Left traffic lights placeholder spacing */}
       <div className="flex items-center gap-2.5 w-52 no-drag">
         <div className="w-14" /> {/* Space for macOS native stoplights */}
-        <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-[11px] font-mono text-emerald-800">
-          <Database className="w-3 h-3 text-emerald-600" />
+        <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-[#ecfdf5] border border-[#a7f3d0] text-[11px] font-mono text-[#065f46]">
+          <Database className="w-3 h-3 text-[#059669]" />
           <span>DuckDB Local</span>
         </div>
       </div>
 
       {/* Center Document Title with Cinnamon Branch Logo */}
-      <div className="flex items-center gap-2 text-xs font-medium text-mac-text">
+      <div className="flex items-center gap-2 text-xs font-medium">
         <CinnamonLogo size={20} className="w-5 h-5 shrink-0" />
-        <span className="font-bold text-stone-900 tracking-tight text-sm">Cinnamon</span>
-        <span className="text-mac-textMuted">—</span>
-        <span className="text-cinnamon-800 font-medium text-[11px]">Atelier de Datos & Arte</span>
-        <span className="text-mac-textMuted hidden sm:inline">|</span>
-        <span className="text-stone-600 font-mono text-[11px] bg-stone-100 px-2 py-0.5 rounded border border-mac-border">
+        <span className="font-bold text-[#2c1a0e] tracking-tight text-sm">Cinnamon</span>
+        <span className="text-[#a89988]">—</span>
+        <span className="text-[#b44b10] font-medium text-[11px]">Atelier Gráfico & Analítico</span>
+        <span className="text-[#a89988] hidden sm:inline">|</span>
+        <span className="text-[#5e4634] font-mono text-[11px] bg-[#ede5db] px-2 py-0.5 rounded border border-[#dfd2c4]">
           {datasetName}
         </span>
       </div>
 
       {/* Right Telemetry */}
       <div className="flex items-center gap-2 no-drag text-[11px] font-mono">
-        <div className="flex items-center gap-1.5 px-2 py-0.5 rounded bg-stone-100 border border-mac-border text-stone-700">
-          <Activity className="w-3 h-3 text-cinnamon-700" />
+        <div className="flex items-center gap-1.5 px-2 py-0.5 rounded bg-[#ede5db] border border-[#dfd2c4] text-[#5e4634]">
+          <Activity className="w-3 h-3 text-[#b44b10]" />
           <span>{baseNodes.length} puntos</span>
         </div>
 
         {pinnedCount > 0 && (
-          <div className="flex items-center gap-1.5 px-2 py-0.5 rounded bg-amber-50 border border-amber-200 text-amber-800">
-            <ShieldCheck className="w-3 h-3 text-amber-600" />
+          <div className="flex items-center gap-1.5 px-2 py-0.5 rounded bg-[#fffbeb] border border-[#fde68a] text-[#92400e]">
+            <ShieldCheck className="w-3 h-3 text-[#d97706]" />
             <span>{pinnedCount} fijos</span>
           </div>
         )}

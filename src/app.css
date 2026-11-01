@@ -3,29 +3,30 @@
 @tailwind utilities;
 
 @layer base {
-  /* CINNAMON WARM LIGHT THEME (DEFAULT) — Artisanal Paper, Cream & Warm Spiced Amber */
+  /* CINNAMON 100% UNIFIED ARTISANAL WARM PALETTE — NO BLACK BARS */
   :root {
     --titlebar-height: 38px;
     --mac-font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Helvetica Neue", sans-serif;
     
-    --mac-bg: #faf7f2;
-    --mac-surface: #ffffff;
-    --mac-panel: #ffffff;
-    --mac-card: #f7f3ec;
-    --mac-border: #e8ded4;
-    --mac-border-subtle: #f0e9e1;
-    --mac-border-hover: #d4c5b6;
-    --mac-text: #292524;
-    --mac-text-secondary: #57534e;
-    --mac-text-muted: #8c827a;
-    --mac-accent: #c2410c;
-    --mac-accent-hover: #ea580c;
+    --cinnamon-canvas: #fcfaf6;
+    --cinnamon-chrome: #f6f2ea;
+    --cinnamon-surface: #ffffff;
+    --cinnamon-card: #ffffff;
+    --cinnamon-border: #e6dcce;
+    --cinnamon-border-subtle: #f0e7dc;
+    --cinnamon-border-hover: #d8c9b8;
+    --cinnamon-text: #2c1a0e;
+    --cinnamon-text-secondary: #5e4634;
+    --cinnamon-text-muted: #8c7664;
+    --cinnamon-accent: #b44b10;
+    --cinnamon-accent-hover: #d25b18;
+    --cinnamon-accent-muted: rgba(180, 75, 16, 0.08);
   }
 
-  body {
+  html, body {
     font-family: var(--mac-font);
-    background-color: var(--mac-bg);
-    color: var(--mac-text);
+    background-color: var(--cinnamon-chrome);
+    color: var(--cinnamon-text);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     user-select: none;
@@ -33,7 +34,7 @@
   }
 }
 
-/* Cinnamon Custom Scrollbars */
+/* Cinnamon Custom Warm Scrollbars */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -44,15 +45,15 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(194, 65, 12, 0.18);
+  background: rgba(180, 75, 16, 0.16);
   border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(194, 65, 12, 0.35);
+  background: rgba(180, 75, 16, 0.32);
 }
 
-/* Native Glass & TitleBar */
+/* Native TitleBar Drag Region */
 .mac-titlebar {
   -webkit-app-region: drag;
 }

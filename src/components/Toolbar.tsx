@@ -119,7 +119,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({ onOpenProfiler, svgRef }) => {
   ];
 
   return (
-    <div className="h-11 bg-mac-surface border-b border-mac-border px-3 flex items-center justify-between text-xs select-none z-40">
+    <div className="h-11 bg-[#f8f5ee] border-b border-[#e6dcce] px-3 flex items-center justify-between text-xs select-none z-40">
       {/* File & Profiling Actions */}
       <div className="flex items-center gap-2">
         <input
@@ -131,25 +131,25 @@ export const Toolbar: React.FC<ToolbarProps> = ({ onOpenProfiler, svgRef }) => {
         />
         <button
           onClick={handleNativeImport}
-          className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md bg-stone-50 hover:bg-stone-100 active:bg-stone-200 text-stone-800 border border-mac-border transition-colors font-medium shadow-sm"
+          className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md bg-white hover:bg-[#faf7f2] active:bg-[#ede5db] text-[#2c1a0e] border border-[#e6dcce] transition-colors font-medium shadow-xs"
           title="Importar un archivo CSV, JSON o Parquet desde tu equipo"
         >
-          <Upload className="w-3.5 h-3.5 text-cinnamon-700" />
+          <Upload className="w-3.5 h-3.5 text-[#b44b10]" />
           <span>Subir Archivo</span>
         </button>
 
         <button
           onClick={onOpenProfiler}
-          className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md bg-stone-50 hover:bg-stone-100 text-stone-800 border border-mac-border transition-colors font-medium shadow-sm"
+          className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md bg-white hover:bg-[#faf7f2] text-[#2c1a0e] border border-[#e6dcce] transition-colors font-medium shadow-xs"
           title="Ver columnas, valores y filtrar datos sin fórmulas"
         >
-          <SlidersHorizontal className="w-3.5 h-3.5 text-amber-600" />
+          <SlidersHorizontal className="w-3.5 h-3.5 text-[#d97706]" />
           <span>Filtros y Columnas</span>
         </button>
       </div>
 
-      {/* Chart Types (Warm light segmented controls) */}
-      <div className="flex items-center bg-stone-100 p-0.5 rounded-lg border border-stone-200">
+      {/* Chart Types Segmented Control */}
+      <div className="flex items-center bg-[#ede5db] p-0.5 rounded-lg border border-[#dfd2c4]">
         {chartButtons.map((btn) => {
           const compat = compatibilities.find((c) => c.type === btn.type);
           const isCompatible = compat ? compat.isCompatible : true;
@@ -167,10 +167,10 @@ export const Toolbar: React.FC<ToolbarProps> = ({ onOpenProfiler, svgRef }) => {
               }
               className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md transition-all ${
                 isSelected
-                  ? 'bg-cinnamon-700 text-white shadow-sm font-semibold'
+                  ? 'bg-[#b44b10] text-white shadow-xs font-semibold'
                   : isCompatible
-                  ? 'text-stone-700 hover:text-stone-900 hover:bg-white/80'
-                  : 'text-stone-400 opacity-40 cursor-not-allowed'
+                  ? 'text-[#5e4634] hover:text-[#2c1a0e] hover:bg-white/70'
+                  : 'text-[#8c7664] opacity-40 cursor-not-allowed'
               }`}
             >
               {btn.icon}
@@ -181,11 +181,11 @@ export const Toolbar: React.FC<ToolbarProps> = ({ onOpenProfiler, svgRef }) => {
       </div>
 
       {/* Tool Selector (Select, Move, Curvar, Anotar) */}
-      <div className="flex items-center bg-stone-100 p-0.5 rounded-lg border border-stone-200">
+      <div className="flex items-center bg-[#ede5db] p-0.5 rounded-lg border border-[#dfd2c4]">
         <button
           onClick={() => setActiveTool('select')}
           className={`p-1.5 rounded-md transition-colors ${
-            activeTool === 'select' ? 'bg-white text-cinnamon-700 shadow-sm border border-stone-200' : 'text-stone-500 hover:text-stone-800'
+            activeTool === 'select' ? 'bg-white text-[#b44b10] shadow-xs' : 'text-[#8c7664] hover:text-[#2c1a0e]'
           }`}
           title="Seleccionar elemento [Tecla V]"
         >
@@ -194,7 +194,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({ onOpenProfiler, svgRef }) => {
         <button
           onClick={() => setActiveTool('move')}
           className={`p-1.5 rounded-md transition-colors ${
-            activeTool === 'move' ? 'bg-white text-cinnamon-700 shadow-sm border border-stone-200' : 'text-stone-500 hover:text-stone-800'
+            activeTool === 'move' ? 'bg-white text-[#b44b10] shadow-xs' : 'text-[#8c7664] hover:text-[#2c1a0e]'
           }`}
           title="Arrastrar y mover libremente [Tecla M]"
         >
@@ -203,7 +203,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({ onOpenProfiler, svgRef }) => {
         <button
           onClick={() => setActiveTool('bezier')}
           className={`p-1.5 rounded-md transition-colors ${
-            activeTool === 'bezier' ? 'bg-white text-cinnamon-700 shadow-sm border border-stone-200' : 'text-stone-500 hover:text-stone-800'
+            activeTool === 'bezier' ? 'bg-white text-[#b44b10] shadow-xs' : 'text-[#8c7664] hover:text-[#2c1a0e]'
           }`}
           title="Deformar y curvar con manetas artísticas [Tecla B]"
         >
@@ -212,7 +212,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({ onOpenProfiler, svgRef }) => {
         <button
           onClick={() => setActiveTool('annotate')}
           className={`p-1.5 rounded-md transition-colors ${
-            activeTool === 'annotate' ? 'bg-white text-cinnamon-700 shadow-sm border border-stone-200' : 'text-stone-500 hover:text-stone-800'
+            activeTool === 'annotate' ? 'bg-white text-[#b44b10] shadow-xs' : 'text-[#8c7664] hover:text-[#2c1a0e]'
           }`}
           title="Crear notas explicativas atadas al punto [Tecla A]"
         >
@@ -222,15 +222,15 @@ export const Toolbar: React.FC<ToolbarProps> = ({ onOpenProfiler, svgRef }) => {
 
       {/* Cinnamon Editorial Palette & Clean Export */}
       <div className="flex items-center gap-2">
-        <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-stone-50 border border-mac-border text-stone-800">
-          <Palette className="w-3.5 h-3.5 text-cinnamon-600" />
+        <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-white border border-[#e6dcce] text-[#2c1a0e] shadow-xs">
+          <Palette className="w-3.5 h-3.5 text-[#b44b10]" />
           <select
             value={currentPalette.id}
             onChange={(e) => handlePaletteChange(e.target.value)}
-            className="bg-transparent text-stone-800 text-xs focus:outline-none cursor-pointer font-medium"
+            className="bg-transparent text-[#2c1a0e] text-xs focus:outline-none cursor-pointer font-medium"
           >
             {EDITORIAL_PALETTES.map((p) => (
-              <option key={p.id} value={p.id} className="bg-white text-stone-800">
+              <option key={p.id} value={p.id} className="bg-white text-[#2c1a0e]">
                 {p.name}
               </option>
             ))}
@@ -240,7 +240,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({ onOpenProfiler, svgRef }) => {
         {Object.keys(mutations).length > 0 && (
           <button
             onClick={resetAllMutations}
-            className="p-1.5 rounded-md text-stone-400 hover:text-amber-600 hover:bg-stone-100 transition-colors"
+            className="p-1.5 rounded-md text-[#8c7664] hover:text-[#b44b10] hover:bg-white transition-colors"
             title="Devolver todos los puntos modificados a su coordenada matemática exacta"
           >
             <RotateCcw className="w-3.5 h-3.5" />
@@ -249,7 +249,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({ onOpenProfiler, svgRef }) => {
 
         <button
           onClick={handleExport}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-cinnamon-700 hover:bg-cinnamon-600 active:bg-cinnamon-800 text-white font-medium shadow-sm transition-colors"
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-[#b44b10] hover:bg-[#9a3412] active:bg-[#7c2d12] text-white font-medium shadow-xs transition-colors"
           title="Descargar ilustración vectorial pura en formato SVG"
         >
           <Download className="w-3.5 h-3.5" />

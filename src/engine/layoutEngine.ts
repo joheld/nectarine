@@ -67,6 +67,7 @@ export function computeLayout(
         const yVal = yKey ? Number(r[yKey]) || 0 : 1;
         const xCenter = (xScale(cat) || padding.left) + xScale.bandwidth() / 2;
         const yPos = yScale(yVal);
+        const cleanLabel = r.pais || r.producto || r.name || r.title || r.label || `${cat} (#${i})`;
         return {
           id: `node-${i}`,
           rawIndex: i,
@@ -74,7 +75,7 @@ export function computeLayout(
           mathY: yPos,
           mathR: Math.max(4, Math.min(xScale.bandwidth() / 4, 12)),
           category: cat,
-          label: r.label ? String(r.label) : `${cat} (#${i})`,
+          label: String(cleanLabel),
           valueX: i,
           valueY: yVal,
           metadata: r,
@@ -112,6 +113,7 @@ export function computeLayout(
         const yVal = yKey ? Number(r[yKey]) || 0 : i;
         const sVal = sizeKey ? Number(r[sizeKey]) || 1 : 1;
         const cat = String(r[catKey] ?? 'General');
+        const cleanLabel = r.pais || r.producto || r.name || r.title || r.label || `${cat} (#${i})`;
 
         return {
           id: `node-${i}`,
@@ -120,7 +122,7 @@ export function computeLayout(
           mathY: yScale(yVal),
           mathR: sizeScale(sVal),
           category: cat,
-          label: r.label ? String(r.label) : `${cat} [${xVal.toFixed(1)}, ${yVal.toFixed(1)}]`,
+          label: String(cleanLabel),
           valueX: xVal,
           valueY: yVal,
           valueSize: sVal,

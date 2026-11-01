@@ -123,3 +123,31 @@ Se concibe **Vectura** como un atelier de diseño y analítica nativo para macOS
      - Controles y tarjetas: Blanco cálido `#ffffff` con bordes suaves `#e8ded4`.
      - Acentos interactivos: Ámbar canela tostada `#c2410c` y `#ea580c`.
    - Modales (Guardarraíl, Filtros, Inspector) rediseñados con fondos translúcidos amables y tarjetas claras.
+
+
+---
+
+## Entrada 006 — Auditoría Estética Radical & Des-Frankensteinización Visual
+- **Fecha y Hora**: 2026-11-01
+- **Fase**: Pulido Estético & Arquitectura Visual
+- **Arquitecto**: Antigravity Principal Software Architect
+
+### Diagnóstico Crítico (En respuesta a la captura del usuario)
+El usuario presentó una captura de pantalla demostrando un fallo estético innegable:
+1. **Contraste esquizofrénico (Frankenstein visual)**: La barra superior y la barra de herramientas se renderizaban con fondo negro carbón (`#09090b`), chocando agresivamente con un lienzo blanco y tarjetas de capas blancas con bordes duros.
+2. **Colapso de la jerarquía semántica**: 30 carpetas de capas para 30 registros, porque el selector elegía la columna de clave primaria (`pais`) en vez de la dimensión categórica real (`region`).
+3. **Volcado de datos crudos (Anti-diseño)**: Las tarjetas mostraban cadenas sin formato como `Suiza [87500.0, 83.8] 83.8`, destruyendo la sensación de un producto artesanal refinado.
+
+### Resoluciones Aplicadas
+1. **Unificación Cromática 100% Cálida & Libre de Negro**:
+   - `TitleBar.tsx`: Fondo crema marfil `#f8f5ee`, borde `#e6dcce`, insignia de DuckDB en menta suave y tipografía en chocolate tostado `#2c1a0e`.
+   - `Toolbar.tsx`: Fondo crema marfil, selectores segmentados en `#ede5db`, botón de exportación en acento canela `#b44b10`. Cero fondos negros.
+   - `Canvas.tsx`: Fondo de papel de archivo `#fffdf9` con retícula de puntos sutiles `#e5dacd` y ejes en piedra cálida `#78716c`.
+2. **Heurística de Categorización Inteligente**:
+   - `profiler.ts` ahora prioriza columnas de baja a moderada cardinalidad (entre 2 y el 70% del total de filas). En el dataset de prueba, agrupa por `region` produciendo exactamente 5 categorías limpias y coherentes ("Europa Occidental", "Asia Oriental", etc.) en lugar de 30.
+3. **Formateo Humano de Nombres**:
+   - Se eliminaron todos los arreglos crudos y corchetes `[...]`. Las etiquetas muestran limpiamente el nombre de la entidad (`Suiza`, `Noruega`) y sus subítems están colapsados por defecto para una vista zen y organizada.
+4. **Verificación Zero-Defect**:
+   - 15/15 tests automatizados pasando en Bun.
+   - `tsc -b` con 0 errores y compilación limpia con Vite.
+   - `cargo check` en `src-tauri` finalizado con éxito.

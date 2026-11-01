@@ -40,6 +40,7 @@ gitGraph
 | **CP-11** | Lanzadores de Escritorio macOS | Accesos directos creados: `Cinnamon.app` y `Cinnamon.command` en el Escritorio con resolución portable de paths y socket liveness. | **Completado** |
 | **CP-12** | Rediseño Ergonómico Accesible | Barra de inicio rápido con carga de datos en 1 clic y panel inspector lateral amigable para editar puntos. | **Completado** |
 | **CP-13** | Rebranding a Cinnamon & Logo Botánico | Renombrado oficial a **Cinnamon**, generación del icono de ramitas de canela (`icon.icns`), y purga total de zonas oscuras a favor de tonos crema, vainilla y ámbar canela. | **Completado** |
+| **CP-14** | Auditoría Estética Radical & Limpieza de Capas | Eliminación definitiva del contraste Frankenstein (barras oscuras sobre lienzo blanco). Reestructuración semántica de capas (agrupación por región en 5 carpetas limpias en vez de 30 tarjetas individuales) y eliminación de cadenas crudas con corchetes. | **Completado** |
 
 ---
 
