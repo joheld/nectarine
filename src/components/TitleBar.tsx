@@ -1,8 +1,8 @@
 import React from 'react';
-import { Database, ShieldCheck, Activity } from 'lucide-react';
+import { ShieldCheck, Activity } from 'lucide-react';
 import { useDataStore } from '../store/dataStore';
 import { useMutationStore } from '../store/mutationStore';
-import { CinnamonLogo } from './CinnamonLogo';
+import { NectarineLogo } from './NectarineLogo';
 
 export const TitleBar: React.FC = () => {
   const { datasetName, baseNodes } = useDataStore();
@@ -10,38 +10,32 @@ export const TitleBar: React.FC = () => {
   const pinnedCount = Object.values(mutations).filter((m) => m.isPinned).length;
 
   return (
-    <header className="h-[38px] min-h-[38px] bg-[#f8f5ee] border-b border-[#e6dcce] flex items-center justify-between px-3 mac-titlebar select-none z-50">
+    <header className="h-10 min-h-[40px] bg-[#f8f5ee] border-b border-[#e6dcce] flex items-center justify-between px-4 mac-titlebar select-none z-50">
       {/* Left traffic lights placeholder spacing */}
-      <div className="flex items-center gap-2.5 w-52 no-drag">
-        <div className="w-14" /> {/* Space for macOS native stoplights */}
-        <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-[#ecfdf5] border border-[#a7f3d0] text-[11px] font-mono text-[#065f46]">
-          <Database className="w-3 h-3 text-[#059669]" />
-          <span>DuckDB Local</span>
-        </div>
+      <div className="flex items-center gap-3 w-48 no-drag">
+        <div className="w-16" /> {/* Reserved space for macOS native stoplights */}
       </div>
 
-      {/* Center Document Title with Cinnamon Branch Logo */}
-      <div className="flex items-center gap-2 text-xs font-medium">
-        <CinnamonLogo size={20} className="w-5 h-5 shrink-0" />
-        <span className="font-bold text-[#2c1a0e] tracking-tight text-sm">Cinnamon</span>
-        <span className="text-[#a89988]">—</span>
-        <span className="text-[#b44b10] font-medium text-[11px]">Atelier Gráfico & Analítico</span>
-        <span className="text-[#a89988] hidden sm:inline">|</span>
-        <span className="text-[#5e4634] font-mono text-[11px] bg-[#ede5db] px-2 py-0.5 rounded border border-[#dfd2c4]">
+      {/* Center Clean App & Dataset Title with Nectarine Logo */}
+      <div className="flex items-center gap-2.5 text-xs font-medium">
+        <NectarineLogo size={22} className="w-[22px] h-[22px] shrink-0" />
+        <span className="font-bold text-[#2c1a0e] tracking-tight text-sm">Nectarine</span>
+        <span className="text-[#c4b5a5]">/</span>
+        <span className="text-[#5e4634] font-medium text-[11px] bg-[#f0e7dc] px-2.5 py-0.5 rounded-md border border-[#e2d5c5]">
           {datasetName}
         </span>
       </div>
 
       {/* Right Telemetry */}
-      <div className="flex items-center gap-2 no-drag text-[11px] font-mono">
-        <div className="flex items-center gap-1.5 px-2 py-0.5 rounded bg-[#ede5db] border border-[#dfd2c4] text-[#5e4634]">
-          <Activity className="w-3 h-3 text-[#b44b10]" />
-          <span>{baseNodes.length} puntos</span>
+      <div className="flex items-center gap-2.5 no-drag text-[11px]">
+        <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-[#f0e7dc] border border-[#e2d5c5] text-[#5e4634] font-mono">
+          <Activity className="w-3.5 h-3.5 text-[#e11d48]" />
+          <span>{baseNodes.length} nodos</span>
         </div>
 
         {pinnedCount > 0 && (
-          <div className="flex items-center gap-1.5 px-2 py-0.5 rounded bg-[#fffbeb] border border-[#fde68a] text-[#92400e]">
-            <ShieldCheck className="w-3 h-3 text-[#d97706]" />
+          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-[#fff7ed] border border-[#fed7aa] text-[#9a3412] font-mono">
+            <ShieldCheck className="w-3.5 h-3.5 text-[#ea580c]" />
             <span>{pinnedCount} fijos</span>
           </div>
         )}

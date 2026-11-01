@@ -107,28 +107,28 @@ export const Toolbar: React.FC<ToolbarProps> = ({ onOpenProfiler, svgRef }) => {
   const handleExport = async () => {
     if (!svgRef.current) return;
     const cleanSvg = exportService.cleanAndPurgeSVG(svgRef.current);
-    const result = await exportService.exportSVG(cleanSvg, 'cinnamon_ilustracion.svg');
+    const result = await exportService.exportSVG(cleanSvg, 'nectarine_ilustracion.svg');
     if (result.success) {
       alert(`¡Ilustración vectorial exportada con éxito!\nGuardada en: ${result.filePath}`);
     }
   };
 
   const chartButtons: { type: ChartType; label: string; icon: React.ReactNode }[] = [
-    { type: 'scatter', label: 'Dispersión', icon: <ScatterChart className="w-3.5 h-3.5" /> },
-    { type: 'bubble', label: 'Burbujas', icon: <CircleDot className="w-3.5 h-3.5" /> },
-    { type: 'chord', label: 'Cuerdas', icon: <Disc className="w-3.5 h-3.5" /> },
-    { type: 'spiral', label: 'Espiral', icon: <Orbit className="w-3.5 h-3.5" /> },
-    { type: 'celestial', label: 'Celestial', icon: <Sparkles className="w-3.5 h-3.5" /> },
-    { type: 'bar', label: 'Barras', icon: <BarChart3 className="w-3.5 h-3.5" /> },
-    { type: 'voronoi', label: 'Mosaico', icon: <Share2 className="w-3.5 h-3.5" /> },
-    { type: 'network', label: 'Red', icon: <Network className="w-3.5 h-3.5" /> },
-    { type: 'stream', label: 'Ondas', icon: <Waves className="w-3.5 h-3.5" /> },
+    { type: 'scatter', label: 'Dispersión', icon: <ScatterChart className="w-4 h-4" /> },
+    { type: 'bubble', label: 'Burbujas', icon: <CircleDot className="w-4 h-4" /> },
+    { type: 'chord', label: 'Cuerdas', icon: <Disc className="w-4 h-4" /> },
+    { type: 'spiral', label: 'Espiral', icon: <Orbit className="w-4 h-4" /> },
+    { type: 'celestial', label: 'Celestial', icon: <Sparkles className="w-4 h-4" /> },
+    { type: 'bar', label: 'Barras', icon: <BarChart3 className="w-4 h-4" /> },
+    { type: 'voronoi', label: 'Mosaico', icon: <Share2 className="w-4 h-4" /> },
+    { type: 'network', label: 'Red', icon: <Network className="w-4 h-4" /> },
+    { type: 'stream', label: 'Ondas', icon: <Waves className="w-4 h-4" /> },
   ];
 
   return (
-    <div className="h-11 bg-[#f8f5ee] border-b border-[#e6dcce] px-3 flex items-center justify-between text-xs select-none z-40">
-      {/* File & Profiling Actions */}
-      <div className="flex items-center gap-2">
+    <div className="h-12 bg-[#f8f5ee] border-b border-[#e6dcce] px-4 flex items-center justify-between text-xs select-none z-40 gap-3">
+      {/* 1. File Actions */}
+      <div className="flex items-center gap-2 shrink-0">
         <input
           ref={fileInputRef}
           type="file"
@@ -138,25 +138,27 @@ export const Toolbar: React.FC<ToolbarProps> = ({ onOpenProfiler, svgRef }) => {
         />
         <button
           onClick={handleNativeImport}
-          className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md bg-white hover:bg-[#faf7f2] active:bg-[#ede5db] text-[#2c1a0e] border border-[#e6dcce] transition-colors font-medium shadow-xs"
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white hover:bg-[#faf7f2] active:bg-[#ede5db] text-[#2c1a0e] border border-[#e6dcce] transition-colors font-medium shadow-2xs"
           title="Importar un archivo CSV, JSON o Parquet desde tu equipo"
         >
-          <Upload className="w-3.5 h-3.5 text-[#b44b10]" />
+          <Upload className="w-3.5 h-3.5 text-[#e11d48]" />
           <span>Subir Archivo</span>
         </button>
 
         <button
           onClick={onOpenProfiler}
-          className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md bg-white hover:bg-[#faf7f2] text-[#2c1a0e] border border-[#e6dcce] transition-colors font-medium shadow-xs"
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white hover:bg-[#faf7f2] text-[#2c1a0e] border border-[#e6dcce] transition-colors font-medium shadow-2xs"
           title="Ver columnas, valores y filtrar datos sin fórmulas"
         >
-          <SlidersHorizontal className="w-3.5 h-3.5 text-[#d97706]" />
-          <span>Filtros y Columnas</span>
+          <SlidersHorizontal className="w-3.5 h-3.5 text-[#f97316]" />
+          <span>Filtros</span>
         </button>
       </div>
 
-      {/* Chart Types Segmented Control */}
-      <div className="flex items-center bg-[#ede5db] p-0.5 rounded-lg border border-[#dfd2c4]">
+      <div className="h-5 w-px bg-[#e6dcce] shrink-0" />
+
+      {/* 2. Chart Types Segmented Control (Airy & Spacious: active shows label, others icon-only) */}
+      <div className="flex items-center bg-[#ede5db] p-1 rounded-xl border border-[#dfd2c4] gap-0.5 shrink-0">
         {chartButtons.map((btn) => {
           const compat = compatibilities.find((c) => c.type === btn.type);
           const isCompatible = compat ? compat.isCompatible : true;
@@ -172,78 +174,82 @@ export const Toolbar: React.FC<ToolbarProps> = ({ onOpenProfiler, svgRef }) => {
                   ? `${btn.label}: Gráfico compatible con los datos actuales`
                   : `${btn.label}: Incompatible (${compat?.reason})`
               }
-              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md transition-all ${
+              className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg transition-all ${
                 isSelected
-                  ? 'bg-[#b44b10] text-white shadow-xs font-semibold'
+                  ? 'bg-gradient-to-r from-[#e11d48] to-[#f97316] text-white shadow-xs font-semibold'
                   : isCompatible
-                  ? 'text-[#5e4634] hover:text-[#2c1a0e] hover:bg-white/70'
-                  : 'text-[#8c7664] opacity-40 cursor-not-allowed'
+                  ? 'text-[#5e4634] hover:text-[#2c1a0e] hover:bg-white/80'
+                  : 'text-[#8c7664] opacity-35 cursor-not-allowed'
               }`}
             >
               {btn.icon}
-              <span className="text-[11px]">{btn.label}</span>
+              {isSelected && <span className="text-[11px] whitespace-nowrap">{btn.label}</span>}
             </button>
           );
         })}
       </div>
 
-      {/* Tool Selector (Select, Move, Curvar, Anotar) */}
-      <div className="flex items-center bg-[#ede5db] p-0.5 rounded-lg border border-[#dfd2c4]">
+      <div className="h-5 w-px bg-[#e6dcce] shrink-0" />
+
+      {/* 3. Canvas Tools (Select, Move, Curvar, Anotar) */}
+      <div className="flex items-center bg-[#ede5db] p-1 rounded-xl border border-[#dfd2c4] gap-0.5 shrink-0">
         <button
           onClick={() => setActiveTool('select')}
-          className={`p-1.5 rounded-md transition-colors ${
-            activeTool === 'select' ? 'bg-white text-[#b44b10] shadow-xs' : 'text-[#8c7664] hover:text-[#2c1a0e]'
+          className={`p-1.5 rounded-lg transition-colors ${
+            activeTool === 'select' ? 'bg-white text-[#e11d48] shadow-xs' : 'text-[#8c7664] hover:text-[#2c1a0e]'
           }`}
           title="Seleccionar elemento [Tecla V]"
         >
-          <Pointer className="w-3.5 h-3.5" />
+          <Pointer className="w-4 h-4" />
         </button>
         <button
           onClick={() => setActiveTool('move')}
-          className={`p-1.5 rounded-md transition-colors ${
-            activeTool === 'move' ? 'bg-white text-[#b44b10] shadow-xs' : 'text-[#8c7664] hover:text-[#2c1a0e]'
+          className={`p-1.5 rounded-lg transition-colors ${
+            activeTool === 'move' ? 'bg-white text-[#e11d48] shadow-xs' : 'text-[#8c7664] hover:text-[#2c1a0e]'
           }`}
           title="Arrastrar y mover libremente [Tecla M]"
         >
-          <Move className="w-3.5 h-3.5" />
+          <Move className="w-4 h-4" />
         </button>
         <button
           onClick={() => setActiveTool('bezier')}
-          className={`p-1.5 rounded-md transition-colors ${
-            activeTool === 'bezier' ? 'bg-white text-[#b44b10] shadow-xs' : 'text-[#8c7664] hover:text-[#2c1a0e]'
+          className={`p-1.5 rounded-lg transition-colors ${
+            activeTool === 'bezier' ? 'bg-white text-[#e11d48] shadow-xs' : 'text-[#8c7664] hover:text-[#2c1a0e]'
           }`}
           title="Deformar y curvar con manetas artísticas [Tecla B]"
         >
-          <Spline className="w-3.5 h-3.5" />
+          <Spline className="w-4 h-4" />
         </button>
         <button
           onClick={() => setActiveTool('annotate')}
-          className={`p-1.5 rounded-md transition-colors ${
-            activeTool === 'annotate' ? 'bg-white text-[#b44b10] shadow-xs' : 'text-[#8c7664] hover:text-[#2c1a0e]'
+          className={`p-1.5 rounded-lg transition-colors ${
+            activeTool === 'annotate' ? 'bg-white text-[#e11d48] shadow-xs' : 'text-[#8c7664] hover:text-[#2c1a0e]'
           }`}
           title="Crear notas explicativas atadas al punto [Tecla A]"
         >
-          <MessageSquarePlus className="w-3.5 h-3.5" />
+          <MessageSquarePlus className="w-4 h-4" />
         </button>
       </div>
 
-      {/* Cinnamon Editorial Palette, Glow & Clean Export */}
-      <div className="flex items-center gap-2">
+      <div className="h-5 w-px bg-[#e6dcce] shrink-0" />
+
+      {/* 4. Style, Glow & Clean Export */}
+      <div className="flex items-center gap-2.5 shrink-0">
         <button
           onClick={toggleGlow}
-          className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md border transition-all ${
+          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border transition-all ${
             isGlowEnabled
-              ? 'bg-[#fffbeb] border-[#fde68a] text-[#b45309] font-medium shadow-xs'
+              ? 'bg-[#fff7ed] border-[#fed7aa] text-[#c2410c] font-medium shadow-xs'
               : 'bg-white border-[#e6dcce] text-[#8c7664] hover:text-[#2c1a0e]'
           }`}
           title="Alternar resplandor estelar y halos de luz (Glow SVG)"
         >
-          <SunMedium className={`w-3.5 h-3.5 ${isGlowEnabled ? 'text-[#d97706]' : 'text-[#8c7664]'}`} />
-          <span className="text-[11px] hidden xl:inline">Luz & Glow</span>
+          <SunMedium className={`w-3.5 h-3.5 ${isGlowEnabled ? 'text-[#ea580c]' : 'text-[#8c7664]'}`} />
+          <span className="text-[11px] hidden 2xl:inline">Luz & Glow</span>
         </button>
 
-        <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-white border border-[#e6dcce] text-[#2c1a0e] shadow-xs">
-          <Palette className="w-3.5 h-3.5 text-[#b44b10]" />
+        <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-white border border-[#e6dcce] text-[#2c1a0e] shadow-2xs">
+          <Palette className="w-3.5 h-3.5 text-[#e11d48]" />
           <select
             value={currentPalette.id}
             onChange={(e) => handlePaletteChange(e.target.value)}
@@ -260,16 +266,16 @@ export const Toolbar: React.FC<ToolbarProps> = ({ onOpenProfiler, svgRef }) => {
         {Object.keys(mutations).length > 0 && (
           <button
             onClick={resetAllMutations}
-            className="p-1.5 rounded-md text-[#8c7664] hover:text-[#b44b10] hover:bg-white transition-colors"
+            className="p-1.5 rounded-lg text-[#8c7664] hover:text-[#e11d48] hover:bg-white transition-colors border border-transparent hover:border-[#e6dcce]"
             title="Devolver todos los puntos modificados a su coordenada matemática exacta"
           >
-            <RotateCcw className="w-3.5 h-3.5" />
+            <RotateCcw className="w-4 h-4" />
           </button>
         )}
 
         <button
           onClick={handleExport}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-[#b44b10] hover:bg-[#9a3412] active:bg-[#7c2d12] text-white font-medium shadow-xs transition-colors"
+          className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-gradient-to-r from-[#e11d48] to-[#f97316] hover:opacity-95 text-white font-medium shadow-xs transition-opacity"
           title="Descargar ilustración vectorial pura en formato SVG"
         >
           <Download className="w-3.5 h-3.5" />

@@ -52,22 +52,22 @@ export const SemanticLayersPanel: React.FC = () => {
   };
 
   return (
-    <aside className="w-64 bg-[#f8f5ee] border-r border-[#e6dcce] flex flex-col h-full select-none text-xs">
+    <aside className="w-72 bg-[#f8f5ee] border-r border-[#e6dcce] flex flex-col h-full select-none text-xs">
       {/* Header */}
-      <div className="h-10 px-3 border-b border-[#e6dcce] flex items-center justify-between bg-[#f3ece0]">
+      <div className="h-11 px-4 border-b border-[#e6dcce] flex items-center justify-between bg-[#f3ece0]">
         <div className="flex items-center gap-2">
-          <Layers className="w-3.5 h-3.5 text-[#b44b10]" />
+          <Layers className="w-4 h-4 text-[#e11d48]" />
           <span className="font-semibold text-[#2c1a0e] text-[11px] uppercase tracking-wider">
             Grupos
           </span>
         </div>
-        <span className="text-[10px] font-mono text-[#8c7664] bg-[#ebd9c8] px-1.5 py-0.5 rounded">
+        <span className="text-[10px] font-mono text-[#8c7664] bg-[#ebd9c8] px-2 py-0.5 rounded-md">
           {groups.length} categorías
         </span>
       </div>
 
       {/* Categories Tree */}
-      <div className="flex-1 overflow-y-auto p-2 space-y-1">
+      <div className="flex-1 overflow-y-auto p-2.5 space-y-1.5">
         {groups.map(({ category, nodes, count, defaultColor }) => {
           const override = layerOverrides[category] || {};
           const isVisible = override.isVisible !== false;
@@ -79,14 +79,14 @@ export const SemanticLayersPanel: React.FC = () => {
           return (
             <div
               key={category}
-              className={`rounded-md border transition-all ${
+              className={`rounded-lg border transition-all ${
                 isGroupSelected
-                  ? 'bg-[#fffae8] border-[#b44b10] shadow-sm'
-                  : 'bg-white border-[#ebd9c8] hover:border-[#b44b10]/40'
+                  ? 'bg-[#fff5f5] border-[#f43f5e] shadow-xs'
+                  : 'bg-white border-[#ebd9c8] hover:border-[#f43f5e]/50'
               }`}
             >
               {/* Row */}
-              <div className="flex items-center justify-between px-2.5 py-1.5">
+              <div className="flex items-center justify-between px-3 py-2">
                 <div
                   className="flex items-center gap-1.5 flex-1 min-w-0 cursor-pointer"
                   onClick={() => handleSelectGroup(nodes)}

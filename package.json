@@ -1,8 +1,8 @@
 {
-  "name": "cinnamon",
+  "name": "nectarine",
   "private": true,
   "version": "0.1.0",
-  "description": "Cinnamon — macOS Local Data & Vector Art Atelier",
+  "description": "Nectarine — macOS Local Data & Vector Art Studio",
   "type": "module",
   "scripts": {
     "dev": "vite",

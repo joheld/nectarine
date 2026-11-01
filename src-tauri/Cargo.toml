@@ -1,12 +1,12 @@
 [package]
-name = "cinnamon"
+name = "nectarine"
 version = "0.1.0"
-description = "Cinnamon — macOS Local Data & Vector Art Atelier"
+description = "Nectarine — macOS Local Data & Vector Art Studio"
 authors = ["Antigravity Architecture"]
 edition = "2021"
 
 [lib]
-name = "cinnamon_lib"
+name = "nectarine_lib"
 crate-type = ["staticlib", "cdylib", "rlib"]
 
 [build-dependencies]

@@ -208,3 +208,37 @@ El usuario solicitó capacitar a **Cinnamon** para crear proyectos de la complej
    - 19/19 tests automatizados pasando en Bun (incluyendo validación matemática de cuerdas, espirales, órbitas y preservación en `exportService`).
    - `tsc -b` con 0 errores y compilación de producción con Vite superada.
    - `cargo check` en Tauri superado y socket escuchando en `http://127.0.0.1:5220`.
+
+
+---
+
+## Entrada 009 — Rebranding a Nectarine, Desahogo Visual & Ergonomía Respirable
+- **Fecha y Hora**: 2026-11-01
+- **Fase**: Identidad de Producto & Ergonomía Espaciosa
+- **Arquitecto**: Antigravity Principal Software Architect
+
+### Diagnóstico de Brechas (En respuesta al feedback del usuario)
+1. **Identidad & Branding**: El usuario solicitó el nombre **Nectarine** y una iconografía sumamente cuidada de una nectarina (piel lisa sin vellosidad, degradado de rubí a melocotón dorado, tallo y hoja verde).
+2. **Ruido en la Barra de Título**: Se detectó ruido visual redundante ("DuckDB Local" y "Atelier Gráfico & Analítico") que sobrecargaba la percepción.
+3. **Agobio Visual en la Barra de Herramientas**: La acumulación de 19 botones y etiquetas de texto en una sola barra horizontal (`h-11`) provocaba agobio visual y falta de aire.
+4. **Nombre de la Paleta**: El nombre "Visual Cinnamon & Cosmos" fue rechazado por el usuario.
+
+### Resoluciones Aplicadas
+1. **Iconografía Esculpida de Nectarine**:
+   - Se diseñó un icono 3D de 1024x1024 de una nectarina jugosa con piel lisa brillante, hendidura orgánica, degradado de rubí a néctar dorado, tallo leñoso y hoja verde sobre squircle de porcelana marfil con bisel subpíxel.
+   - Compilación nativa con `/usr/bin/iconutil` generando `icon.icns` para el bundle de escritorio [Nectarine.app](file:///Users/joe/Desktop/Nectarine.app) y el script ejecutable [Nectarine.command](file:///Users/joe/Desktop/Nectarine.command).
+   - Glifo vectorial puro [NectarineLogo.tsx](file:///Users/joe/vectura/src/components/NectarineLogo.tsx) y [nectarine-logo.svg](file:///Users/joe/vectura/public/nectarine-logo.svg).
+2. **Purga de Ruido en TitleBar**:
+   - Se eliminaron por completo las insignias "DuckDB Local" y "Atelier Gráfico & Analítico".
+   - La barra de título ahora es sobria y refinada: proxy icon de la nectarina, nombre "Nectarine", separador sutil y el dataset activo con telemetría de nodos en la esquina derecha.
+3. **Desahogo Espacial & Ergonomía Respirable**:
+   - **Barra de Herramientas (`Toolbar.tsx`)**: Altura aumentada a `h-12` (48px). En el selector de gráficos, ahora se muestran iconos limpios y **únicamente el gráfico seleccionado muestra su etiqueta de texto**, reduciendo el ancho del bloque en más del 50%.
+   - Inclusión de divisores verticales sutiles (`h-5 w-px bg-[#e6dcce]`) que separan claramente las acciones de archivo, tipos de gráficos, herramientas de canvas y controles de estilo/exportación.
+   - **Panel de Capas (`SemanticLayersPanel.tsx`)**: Ampliado a `w-72` con tarjetas redondeadas (`rounded-lg`), mayor espaciado interno y padding generoso.
+   - **Barra de Inicio Rápido (`QuickStartBar.tsx`)**: Degradado suave de néctar rosado y ámbar con espaciado aireado.
+4. **Renombrado de Paleta**:
+   - Sustituida por **"Nectarine & Melocotón"** en `colorService.ts`, con colores frescos: Rubí Nectarina (`#e11d48`), Melocotón Cálido (`#f97316`), Néctar Dorado (`#f59e0b`), Azul Zafiro (`#1e3a8a`), Menta Fresca (`#0d9488`), Amatista (`#7c3aed`), Grosella (`#be123c`) y Hoja Verde (`#22c55e`).
+5. **Verificación Zero-Defect**:
+   - 19/19 tests automatizados pasando en Bun.
+   - `tsc -b` con 0 errores y compilación limpia con Vite.
+   - `cargo check` en `src-tauri` para el nuevo crate `nectarine v0.1.0` superado con éxito.

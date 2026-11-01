@@ -20,10 +20,10 @@ export const QuickStartBar: React.FC = () => {
   };
 
   return (
-    <div className="bg-gradient-to-r from-amber-50/90 via-orange-50/80 to-amber-50/90 border-b border-amber-200/70 px-4 py-2 flex items-center justify-between text-xs select-none backdrop-blur-sm z-30 transition-all">
-      <div className="flex items-center gap-3">
-        <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-amber-500/15 text-cinnamon-800 font-semibold">
-          <Sparkles className="w-3.5 h-3.5 text-cinnamon-700" />
+    <div className="bg-gradient-to-r from-rose-50/85 via-orange-50/75 to-amber-50/85 border-b border-[#ebd9c8] px-5 py-2.5 flex items-center justify-between text-xs select-none backdrop-blur-sm z-30 transition-all">
+      <div className="flex items-center gap-3.5">
+        <div className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-rose-500/10 text-rose-900 font-semibold">
+          <Sparkles className="w-3.5 h-3.5 text-[#e11d48]" />
           <span>Inicio Rápido</span>
         </div>
 
@@ -31,20 +31,20 @@ export const QuickStartBar: React.FC = () => {
           Prueba con datos listos para usar en un clic:
         </span>
 
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-2">
           <button
             onClick={handleLoadCountries}
-            className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-white hover:bg-amber-50 text-cinnamon-900 border border-amber-200 font-medium shadow-sm transition-colors text-[11px]"
+            className="flex items-center gap-1.5 px-3 py-1 rounded-lg bg-white hover:bg-rose-50/70 text-[#2c1a0e] border border-[#ebd9c8] font-medium shadow-2xs transition-colors text-[11px]"
           >
-            <Globe2 className="w-3 h-3 text-cinnamon-700" />
+            <Globe2 className="w-3.5 h-3.5 text-[#e11d48]" />
             <span>Países y Economía</span>
           </button>
 
           <button
             onClick={handleLoadSales}
-            className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-white hover:bg-orange-50 text-cinnamon-900 border border-amber-200 font-medium shadow-sm transition-colors text-[11px]"
+            className="flex items-center gap-1.5 px-3 py-1 rounded-lg bg-white hover:bg-orange-50/70 text-[#2c1a0e] border border-[#ebd9c8] font-medium shadow-2xs transition-colors text-[11px]"
           >
-            <ShoppingBag className="w-3 h-3 text-cinnamon-700" />
+            <ShoppingBag className="w-3.5 h-3.5 text-[#f97316]" />
             <span>Ventas de Tecnología</span>
           </button>
         </div>
@@ -52,7 +52,7 @@ export const QuickStartBar: React.FC = () => {
 
       <div className="flex items-center gap-3 text-stone-500 text-[11px]">
         <div className="hidden lg:flex items-center gap-1.5">
-          <Info className="w-3.5 h-3.5 text-cinnamon-700" />
+          <Info className="w-3.5 h-3.5 text-[#e11d48]" />
           <span>
             <strong>Pista:</strong> Arrastra cualquier punto en el lienzo para retocarlo artísticamente.
           </span>
@@ -60,7 +60,7 @@ export const QuickStartBar: React.FC = () => {
 
         <button
           onClick={() => setIsVisible(false)}
-          className="p-1 rounded hover:bg-amber-100 text-stone-400 hover:text-stone-700"
+          className="p-1 rounded-md hover:bg-rose-100/60 text-stone-400 hover:text-stone-700"
           title="Ocultar barra de inicio rápido"
         >
           <X className="w-3.5 h-3.5" />

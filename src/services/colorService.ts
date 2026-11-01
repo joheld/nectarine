@@ -10,19 +10,19 @@ export interface EditorialPalette {
 
 export const EDITORIAL_PALETTES: EditorialPalette[] = [
   {
-    id: 'visual-cinnamon',
-    name: 'Visual Cinnamon & Cosmos',
-    subtitle: 'Inspirada en las obras cósmicas y florales de Nadieh Bremer',
+    id: 'nectarine-sunset',
+    name: 'Nectarine & Melocotón',
+    subtitle: 'Tonos jugosos de néctar, coral, ámbar y amatista',
     blendMode: 'multiply',
     colors: [
-      '#c2410c', // Canela Ceilán
-      '#1e3a8a', // Azul Celestial Profundo
-      '#f59e0b', // Oro Estelar
-      '#f43f5e', // Rosa Sakura
-      '#0d9488', // Aurora Boreal
-      '#7c3aed', // Amatista Cósmico
-      '#0284c7', // Celeste Puro
-      '#b45309', // Caramelo Tostado
+      '#e11d48', // Rubí Nectarina
+      '#f97316', // Melocotón Cálido
+      '#f59e0b', // Néctar Dorado
+      '#1e3a8a', // Azul Zafiro
+      '#0d9488', // Menta Fresca
+      '#7c3aed', // Amatista
+      '#be123c', // Grosella
+      '#22c55e', // Hoja Verde
     ],
     backgroundLight: '#fffdf9',
     backgroundDark: '#0b0f19',
