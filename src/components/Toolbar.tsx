@@ -10,12 +10,6 @@ import {
   Waves,
   Palette,
   SlidersHorizontal,
-  Hand,
-  Pointer,
-  Move,
-  Spline,
-  MessageSquarePlus,
-  RotateCcw,
   Disc,
   Orbit,
   Sparkles,
@@ -53,7 +47,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({ onOpenProfiler, svgRef }) => {
     reconcileDataset,
     recalculateLayout,
   } = useDataStore();
-  const { activeTool, setActiveTool, resetAllMutations, mutations, isGlowEnabled, toggleGlow } = useMutationStore();
+  const { isGlowEnabled, toggleGlow } = useMutationStore();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [copyToast, setCopyToast] = useState(false);
   const [currentFinish, setCurrentFinish] = useState(textureService.getActiveFinish());
@@ -229,58 +223,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({ onOpenProfiler, svgRef }) => {
 
       <div className="h-5 w-px bg-[#e6dcce] shrink-0" />
 
-      {/* 3. Canvas Tools (Mano, Selección, Mover, Curvar Bézier, Anotar) */}
-      <div className="flex items-center bg-[#ede5db] p-1 rounded-xl border border-[#dfd2c4] gap-0.5 shrink-0">
-        <button
-          onClick={() => setActiveTool('pan')}
-          className={`p-1.5 rounded-lg transition-colors ${
-            activeTool === 'pan' ? 'bg-white text-[#e11d48] shadow-xs' : 'text-[#8c7664] hover:text-[#2c1a0e]'
-          }`}
-          title="Mano: Encuadrar y navegar por el lienzo sin modificar datos [Tecla H o Espacio]"
-        >
-          <Hand className="w-4 h-4" />
-        </button>
-        <button
-          onClick={() => setActiveTool('select')}
-          className={`p-1.5 rounded-lg transition-colors ${
-            activeTool === 'select' ? 'bg-white text-[#e11d48] shadow-xs' : 'text-[#8c7664] hover:text-[#2c1a0e]'
-          }`}
-          title="Seleccionar: Elige elementos individuales o arrastra sobre el fondo para selección múltiple con caja [Tecla V]"
-        >
-          <Pointer className="w-4 h-4" />
-        </button>
-        <button
-          onClick={() => setActiveTool('move')}
-          className={`p-1.5 rounded-lg transition-colors ${
-            activeTool === 'move' ? 'bg-white text-[#e11d48] shadow-xs' : 'text-[#8c7664] hover:text-[#2c1a0e]'
-          }`}
-          title="Mover y Reubicar: Haz clic y arrastra nodos por el lienzo con control 1:1 [Tecla M]"
-        >
-          <Move className="w-4 h-4" />
-        </button>
-        <button
-          onClick={() => setActiveTool('bezier')}
-          className={`p-1.5 rounded-lg transition-colors ${
-            activeTool === 'bezier' ? 'bg-white text-[#e11d48] shadow-xs' : 'text-[#8c7664] hover:text-[#2c1a0e]'
-          }`}
-          title="Curvar Bézier: Clic en cualquier dato para desplegar manetas de deformación orgánica [Tecla B]"
-        >
-          <Spline className="w-4 h-4" />
-        </button>
-        <button
-          onClick={() => setActiveTool('annotate')}
-          className={`p-1.5 rounded-lg transition-colors ${
-            activeTool === 'annotate' ? 'bg-white text-[#e11d48] shadow-xs' : 'text-[#8c7664] hover:text-[#2c1a0e]'
-          }`}
-          title="Anotar: Clic en cualquier dato para crear notas explicativas atadas al punto [Tecla A]"
-        >
-          <MessageSquarePlus className="w-4 h-4" />
-        </button>
-      </div>
-
-      <div className="h-5 w-px bg-[#e6dcce] shrink-0" />
-
-      {/* 4. Style, Glow & Clean Export */}
+      {/* 3. Style, Glow, Morphological Glyphs, Textures & Clean Export */}
       <div className="flex items-center gap-2.5 shrink-0">
         <button
           onClick={toggleGlow}
@@ -361,16 +304,6 @@ export const Toolbar: React.FC<ToolbarProps> = ({ onOpenProfiler, svgRef }) => {
           )}
           <span>{copyToast ? '¡Copiado!' : 'Copiar a Figma'}</span>
         </button>
-
-        {Object.keys(mutations).length > 0 && (
-          <button
-            onClick={resetAllMutations}
-            className="p-1.5 rounded-lg text-[#8c7664] hover:text-[#e11d48] hover:bg-white transition-colors border border-transparent hover:border-[#e6dcce]"
-            title="Devolver todos los puntos modificados a su coordenada matemática exacta"
-          >
-            <RotateCcw className="w-4 h-4" />
-          </button>
-        )}
 
         <button
           onClick={handleExport}

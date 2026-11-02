@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { TitleBar } from './components/TitleBar';
 import { Toolbar } from './components/Toolbar';
 import { SemanticLayersPanel } from './components/SemanticLayersPanel';
+import { VerticalToolbox } from './components/VerticalToolbox';
 import { Canvas } from './components/Canvas';
 import { NodeInspector } from './components/NodeInspector';
 import { DataProfilerModal } from './components/DataProfilerModal';
@@ -85,6 +86,7 @@ export const App: React.FC = () => {
         ) : (
           <>
             <SemanticLayersPanel />
+            <VerticalToolbox />
             <Canvas svgRef={svgRef} />
             <NodeInspector />
           </>

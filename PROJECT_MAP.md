@@ -28,6 +28,7 @@ gitGraph
     commit id: "feat-multi-column-filtering" tag: "v2.0.0"
     commit id: "fix-tools-separation-and-closed-bezier" tag: "v2.1.0"
     commit id: "feat-live-hot-reload-glyphs-textures-figma-clipboard" tag: "v3.0.0"
+    commit id: "feat-vertical-toolbox-palette" tag: "v3.1.0"
 ```
 
 ---
@@ -63,6 +64,7 @@ gitGraph
 | **CP-24** | Filtrado Multicolumna Compuesto (Multi-Condition Engine) | Sistema dinámico de filtrado multi-regla con soporte para múltiples columnas simultáneas, conjunción lógica conmutable (Y / O), operadores extendidos (`>`, `<`, `>=`, `<=`, `=`, `!=`, `contiene`), contador de filas en tiempo real con telemetría visual, persistencia en `dataStore` y badge numérico en botón de filtros. | **Completado** |
 | **CP-25** | Separación Estricta de Herramientas Selección/Mover, Marquee Box & Deformación Bézier Orgánica Cerrada | Separación conceptual y de eventos entre Selección (`select`, selección individual o múltiple elástica rectangular en fondo) y Mover (`move`, arrastre 1:1 con zoom compensado de nodo o selección múltiple). Rediseño del motor Bézier a curvas orgánicas cerradas continuas (sin cortes planos) con dos manetas tangentes rotuladas (`Curva 1` y `Curva 2`), áreas táctiles de 15px, botón de reseteo (`↺`), atajos contextuales y banner flotante de asistencia en lienzo. | **Completado** |
 | **CP-26** | Vanguardia de Taller: Reconciliación en Caliente, Glifos Morfológicos, Texturas de Imprenta & Copiar a Figma (<kbd>⌘C</kbd>) | Motor de reconciliación determinista `reconciler.ts` que permite soltar un CSV/JSON actualizado preservando todas las mutaciones artísticas y notas de entidades previas por clave primaria. Estudio de Glifos Morfológicos (`glyphMath.ts`: Círculo, Pétalo, Estrella, Rombo, Semilla). Texturas analógicas de taller editorial (`textureService.ts`: Grano Risográfico, Trama Halftone, Papel de Algodón). Copia directa a Figma/Illustrator con <kbd>⌘C</kbd> y botón en barra. | **Completado** |
+| **CP-27** | Paleta Vertical Clásica & Barra Superior Desahogada | Implementación de `VerticalToolbox.tsx` como tira vertical delgada (48px) fija a la izquierda del lienzo (estilo Illustrator / Photoshop) con las 5 herramientas (`select` [V], `move` [M], `bezier` [B], `annotate` [A], `pan` [H]) y botón de reseteo (`↺`). Desahogo total de la barra superior: los 9 gráficos permanecen accesibles en 1 clic directo en el control segmentado central sin menús ocultos, archivo/filtros a la izquierda y estilos/exportación a la derecha. | **Completado** |
 
 ---
 
@@ -110,5 +112,5 @@ flowchart TD
 
 ## 4. Estado de la Sesión
 
-- **Estado Actual**: Implementadas las 4 capacidades de vanguardia del taller de datos: Reconciliación en Caliente (Hot-Reload de datasets con preservación automática de mutaciones por entidad), Estudio de Glifos Morfológicos (5 marcas de datos botánicas y geométricas), Texturas de Taller Editorial (Grano Risográfico, Halftone y Papel Algodón) y Copia Directa a Figma e Illustrator (<kbd>⌘C</kbd> y botón de barra). 34/34 tests unitarios aprobados (100%), 0 errores de tipado `tsc -b`, build de producción limpio y servidor respondiendo HTTP 200 en puerto 5220.
+- **Estado Actual**: Implementada la paleta vertical clásica de herramientas a la izquierda del lienzo (`VerticalToolbox.tsx`, estilo Illustrator / Photoshop) con acceso directo y atajos (<kbd>V</kbd>, <kbd>M</kbd>, <kbd>B</kbd>, <kbd>A</kbd>, <kbd>H</kbd>) más botón de reseteo (<kbd>↺</kbd>). La barra superior queda completamente desahogada y equilibrada en tres zonas: izquierda (archivo, hot-reload y filtros), centro (los 9 gráficos con cambio a 1 clic sin dropdowns ni menús ocultos) y derecha (luz/glow, paleta de color, glifos morfológicos, acabados de imprenta, copiar a Figma y exportar SVG). 34/34 tests unitarios aprobados, compilación limpia en Vite y HTTP 200 en puerto 5220.
 - **Siguiente Paso**: Commit atómico y entrega explicativa al usuario.

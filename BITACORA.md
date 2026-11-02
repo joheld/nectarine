@@ -602,3 +602,40 @@ Para elevar a Nectarine al estándar de un software de culto entre diseñadores 
    - `bun run verify` (`tsc -b && vite build`): 0 errores de tipado, compilación limpia en 2.30s.
    - Liveness socket HTTP 200 en puerto 5220 verificado.
    - Firma de código en `Nectarine.app` verificada como válida.
+
+
+---
+
+## Entrada 019 — Reorganización Ergonómica: Paleta Vertical Clásica & Barra Superior Desahogada
+- **Fecha y Hora**: 2026-11-02 14:50
+- **Fase**: Fase 6: Ergonomía de Estudio & Alineación Visual Human-Craft
+- **Arquitecto**: Antigravity Principal Software Architect
+
+### Contexto y Necesidad
+Al incorporar nuevas capacidades avanzadas (hot-reload, glifos, texturas y copiar a Figma), la barra superior acumulaba demasiados elementos en una sola línea horizontal. Un intento previo de colocar un dock flotante en el fondo del lienzo resultó molesto porque cubría las marcas de datos y competía con los controles de zoom. Tras una consulta de opciones con el usuario, se seleccionó el estándar clásico y universal de las aplicaciones de diseño vectorial (Adobe Illustrator, Photoshop, Figma): **una tira lateral vertical delgada a la izquierda del lienzo**, liberando por completo la barra superior.
+
+### Arquitectura de la Solución
+1. **Componente `VerticalToolbox.tsx` (Tira Lateral de 48px)**:
+   - Ubicado exactamente entre `<SemanticLayersPanel />` y `<Canvas />`.
+   - Ancho exacto `w-12` (48px), fondo cálido `#f8f5ee` y borde derecho `#e6dcce`.
+   - Aloja exclusivamente las 5 herramientas de interacción del lienzo con iconos limpios, indicador de tecla de atajo en subíndice discreto y estados activos claros (carmesí `#e11d48` con texto blanco):
+     - **Seleccionar** (`select`, <kbd>V</kbd>): Clic en nodos o arrastre en fondo para caja elástica (Marquee).
+     - **Mover y Arrastrar** (`move`, <kbd>M</kbd>): Desplazamiento de nodos con escala 1:1.
+     - **Curvar Bézier** (`bezier`, <kbd>B</kbd>): Despliegue de manetas orgánicas de deformación.
+     - **Anotación Conectada** (`annotate`, <kbd>A</kbd>): Creación de notas atadas a datos.
+     - **Mano / Encuadre** (`pan`, <kbd>H</kbd>): Desplazamiento del lienzo sin tocar las marcas.
+   - **Botón de Restablecimiento Inmediato (`↺`)**: Aparece bajo un separador solo cuando existen mutaciones manuales registradas en `mutationStore`, permitiendo volver a la verdad matemática con un clic.
+2. **Desahogo Total de la Barra Superior (`Toolbar.tsx`)**:
+   - Se retiraron las herramientas de interacción manual de la barra superior.
+   - La barra queda dividida armónicamente en 3 secciones:
+     - **Izquierda (Datos y Archivos)**: Subir Archivo, Hot-Reload y Filtros multicolumna.
+     - **Centro (Arquitectura Gráfica)**: Los 9 tipos de gráficos (Dispersión, Burbujas, Cuerdas, Espiral, Celestial, Barras, Mosaico, Red, Ondas) en un control segmentado accesible a un solo clic sin dropdowns ni menús desplegables.
+     - **Derecha (Estilo Editorial & Salida)**: Luz & Glow, Selector de Paletas, Glifos Morfológicos, Acabados de Imprenta, Copiar a Figma y Exportar SVG.
+3. **Lienzo Libre y Despejado (`Canvas.tsx`)**:
+   - Sin ningún dock flotante inferior cubriendo la visualización de datos.
+
+### Batería Zero-Defect
+- `bun test`: 34/34 tests pasados (100%).
+- `bun run verify` (`tsc -b && vite build`): 0 errores de tipado, compilación de producción limpia.
+- Socket HTTP 200 en puerto 5220 verificado.
+- Firma de código en `/Users/joe/Desktop/Nectarine.app` verificada como válida con Designated Requirement.
