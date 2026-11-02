@@ -8,9 +8,12 @@ import {
   CelestialOrbit,
   ConstellationLink,
   CurvedTextPath,
+  GlyphShape,
+  ReconciliationReport,
 } from '../engine/types';
 import { computeLayout, LayoutBounds } from '../engine/layoutEngine';
 import { datasetProfiler, GuardrailCheck, FilterCondition } from '../services/profiler';
+import { datasetReconciler } from '../services/reconciler';
 import { useMutationStore } from './mutationStore';
 import { useLayerStore } from './layerStore';
 
@@ -20,6 +23,7 @@ interface DataState {
   activeRows: Record<string, any>[];
   profiledColumns: ProfiledColumn[];
   chartType: ChartType;
+  defaultGlyphShape: GlyphShape;
   mappings: {
     x?: string;
     y?: string;
@@ -42,9 +46,13 @@ interface DataState {
   isGuardrailModalOpen: boolean;
   activeFilters: FilterCondition[];
   filterConjunction: 'AND' | 'OR';
+  lastReconciliation: ReconciliationReport | null;
 
   // Actions
   loadDataset: (name: string, rows: Record<string, any>[]) => void;
+  reconcileDataset: (name: string, rows: Record<string, any>[], matchKey?: string) => ReconciliationReport;
+  clearReconciliationReport: () => void;
+  setDefaultGlyphShape: (shape: GlyphShape) => void;
   setChartType: (type: ChartType) => void;
   setMappings: (mappings: Partial<DataState['mappings']>) => void;
   setLayoutBounds: (bounds: LayoutBounds) => void;
@@ -69,6 +77,7 @@ export const useDataStore = create<DataState>((set, get) => ({
   activeRows: [],
   profiledColumns: [],
   chartType: 'scatter',
+  defaultGlyphShape: 'circle',
   mappings: {},
   baseNodes: [],
   voronoiCells: new Map(),
@@ -83,6 +92,16 @@ export const useDataStore = create<DataState>((set, get) => ({
   isGuardrailModalOpen: false,
   activeFilters: [],
   filterConjunction: 'AND',
+  lastReconciliation: null,
+
+  clearReconciliationReport: () => {
+    set({ lastReconciliation: null });
+  },
+
+  setDefaultGlyphShape: (shape: GlyphShape) => {
+    set({ defaultGlyphShape: shape });
+    get().recalculateLayout();
+  },
 
   loadDataset: (name, rows) => {
     const profiled = datasetProfiler.profileColumns(rows);
@@ -112,9 +131,70 @@ export const useDataStore = create<DataState>((set, get) => ({
       },
       guardrailCheck: guardrail.isExceeded ? guardrail : null,
       isGuardrailModalOpen: guardrail.isExceeded,
+      lastReconciliation: null,
     });
 
     get().recalculateLayout();
+  },
+
+  reconcileDataset: (name, rows, matchKey) => {
+    const { rawRows: oldRows, baseNodes: oldBaseNodes, chartType, mappings, layoutBounds, defaultGlyphShape } = get();
+    const currentMutations = useMutationStore.getState().mutations;
+    const currentAnnotations = useLayerStore.getState().annotations;
+
+    const profiled = datasetProfiler.profileColumns(rows);
+    const guardrail = datasetProfiler.checkPerformance(rows.length);
+
+    // Compute raw new base nodes with current chart type & mappings
+    const layoutResult = computeLayout(chartType, rows, mappings, layoutBounds);
+    const newBaseNodes = layoutResult.nodes.map((n) => ({
+      ...n,
+      glyphShape: defaultGlyphShape,
+    }));
+
+    // Run reconciliation diffing
+    const reconcileResult = datasetReconciler.reconcile({
+      oldRows,
+      newRows: rows,
+      oldBaseNodes,
+      newBaseNodes,
+      currentMutations,
+      currentAnnotations,
+      specifiedKey: matchKey,
+    });
+
+    // Update mutations with reconciled set
+    useMutationStore.setState({
+      mutations: reconcileResult.reconciledMutations,
+      selectedNodeIds: [],
+    });
+
+    // Update layer annotations with re-anchored set
+    useLayerStore.setState({
+      annotations: reconcileResult.reconciledAnnotations,
+    });
+
+    set({
+      datasetName: name,
+      rawRows: rows,
+      activeRows: rows,
+      activeFilters: [],
+      filterConjunction: 'AND',
+      profiledColumns: profiled,
+      baseNodes: newBaseNodes,
+      voronoiCells: layoutResult.voronoiPolygons || new Map(),
+      chordRibbons: layoutResult.chordRibbons || [],
+      spiralTrack: layoutResult.spiralTrack || null,
+      celestialOrbits: layoutResult.celestialOrbits || [],
+      constellationLinks: layoutResult.constellationLinks || [],
+      curvedTextPaths: layoutResult.curvedTextPaths || [],
+      axes: layoutResult.axes,
+      guardrailCheck: guardrail.isExceeded ? guardrail : null,
+      isGuardrailModalOpen: guardrail.isExceeded,
+      lastReconciliation: reconcileResult.report,
+    });
+
+    return reconcileResult.report;
   },
 
   setChartType: (type) => {
@@ -148,12 +228,16 @@ export const useDataStore = create<DataState>((set, get) => ({
   },
 
   recalculateLayout: () => {
-    const { chartType, activeRows, mappings, layoutBounds } = get();
+    const { chartType, activeRows, mappings, layoutBounds, defaultGlyphShape } = get();
     if (activeRows.length === 0) return;
 
     const result = computeLayout(chartType, activeRows, mappings, layoutBounds);
+    const nodesWithGlyph = result.nodes.map((node) => ({
+      ...node,
+      glyphShape: defaultGlyphShape,
+    }));
     set({
-      baseNodes: result.nodes,
+      baseNodes: nodesWithGlyph,
       voronoiCells: result.voronoiPolygons || new Map(),
       chordRibbons: result.chordRibbons || [],
       spiralTrack: result.spiralTrack || null,

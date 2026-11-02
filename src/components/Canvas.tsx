@@ -5,7 +5,8 @@ import { CanvasNode } from './CanvasNode';
 import { TetheredAnnotations } from './TetheredAnnotations';
 import { DataLassoContextMenu } from './DataLasso';
 import { colorService } from '../services/colorService';
-import { ZoomIn, ZoomOut, Maximize2, Upload, ShieldCheck, Spline } from 'lucide-react';
+import { textureService } from '../services/textureService';
+import { ZoomIn, ZoomOut, Maximize2, Upload, ShieldCheck, Spline, X } from 'lucide-react';
 import { NectarineLogo } from './NectarineLogo';
 import { openNativeFileDialog, processDataFile } from '../services/fileImportHelper';
 
@@ -25,8 +26,11 @@ export const Canvas: React.FC<CanvasProps> = ({ svgRef }) => {
     axes,
     layoutBounds,
     chartType,
+    lastReconciliation,
+    clearReconciliationReport,
     setLayoutBounds,
     loadDataset,
+    reconcileDataset,
   } = useDataStore();
   const { clearSelection, selectAll, isGlowEnabled, activeTool, mutations } = useMutationStore();
   const containerRef = useRef<HTMLDivElement>(null);
@@ -37,7 +41,14 @@ export const Canvas: React.FC<CanvasProps> = ({ svgRef }) => {
   const [isPanning, setIsPanning] = useState(false);
   const [marquee, setMarquee] = useState<{ startX: number; startY: number; currentX: number; currentY: number } | null>(null);
   const [isDraggingFile, setIsDraggingFile] = useState(false);
+  const [activeFinish, setActiveFinish] = useState(textureService.getActiveFinish());
   const panStartRef = useRef({ x: 0, y: 0 });
+
+  useEffect(() => {
+    return textureService.subscribe((finish) => {
+      setActiveFinish(finish);
+    });
+  }, []);
 
   const [contextMenu, setContextMenu] = useState<{
     visible: boolean;
@@ -156,7 +167,11 @@ export const Canvas: React.FC<CanvasProps> = ({ svgRef }) => {
     setIsDraggingFile(false);
     const file = e.dataTransfer.files?.[0];
     if (file) {
-      await processDataFile(file, loadDataset);
+      if (baseNodes.length > 0) {
+        await processDataFile(file, (name, rows) => reconcileDataset(name, rows));
+      } else {
+        await processDataFile(file, loadDataset);
+      }
     }
   };
 
@@ -167,7 +182,11 @@ export const Canvas: React.FC<CanvasProps> = ({ svgRef }) => {
   const handleFallbackFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      await processDataFile(file, loadDataset);
+      if (baseNodes.length > 0) {
+        await processDataFile(file, (name, rows) => reconcileDataset(name, rows));
+      } else {
+        await processDataFile(file, loadDataset);
+      }
     }
   };
 
@@ -324,6 +343,26 @@ export const Canvas: React.FC<CanvasProps> = ({ svgRef }) => {
               <feMergeNode in="SourceGraphic" />
             </feMerge>
           </filter>
+
+          {/* Artisanal Studio Finishes: Risograph Grain & Cotton Paper */}
+          <filter id="studio-finish-risograph" x="-10%" y="-10%" width="120%" height="120%">
+            <feTurbulence type="fractalNoise" baseFrequency="0.72" numOctaves="3" result="noise" />
+            <feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 0.18 0" result="coloredNoise" />
+            <feComposite operator="in" in="coloredNoise" in2="SourceGraphic" result="textured" />
+            <feBlend in="SourceGraphic" in2="textured" mode="multiply" />
+          </filter>
+
+          <filter id="studio-finish-paper" x="-10%" y="-10%" width="120%" height="120%">
+            <feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="4" result="paperNoise" />
+            <feDiffuseLighting in="paperNoise" lightingColor="#fffefc" surfaceScale="1.1" result="light">
+              <feDistantLight azimuth="45" elevation="60" />
+            </feDiffuseLighting>
+            <feBlend in="SourceGraphic" in2="light" mode="multiply" />
+          </filter>
+
+          <pattern id="studio-pattern-halftone" width="8" height="8" patternUnits="userSpaceOnUse">
+            <circle cx="4" cy="4" r="1.3" fill="#8c7664" opacity="0.14" />
+          </pattern>
         </defs>
 
         <g transform={`translate(${pan.x}, ${pan.y}) scale(${zoom})`}>
@@ -518,7 +557,19 @@ export const Canvas: React.FC<CanvasProps> = ({ svgRef }) => {
             </g>
           )}
 
-          <g className="nodes-group">
+          {/* Studio Finish: Halftone dot overlay */}
+          {activeFinish === 'halftone' && (
+            <rect
+              x={0}
+              y={0}
+              width={layoutBounds.width}
+              height={layoutBounds.height}
+              fill="url(#studio-pattern-halftone)"
+              className="pointer-events-none"
+            />
+          )}
+
+          <g className="nodes-group" filter={textureService.getFilterId(activeFinish)}>
             {baseNodes.map((node) => (
               <CanvasNode
                 key={node.id}
@@ -549,8 +600,27 @@ export const Canvas: React.FC<CanvasProps> = ({ svgRef }) => {
         </g>
       </svg>
 
+      {/* Live Data Hot-Reload & Reconciliation Notification Banner */}
+      {lastReconciliation && (
+        <div className="absolute top-3 left-1/2 -translate-x-1/2 z-40 flex items-center gap-3 px-4 py-2.5 rounded-xl bg-[#fffdfa]/95 border border-[#0284c7]/40 shadow-lg text-[#0369a1] text-xs backdrop-blur-md animate-in fade-in slide-in-from-top-3">
+          <div className="w-2.5 h-2.5 rounded-full bg-[#0284c7] animate-ping" />
+          <span>
+            <strong>Hot-Reload Activo:</strong> Se reconciliaron <strong>{lastReconciliation.matchedCount} entidades</strong> preservando todas sus mutaciones artísticas (clave: <code className="bg-[#f0f9ff] px-1.5 py-0.5 rounded font-mono font-bold text-[#0284c7]">{lastReconciliation.matchKey}</code>)
+            {lastReconciliation.newCount > 0 && ` • ${lastReconciliation.newCount} nuevas`}
+            {lastReconciliation.removedCount > 0 && ` • ${lastReconciliation.removedCount} retiradas`}
+          </span>
+          <button
+            onClick={clearReconciliationReport}
+            className="p-1 rounded-md hover:bg-[#e0f2fe] text-[#0369a1] cursor-pointer transition-colors"
+            title="Cerrar aviso de reconciliación"
+          >
+            <X className="w-3.5 h-3.5" />
+          </button>
+        </div>
+      )}
+
       {/* Visual Guidance Banner for Bézier Curvature Mode */}
-      {activeTool === 'bezier' && (
+      {activeTool === 'bezier' && !lastReconciliation && (
         <div className="absolute top-3 left-1/2 -translate-x-1/2 z-30 flex items-center gap-2.5 px-4 py-2 rounded-full bg-[#fffdfa]/95 border border-[#dfd2c4] shadow-md text-[#5e4634] text-[11.5px] backdrop-blur-sm pointer-events-none animate-in fade-in slide-in-from-top-2">
           <Spline className="w-4 h-4 text-[#e11d48] shrink-0" />
           <span>

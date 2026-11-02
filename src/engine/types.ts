@@ -80,6 +80,17 @@ export interface ChartCompatibility {
   };
 }
 
+export type GlyphShape = 'circle' | 'petal' | 'star' | 'diamond' | 'seed';
+export type StudioFinish = 'clean' | 'risograph' | 'halftone' | 'paper';
+
+export interface ReconciliationReport {
+  timestamp: string;
+  matchedCount: number;
+  newCount: number;
+  removedCount: number;
+  matchKey: string;
+}
+
 export interface BaseNode {
   id: string;
   rawIndex: number;
@@ -88,6 +99,7 @@ export interface BaseNode {
   mathR: number;
   category: string;
   label: string;
+  glyphShape?: GlyphShape;
   valueX?: number;
   valueY?: number;
   valueSize?: number;
@@ -102,6 +114,7 @@ export interface NodeMutation {
   customFill?: string;
   customStroke?: string;
   customOpacity?: number;
+  glyphShape?: GlyphShape;
   // Cubic Bézier control points relative to node center
   cp1x?: number;
   cp1y?: number;

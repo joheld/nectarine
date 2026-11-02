@@ -90,6 +90,43 @@ export class ExportService {
 
     return { success: true, filePath: filename, method: 'web' };
   }
+
+  /**
+   * Copies purified SVG directly to system clipboard for instant 1-click paste into Figma or Adobe Illustrator
+   */
+  public async copyToClipboard(
+    svgContent: string
+  ): Promise<{ success: boolean; message: string }> {
+    try {
+      if (typeof navigator !== 'undefined' && navigator.clipboard) {
+        // Try writing rich SVG MIME payload for Figma
+        try {
+          const textBlob = new Blob([svgContent], { type: 'text/plain' });
+          const svgBlob = new Blob([svgContent], { type: 'image/svg+xml' });
+          await navigator.clipboard.write([
+            new ClipboardItem({
+              'text/plain': textBlob,
+              'image/svg+xml': svgBlob,
+            }),
+          ]);
+          return {
+            success: true,
+            message: '¡Vector copiado! Pégalo con ⌘V en Figma o Adobe Illustrator',
+          };
+        } catch {
+          // Standard text copy fallback (Figma & Illustrator also parse plain text SVG)
+          await navigator.clipboard.writeText(svgContent);
+          return {
+            success: true,
+            message: '¡Vector copiado! Pégalo con ⌘V en Figma o Adobe Illustrator',
+          };
+        }
+      }
+      return { success: false, message: 'El portapapeles del sistema no está accesible' };
+    } catch (err: any) {
+      return { success: false, message: `Error al copiar al portapapeles: ${err?.message || err}` };
+    }
+  }
 }
 
 export const exportService = new ExportService();

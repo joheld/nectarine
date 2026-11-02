@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import {
   Upload,
   Download,
@@ -20,13 +20,19 @@ import {
   Orbit,
   Sparkles,
   SunMedium,
+  Copy,
+  RefreshCw,
+  Layers,
+  Check,
 } from 'lucide-react';
 import { useDataStore } from '../store/dataStore';
 import { useMutationStore } from '../store/mutationStore';
 import { colorService, EDITORIAL_PALETTES } from '../services/colorService';
+import { textureService, STUDIO_FINISHES } from '../services/textureService';
 import { datasetProfiler } from '../services/profiler';
 import { exportService } from '../services/exportService';
-import { ChartType } from '../engine/types';
+import { ChartType, StudioFinish, GlyphShape } from '../engine/types';
+import { GLYPH_OPTIONS } from '../engine/glyphMath';
 import { openNativeFileDialog, processDataFile } from '../services/fileImportHelper';
 
 interface ToolbarProps {
@@ -35,9 +41,28 @@ interface ToolbarProps {
 }
 
 export const Toolbar: React.FC<ToolbarProps> = ({ onOpenProfiler, svgRef }) => {
-  const { chartType, setChartType, profiledColumns, rawRows, activeFilters, loadDataset, recalculateLayout } = useDataStore();
+  const {
+    chartType,
+    setChartType,
+    profiledColumns,
+    rawRows,
+    activeFilters,
+    defaultGlyphShape,
+    setDefaultGlyphShape,
+    loadDataset,
+    reconcileDataset,
+    recalculateLayout,
+  } = useDataStore();
   const { activeTool, setActiveTool, resetAllMutations, mutations, isGlowEnabled, toggleGlow } = useMutationStore();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [copyToast, setCopyToast] = useState(false);
+  const [currentFinish, setCurrentFinish] = useState(textureService.getActiveFinish());
+
+  useEffect(() => {
+    return textureService.subscribe((finish) => {
+      setCurrentFinish(finish);
+    });
+  }, []);
 
   const compatibilities = datasetProfiler.evaluateCompatibility(profiledColumns, rawRows.length);
   const currentPalette = colorService.getPalette();
@@ -47,15 +72,55 @@ export const Toolbar: React.FC<ToolbarProps> = ({ onOpenProfiler, svgRef }) => {
     recalculateLayout();
   };
 
+  const handleFinishChange = (finish: StudioFinish) => {
+    textureService.setFinish(finish);
+  };
+
   const handleNativeImport = async () => {
     await openNativeFileDialog(loadDataset, fileInputRef.current);
+  };
+
+  const handleNativeReconcile = async () => {
+    await openNativeFileDialog((name, rows) => reconcileDataset(name, rows), fileInputRef.current);
   };
 
   const handleWebFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    await processDataFile(file, loadDataset);
+    if (rawRows.length > 0) {
+      await processDataFile(file, (name, rows) => reconcileDataset(name, rows));
+    } else {
+      await processDataFile(file, loadDataset);
+    }
   };
+
+  const handleCopyToClipboard = async () => {
+    if (!svgRef.current) return;
+    const cleanSvg = exportService.cleanAndPurgeSVG(svgRef.current);
+    const result = await exportService.copyToClipboard(cleanSvg);
+    if (result.success) {
+      setCopyToast(true);
+      setTimeout(() => setCopyToast(false), 3200);
+    } else {
+      alert(result.message);
+    }
+  };
+
+  // Global ⌘C / Ctrl+C shortcut to copy clean SVG to Figma/Illustrator
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'c') {
+        const target = e.target as HTMLElement;
+        if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable)) {
+          return;
+        }
+        e.preventDefault();
+        handleCopyToClipboard();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   const handleExport = async () => {
     if (!svgRef.current) return;
@@ -97,6 +162,17 @@ export const Toolbar: React.FC<ToolbarProps> = ({ onOpenProfiler, svgRef }) => {
           <Upload className="w-3.5 h-3.5 text-[#e11d48]" />
           <span>Subir Archivo</span>
         </button>
+
+        {rawRows.length > 0 && (
+          <button
+            onClick={handleNativeReconcile}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#eff6ff] hover:bg-[#dbeafe] active:bg-[#bfdbfe] text-[#0369a1] border border-[#bfdbfe] transition-colors font-medium shadow-2xs"
+            title="Cargar dataset actualizado preservando todas tus mutaciones artísticas, notas y curvas por clave"
+          >
+            <RefreshCw className="w-3.5 h-3.5 text-[#0284c7]" />
+            <span>Hot-Reload</span>
+          </button>
+        )}
 
         <button
           onClick={onOpenProfiler}
@@ -233,6 +309,58 @@ export const Toolbar: React.FC<ToolbarProps> = ({ onOpenProfiler, svgRef }) => {
             ))}
           </select>
         </div>
+
+        {/* Morphological Glyph Studio */}
+        <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-white border border-[#e6dcce] text-[#2c1a0e] shadow-2xs">
+          <Sparkles className="w-3.5 h-3.5 text-[#c2410c]" />
+          <select
+            value={defaultGlyphShape}
+            onChange={(e) => setDefaultGlyphShape(e.target.value as GlyphShape)}
+            className="bg-transparent text-[#2c1a0e] text-xs focus:outline-none cursor-pointer font-medium"
+            title="Morfología artesanal de las marcas de datos (Glifos)"
+          >
+            {GLYPH_OPTIONS.map((g) => (
+              <option key={g.id} value={g.id} className="bg-white text-[#2c1a0e]">
+                {g.label}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* Studio Finishes (Risograph, Halftone, Paper) */}
+        <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-white border border-[#e6dcce] text-[#2c1a0e] shadow-2xs">
+          <Layers className="w-3.5 h-3.5 text-[#7c3aed]" />
+          <select
+            value={currentFinish}
+            onChange={(e) => handleFinishChange(e.target.value as StudioFinish)}
+            className="bg-transparent text-[#2c1a0e] text-xs focus:outline-none cursor-pointer font-medium"
+            title="Texturas de imprenta editorial y grano analógico"
+          >
+            {STUDIO_FINISHES.map((f) => (
+              <option key={f.id} value={f.id} className="bg-white text-[#2c1a0e]">
+                {f.label}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* Copy for Figma & Illustrator */}
+        <button
+          onClick={handleCopyToClipboard}
+          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border transition-all font-medium shadow-2xs cursor-pointer ${
+            copyToast
+              ? 'bg-[#ecfdf5] border-[#a7f3d0] text-[#047857]'
+              : 'bg-white hover:bg-[#faf7f2] active:bg-[#ede5db] text-[#2c1a0e] border-[#e6dcce]'
+          }`}
+          title="Copiar ilustración vectorial limpia al portapapeles para pegar con ⌘V en Figma o Adobe Illustrator [Atajo ⌘C]"
+        >
+          {copyToast ? (
+            <Check className="w-3.5 h-3.5 text-[#059669]" />
+          ) : (
+            <Copy className="w-3.5 h-3.5 text-[#0284c7]" />
+          )}
+          <span>{copyToast ? '¡Copiado!' : 'Copiar a Figma'}</span>
+        </button>
 
         {Object.keys(mutations).length > 0 && (
           <button

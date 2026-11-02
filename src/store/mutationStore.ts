@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { NodeMutation, DistortionMetric, BaseNode } from '../engine/types';
+import { NodeMutation, DistortionMetric, BaseNode, GlyphShape } from '../engine/types';
 
 interface MutationState {
   mutations: Record<string, NodeMutation>;
@@ -19,6 +19,8 @@ interface MutationState {
   resetBezierHandles: (id: string) => void;
   updateFill: (id: string, fill: string) => void;
   batchUpdateFill: (ids: string[], fill: string) => void;
+  updateGlyphShape: (id: string, shape: GlyphShape) => void;
+  batchUpdateGlyphShape: (ids: string[], shape: GlyphShape) => void;
   updateRadius: (id: string, r: number) => void;
   setManualScale: (id: string, scale: number) => void;
   togglePin: (id: string) => void;
@@ -143,6 +145,32 @@ export const useMutationStore = create<MutationState>((set, get) => ({
       ids.forEach((id) => {
         const existing = updated[id] || { id, isPinned: false, manualScale: 1.0 };
         updated[id] = { ...existing, customFill: fill };
+      });
+      return { mutations: updated };
+    });
+  },
+
+  updateGlyphShape: (id, shape) => {
+    set((state) => {
+      const existing = state.mutations[id] || { id, isPinned: false, manualScale: 1.0 };
+      return {
+        mutations: {
+          ...state.mutations,
+          [id]: {
+            ...existing,
+            glyphShape: shape,
+          },
+        },
+      };
+    });
+  },
+
+  batchUpdateGlyphShape: (ids, shape) => {
+    set((state) => {
+      const updated = { ...state.mutations };
+      ids.forEach((id) => {
+        const existing = updated[id] || { id, isPinned: false, manualScale: 1.0 };
+        updated[id] = { ...existing, glyphShape: shape };
       });
       return { mutations: updated };
     });

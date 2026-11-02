@@ -5,6 +5,7 @@ import { colorService } from '../services/colorService';
 import { useLayerStore } from '../store/layerStore';
 import { useDataStore } from '../store/dataStore';
 import { buildClosedOrganicBezierPath, generateOrganicBezierHandles } from '../engine/bezierMath';
+import { generateGlyphPath } from '../engine/glyphMath';
 
 interface CanvasNodeProps {
   node: BaseNode;
@@ -77,6 +78,8 @@ export const CanvasNode: React.FC<CanvasNodeProps> = ({ node, blendMode, zoom = 
 
   const distortion = calculateDistortion(node);
   const showGhost = isPinned && (Math.abs(currentX - node.mathX) > 2 || Math.abs(currentY - node.mathY) > 2);
+
+  const effectiveGlyphShape = mut?.glyphShape || node.glyphShape || 'circle';
 
   // Default organic Bézier handles relative to center
   const defaultHandles = generateOrganicBezierHandles(radius);
@@ -322,9 +325,19 @@ export const CanvasNode: React.FC<CanvasNodeProps> = ({ node, blendMode, zoom = 
             filter={isGlowEnabled ? 'url(#celestial-glow)' : undefined}
             style={{ mixBlendMode: blendMode as any }}
           />
-        ) : (
+        ) : effectiveGlyphShape === 'circle' ? (
           <circle
             r={radius}
+            fill={fill}
+            fillOpacity="0.9"
+            stroke="rgba(0,0,0,0.15)"
+            strokeWidth={isSelected ? 2 : 1}
+            filter={isGlowEnabled ? 'url(#celestial-glow)' : undefined}
+            style={{ mixBlendMode: blendMode as any }}
+          />
+        ) : (
+          <path
+            d={generateGlyphPath(effectiveGlyphShape, radius)}
             fill={fill}
             fillOpacity="0.9"
             stroke="rgba(0,0,0,0.15)"

@@ -2,6 +2,7 @@ import React from 'react';
 import { useDataStore } from '../store/dataStore';
 import { useMutationStore } from '../store/mutationStore';
 import { useLayerStore } from '../store/layerStore';
+import { GLYPH_OPTIONS } from '../engine/glyphMath';
 import {
   RotateCcw,
   Pin,
@@ -19,6 +20,7 @@ export const NodeInspector: React.FC = () => {
     clearSelection,
     mutations,
     updateFill,
+    updateGlyphShape,
     setManualScale,
     togglePin,
     resetMutation,
@@ -141,6 +143,37 @@ export const NodeInspector: React.FC = () => {
                 <span className="font-mono font-medium text-stone-800">{node.valueY.toLocaleString()}</span>
               </div>
             )}
+          </div>
+        </div>
+
+        {/* Morphological Glyph Shape */}
+        <div className="space-y-1.5">
+          <label className="text-[11px] font-medium text-stone-700 block">
+            Morfología del Glifo
+          </label>
+          <div className="grid grid-cols-5 gap-1 bg-[#ede5db] p-1 rounded-lg border border-[#dfd2c4]">
+            {GLYPH_OPTIONS.map((g) => {
+              const isSelected = (mut?.glyphShape || node.glyphShape || 'circle') === g.id;
+              const icons: Record<string, string> = {
+                circle: '●',
+                petal: '❧',
+                star: '★',
+                diamond: '◆',
+                seed: '▲',
+              };
+              return (
+                <button
+                  key={g.id}
+                  onClick={() => updateGlyphShape(node.id, g.id)}
+                  className={`py-1 text-xs rounded transition-all flex items-center justify-center font-bold ${
+                    isSelected ? 'bg-[#e11d48] text-white shadow-xs' : 'text-[#5e4634] hover:text-[#2c1a0e] hover:bg-white/60'
+                  }`}
+                  title={`${g.label}: ${g.description}`}
+                >
+                  {icons[g.id] || '●'}
+                </button>
+              );
+            })}
           </div>
         </div>
 

@@ -562,3 +562,43 @@ El usuario detectó con precisión que el manual anunciaba "9 geometrías" pero 
    - `bun run verify` (`tsc -b && vite build`): 0 errores de tipado, compilación limpia.
    - Socket HTTP 200 en puerto 5220 verificado.
    - Firma de código en `/Users/joe/Desktop/Nectarine.app` verificada como válida.
+
+---
+
+## Entrada 018 — Vanguardia del Atelier: Motor de Reconciliación en Caliente, Estudio de Glifos Morfológicos, Texturas de Taller y Copia Directa a Figma
+- **Fecha y Hora**: 2026-11-02 14:35
+- **Fase**: Fase 6: Reconciliación Inteligente, Texturas Físicas & Flujo Editorial de Élite
+- **Arquitecto**: Antigravity Principal Software Architect
+
+### Contexto y Visión
+Para elevar a Nectarine al estándar de un software de culto entre diseñadores de información y periodistas de datos (superando la brecha destructiva de Adobe Illustrator y Figma), se implementaron las 4 capacidades estratégicas fundamentales:
+
+1. **Motor de Reconciliación en Vivo (Live Data Hot-Reload with Entity Diffing)**:
+   - Se construyó el servicio `reconciler.ts` con el algoritmo `DatasetReconciler`.
+   - Cuando se importa o arrastra un nuevo archivo de datos con información actualizada o corregida, el motor descubre la clave primaria compartida (`id`, `pais`, `codigo`, `name` o columna con alta cardinalidad) y realiza un emparejamiento determinista entidad por entidad.
+   - **Preservación Total de Mutaciones Artísticas**: Todas las posiciones desplazadas (`customX, customY`), manetas de curvatura Bézier (`cp1x, cp1y, cp2x, cp2y`), colores de relleno (`customFill`), escalas y notas explicativas (`tetheredAnnotations`) se transfieren íntegramente a los nuevos nodos de datos.
+   - Telemetría reactiva en pantalla mediante un banner superior que informa: *"Hot-Reload Activo: Se reconciliaron X entidades preservando todas sus mutaciones artísticas (clave: 'col') • Y nuevas • Z retiradas"*.
+2. **Estudio de Glifos Morfológicos (Morphological Glyph Engine)**:
+   - Los datos dejan de estar encasillados en círculos. En `glyphMath.ts` se implementaron generadores matemáticos puros para 5 morfologías de alta precisión editorial:
+     - `circle`: Círculo matemático clásico continuo.
+     - `petal`: Pétalo botánico fluido de curvatura asimétrica suave.
+     - `star`: Estrella áurea paramétrica de 5 puntas.
+     - `diamond`: Rombo editorial suizo angulado de precisión.
+     - `seed`: Semilla orgánica Bézier de doble cúspide.
+   - Selector en la barra de herramientas (`Toolbar.tsx`) para la morfología global del dataset y selector individual en el panel inspector (`NodeInspector.tsx`).
+3. **Texturas de Taller Editorial & Grano Risográfico (Studio Finishes)**:
+   - Servicio `textureService.ts` y filtros SVG vectoriales en tiempo real dentro del lienzo:
+     - `clean`: Vectorial puro afilado.
+     - `risograph`: Textura de micro-ruido denso simulando tinta y grano de risografía/serigrafía (`<feTurbulence baseFrequency="0.72">` + `<feColorMatrix>` + `<feBlend mode="multiply">`).
+     - `halftone`: Trama de semitonos litográfica con matriz de puntos de imprenta.
+     - `paper`: Rugosidad táctil de papel de algodón prensado en frío con iluminación rasante (`<feDiffuseLighting>`).
+   - Conmutable en vivo desde el menú de la barra de herramientas.
+4. **Copia Directa al Portapapeles para Figma e Illustrator (<kbd>⌘C</kbd>)**:
+   - En `exportService.ts` se implementó `copyToClipboard(cleanSvg)`, compatible con Clipboard API multiformato (`image/svg+xml` y `text/plain`).
+   - Botón "Copiar a Figma" en la barra de herramientas con indicador de éxito visual (badge de confirmación) y atajo de teclado global <kbd>⌘C</kbd> / <kbd>Ctrl+C</kbd>. Al pulsar <kbd>⌘V</kbd> dentro de Figma o Illustrator, se pegan instantáneamente vectores y trazados nativos editables.
+5. **Batería Zero-Defect**:
+   - 5 nuevos tests unitarios en `tests/reconcilerAndStudio.test.ts`.
+   - `bun test`: 34/34 tests pasados (100%).
+   - `bun run verify` (`tsc -b && vite build`): 0 errores de tipado, compilación limpia en 2.30s.
+   - Liveness socket HTTP 200 en puerto 5220 verificado.
+   - Firma de código en `Nectarine.app` verificada como válida.
