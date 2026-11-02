@@ -16,6 +16,7 @@ interface MutationState {
 
   updatePosition: (id: string, x: number, y: number, pinNode?: boolean) => void;
   updateBezierHandles: (id: string, cp1x: number, cp1y: number, cp2x: number, cp2y: number) => void;
+  resetBezierHandles: (id: string) => void;
   updateFill: (id: string, fill: string) => void;
   batchUpdateFill: (ids: string[], fill: string) => void;
   updateRadius: (id: string, r: number) => void;
@@ -102,6 +103,20 @@ export const useMutationStore = create<MutationState>((set, get) => ({
             cp2x,
             cp2y,
           },
+        },
+      };
+    });
+  },
+
+  resetBezierHandles: (id) => {
+    set((state) => {
+      const existing = state.mutations[id];
+      if (!existing) return state;
+      const { cp1x: _1, cp1y: _2, cp2x: _3, cp2y: _4, ...rest } = existing;
+      return {
+        mutations: {
+          ...state.mutations,
+          [id]: rest,
         },
       };
     });

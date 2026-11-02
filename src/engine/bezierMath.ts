@@ -74,3 +74,39 @@ export function generateDefaultBezierHandles(radius: number) {
     cp2y: offset * 0.5,
   };
 }
+
+/**
+ * Builds a smooth closed organic vector shape deformed by two control handles.
+ * Top arc deforms toward cp1, bottom arc deforms toward cp2, closing seamlessly without cutting off.
+ */
+export function buildClosedOrganicBezierPath(
+  radius: number,
+  cp1: Point,
+  cp2: Point
+): string {
+  const left = { x: -radius, y: 0 };
+  const right = { x: radius, y: 0 };
+
+  // Control tangents for upper curvature (cp1)
+  const topCp1 = { x: -radius * 0.55 + cp1.x * 0.5, y: cp1.y };
+  const topCp2 = { x: radius * 0.55 + cp1.x * 0.5, y: cp1.y };
+
+  // Control tangents for lower curvature (cp2)
+  const bottomCp1 = { x: radius * 0.55 + cp2.x * 0.5, y: cp2.y };
+  const bottomCp2 = { x: -radius * 0.55 + cp2.x * 0.5, y: cp2.y };
+
+  return `M ${left.x.toFixed(2)} ${left.y.toFixed(2)} C ${topCp1.x.toFixed(2)} ${topCp1.y.toFixed(2)}, ${topCp2.x.toFixed(2)} ${topCp2.y.toFixed(2)}, ${right.x.toFixed(2)} ${right.y.toFixed(2)} C ${bottomCp1.x.toFixed(2)} ${bottomCp1.y.toFixed(2)}, ${bottomCp2.x.toFixed(2)} ${bottomCp2.y.toFixed(2)}, ${left.x.toFixed(2)} ${left.y.toFixed(2)} Z`;
+}
+
+/**
+ * Generates standard organic Bézier handles for a circular node:
+ * cp1 at top apex (0, -radius * 1.33) and cp2 at bottom apex (0, radius * 1.33)
+ */
+export function generateOrganicBezierHandles(radius: number) {
+  return {
+    cp1x: 0,
+    cp1y: -radius * 1.33,
+    cp2x: 0,
+    cp2y: radius * 1.33,
+  };
+}

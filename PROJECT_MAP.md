@@ -26,6 +26,7 @@ gitGraph
     commit id: "fix-macos-launchers-nectarine" tag: "v1.8.0"
     commit id: "fix-tools-hand-drag-annotate-bezier" tag: "v1.9.0"
     commit id: "feat-multi-column-filtering" tag: "v2.0.0"
+    commit id: "fix-tools-separation-and-closed-bezier" tag: "v2.1.0"
 ```
 
 ---
@@ -59,6 +60,7 @@ gitGraph
 | **CP-22** | Resiliencia de Lanzadores macOS & Firma de Código | Corrección de firma de código rota (`a sealed resource is missing or invalid`), desacople total de Terminal en `Nectarine.app`, invocación asíncrona de `launch-desktop.sh`, apertura garantizada de UI en navegador, recuperación de puerto 5220 ante procesos colgados y actualización de `Nectarine.command`. | **Completado** |
 | **CP-23** | Reparación Integral de Herramientas & Purga de Anotación Ficticia | Herramienta de Mano (`pan`) añadida para encuadre del lienzo, arrastre de nodos con compensación de escala por zoom 1:1, manetas Bézier con cálculo relativo libre de saltos a infinito, creación interactiva de anotaciones al hacer clic sobre cualquier nodo, botón de eliminación rápida (`×`) en tarjetas y erradicación definitiva del comentario precargado de PIB/esperanza de vida. | **Completado** |
 | **CP-24** | Filtrado Multicolumna Compuesto (Multi-Condition Engine) | Sistema dinámico de filtrado multi-regla con soporte para múltiples columnas simultáneas, conjunción lógica conmutable (Y / O), operadores extendidos (`>`, `<`, `>=`, `<=`, `=`, `!=`, `contiene`), contador de filas en tiempo real con telemetría visual, persistencia en `dataStore` y badge numérico en botón de filtros. | **Completado** |
+| **CP-25** | Separación Estricta de Herramientas Selección/Mover, Marquee Box & Deformación Bézier Orgánica Cerrada | Separación conceptual y de eventos entre Selección (`select`, selección individual o múltiple elástica rectangular en fondo) y Mover (`move`, arrastre 1:1 con zoom compensado de nodo o selección múltiple). Rediseño del motor Bézier a curvas orgánicas cerradas continuas (sin cortes planos) con dos manetas tangentes rotuladas (`Curva 1` y `Curva 2`), áreas táctiles de 15px, botón de reseteo (`↺`), atajos contextuales y banner flotante de asistencia en lienzo. | **Completado** |
 
 ---
 
@@ -106,5 +108,5 @@ flowchart TD
 
 ## 4. Estado de la Sesión
 
-- **Estado Actual**: Sistema de filtrado de datos ampliado a soporte multicolumna completo con lógica booleana Y / O, operadores avanzados y telemetría de coincidencia en tiempo real. 26/26 tests unitarios aprobados, tipado estricto `tsc` con 0 errores y build de producción validado en 2.41s.
-- **Siguiente Paso**: Commit atómico y entrega al usuario con reporte técnico y guía de operación.
+- **Estado Actual**: Herramientas de Selección y Mover completamente desacopladas (con caja elástica Marquee). Deformación Bézier elevada a curvas orgánicas cerradas con manetas táctiles de 15px rotuladas, botón de reseteo rápido y banner de ayuda visual. 29/29 tests unitarios aprobados (100%), build de producción validado con `tsc -b && vite build` y servidor respondiendo HTTP 200 en puerto dedicado 5220.
+- **Siguiente Paso**: Commit atómico de cambios y entrega explicativa al usuario.

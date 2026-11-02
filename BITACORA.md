@@ -521,3 +521,44 @@ El usuario detectó con precisión que el manual anunciaba "9 geometrías" pero 
    - `bun test`: 26/26 tests pasados (100%).
    - `tsc -b`: 0 errores de tipado.
    - `vite build`: Build de producción validado en 2.41s.
+
+---
+
+## Entrada 017 — Separación de Herramientas (Seleccionar vs Mover), Caja de Selección Elástica (Marquee) y Deformación Bézier Orgánica Cerrada con Guía Visual
+- **Fecha y Hora**: 2026-11-02 14:18
+- **Fase**: Interacción Vectorial, UX Editorial & Motor Bézier
+- **Arquitecto**: Antigravity Principal Software Architect
+
+### Diagnóstico de Brechas (En respuesta al feedback del usuario)
+1. **Confusión y Fusión entre Seleccionar y Arrastrar**:
+   - En `CanvasNode.tsx`, el gestor de eventos contenía la condición unificada `if (activeTool === 'move' || activeTool === 'select') { setIsDragging(true); ... }`. En consecuencia, al hacer clic sobre un nodo con la herramienta Selección, este se desplazaba inmediatamente si el usuario movía el puntero aunque solo quisiera seleccionarlo.
+   - La herramienta Selección carecía además de selección múltiple por arrastre sobre el fondo del lienzo (caja elástica o *marquee box*).
+2. **Deficiencias en la Herramienta de Curvar Bézier**:
+   - **Falta de Guía Visual Inmediata**: Al activar el botón de curvar en la barra, el usuario no recibía ninguna instrucción de que debía hacer clic en un nodo para desplegar sus manetas de control.
+   - **Geometría Abierta Truncada**: La función previa `buildCubicBezierPath` generaba una curva cúbica abierta `M -r 0 C cp1 cp2 r 0` que provocaba que el nodo pareciera rebanado por la mitad con un corte horizontal plano en la base en lugar de deformarse armónicamente como un cuerpo cerrado orgánico.
+   - **Manetas Diminutas y sin Identificación**: Las manetas tenían un radio pequeño (5px) y carecían de etiquetas contextuales, dificultando discernir qué parte del vector se estaba modificando.
+
+### Resoluciones Aplicadas
+1. **Separación Funcional Rigurosa en `CanvasNode.tsx`**:
+   - **Herramienta Selección (`select`)**: Exclusivamente gestiona la selección del nodo (individual o múltiple con Shift/Cmd). Queda terminantemente deshabilitado el arrastre accidental mientras esta herramienta esté activa.
+   - **Herramienta Mover (`move`)**: Gestiona el arrastre y traslación posicional con escala compensada por zoom (1:1), moviendo simultáneamente todos los nodos seleccionados si el nodo pulsado forma parte de un grupo.
+2. **Caja Elástica de Selección Múltiple (Marquee Box) en `Canvas.tsx`**:
+   - Al arrastrar el puntero sobre el fondo del lienzo con la herramienta Selección activa, se dibuja un rectángulo elástico punteado con relleno translúcido rosáceo (`fill="rgba(225, 29, 72, 0.08)"`, `stroke="#e11d48"`).
+   - Todos los nodos cuyas coordenadas matemáticas queden comprendidas dentro de la caja se seleccionan de inmediato de forma reactiva (`selectAll`).
+3. **Rediseño del Motor Bézier a Curvas Orgánicas Cerradas en `bezierMath.ts`**:
+   - Nueva función `buildClosedOrganicBezierPath(radius, cp1, cp2)`: Genera un trayecto cerrado continuo compuesto por dos arcos cúbicos continuos tangentes en los extremos izquierdo y derecho (`M left C topCp1 topCp2 right C bottomCp1 bottomCp2 left Z`). Esto produce una deformación armónica, suave y completamente cerrada, sin bases aplanadas.
+   - Nueva función `generateOrganicBezierHandles(radius)`: Establece puntos de anclaje iniciales verticales polarizados en `(0, -radius * 1.33)` para el lóbulo superior y `(0, radius * 1.33)` para el lóbulo inferior.
+4. **Manetas Ergonómicas de Alta Visibilidad & Botón de Reseteo Rápido**:
+   - **Hit Target Ampliado a 15px**: Área de contacto transparente ampliada para facilitar el arrastre sin precisión milimétrica.
+   - **Etiquetas de Color Diferenciadas**:
+     - **Curva 1** (azul celeste `#0284c7`): Controla el lóbulo superior del vector.
+     - **Curva 2** (rosa carmesí `#e11d48`): Controla el lóbulo inferior del vector.
+   - **Botón de Restablecimiento Inmediato (`↺`)**: Aparece flotando junto al nodo si tiene curvatura personalizada, permitiendo con un solo clic restaurar la forma circular perfecta mediante `resetBezierHandles(node.id)`.
+5. **Banner Flotante de Guía Visual en el Lienzo**:
+   - Cuando se selecciona la herramienta Bézier, aparece en la parte superior central del lienzo un banner translúcido con animación suave informando al usuario: *"Modo Curvar Bézier: Haz clic en cualquier elemento para activar sus manetas y arrastra Curva 1 (azul) o Curva 2 (rosa) para deformarlo orgánicamente."*
+6. **Batería Zero-Defect**:
+   - Nuevos tests unitarios en `tests/toolsAndAnnotations.test.ts` para verificar `buildClosedOrganicBezierPath`, `generateOrganicBezierHandles`, `resetBezierHandles` y la separación de herramientas.
+   - `bun test`: 29/29 tests pasados (100%).
+   - `bun run verify` (`tsc -b && vite build`): 0 errores de tipado, compilación limpia.
+   - Socket HTTP 200 en puerto 5220 verificado.
+   - Firma de código en `/Users/joe/Desktop/Nectarine.app` verificada como válida.

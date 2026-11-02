@@ -2,6 +2,7 @@ import { describe, expect, it, beforeEach } from 'bun:test';
 import { useMutationStore } from '../src/store/mutationStore';
 import { useLayerStore } from '../src/store/layerStore';
 import { useDataStore } from '../src/store/dataStore';
+import { buildClosedOrganicBezierPath, generateOrganicBezierHandles } from '../src/engine/bezierMath';
 
 describe('Canvas Tools, Hand/Pan & Dynamic Annotations Suite', () => {
   beforeEach(() => {
@@ -32,6 +33,63 @@ describe('Canvas Tools, Hand/Pan & Dynamic Annotations Suite', () => {
 
     store.setActiveTool('annotate');
     expect(useMutationStore.getState().activeTool).toBe('annotate');
+  });
+
+  it('builds closed organic Bézier shapes that form complete loops without slicing', () => {
+    const radius = 16;
+    const handles = generateOrganicBezierHandles(radius);
+
+    expect(handles.cp1x).toBe(0);
+    expect(handles.cp1y).toBeCloseTo(-radius * 1.33, 1);
+    expect(handles.cp2x).toBe(0);
+    expect(handles.cp2y).toBeCloseTo(radius * 1.33, 1);
+
+    const pathD = buildClosedOrganicBezierPath(
+      radius,
+      { x: handles.cp1x, y: handles.cp1y },
+      { x: handles.cp2x, y: handles.cp2y }
+    );
+
+    // Verify it is a closed SVG path with start M, two C curves, and closes with Z
+    expect(pathD.startsWith('M -16.00 0.00')).toBe(true);
+    expect(pathD.includes('C ')).toBe(true);
+    expect(pathD.endsWith('Z')).toBe(true);
+    expect(pathD.includes('NaN')).toBe(false);
+    expect(pathD.includes('undefined')).toBe(false);
+  });
+
+  it('supports mutating and resetting Bézier handles in mutationStore', () => {
+    const store = useMutationStore.getState();
+
+    store.updateBezierHandles('node-test-1', -10, -25, 12, 30);
+    expect(useMutationStore.getState().mutations['node-test-1'].cp1x).toBe(-10);
+    expect(useMutationStore.getState().mutations['node-test-1'].cp1y).toBe(-25);
+    expect(useMutationStore.getState().mutations['node-test-1'].cp2x).toBe(12);
+    expect(useMutationStore.getState().mutations['node-test-1'].cp2y).toBe(30);
+
+    store.resetBezierHandles('node-test-1');
+    expect(useMutationStore.getState().mutations['node-test-1'].cp1x).toBeUndefined();
+    expect(useMutationStore.getState().mutations['node-test-1'].cp2x).toBeUndefined();
+  });
+
+  it('separates node selection from node movement and supports marquee selectAll', () => {
+    const store = useMutationStore.getState();
+
+    // Select single node
+    store.selectNode('node-1', false);
+    expect(useMutationStore.getState().selectedNodeIds).toEqual(['node-1']);
+
+    // Shift-select another node
+    store.selectNode('node-2', true);
+    expect(useMutationStore.getState().selectedNodeIds).toEqual(['node-1', 'node-2']);
+
+    // Marquee select multiple nodes
+    store.selectAll(['node-1', 'node-2', 'node-3', 'node-4']);
+    expect(useMutationStore.getState().selectedNodeIds.length).toBe(4);
+
+    // Clear selection
+    store.clearSelection();
+    expect(useMutationStore.getState().selectedNodeIds.length).toBe(0);
   });
 
   it('adds and updates annotations dynamically attached to a specific node', () => {

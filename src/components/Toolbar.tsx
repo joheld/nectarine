@@ -160,7 +160,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({ onOpenProfiler, svgRef }) => {
           className={`p-1.5 rounded-lg transition-colors ${
             activeTool === 'pan' ? 'bg-white text-[#e11d48] shadow-xs' : 'text-[#8c7664] hover:text-[#2c1a0e]'
           }`}
-          title="Mano: Mover y encuadrar lienzo [Tecla H o Espacio]"
+          title="Mano: Encuadrar y navegar por el lienzo sin modificar datos [Tecla H o Espacio]"
         >
           <Hand className="w-4 h-4" />
         </button>
@@ -169,7 +169,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({ onOpenProfiler, svgRef }) => {
           className={`p-1.5 rounded-lg transition-colors ${
             activeTool === 'select' ? 'bg-white text-[#e11d48] shadow-xs' : 'text-[#8c7664] hover:text-[#2c1a0e]'
           }`}
-          title="Seleccionar elemento o grupo [Tecla V]"
+          title="Seleccionar: Elige elementos individuales o arrastra sobre el fondo para selección múltiple con caja [Tecla V]"
         >
           <Pointer className="w-4 h-4" />
         </button>
@@ -178,7 +178,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({ onOpenProfiler, svgRef }) => {
           className={`p-1.5 rounded-lg transition-colors ${
             activeTool === 'move' ? 'bg-white text-[#e11d48] shadow-xs' : 'text-[#8c7664] hover:text-[#2c1a0e]'
           }`}
-          title="Arrastrar y mover libremente [Tecla M]"
+          title="Mover y Reubicar: Haz clic y arrastra nodos por el lienzo con control 1:1 [Tecla M]"
         >
           <Move className="w-4 h-4" />
         </button>
@@ -187,7 +187,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({ onOpenProfiler, svgRef }) => {
           className={`p-1.5 rounded-lg transition-colors ${
             activeTool === 'bezier' ? 'bg-white text-[#e11d48] shadow-xs' : 'text-[#8c7664] hover:text-[#2c1a0e]'
           }`}
-          title="Deformar y curvar con manetas artísticas [Tecla B]"
+          title="Curvar Bézier: Clic en cualquier dato para desplegar manetas de deformación orgánica [Tecla B]"
         >
           <Spline className="w-4 h-4" />
         </button>
@@ -196,7 +196,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({ onOpenProfiler, svgRef }) => {
           className={`p-1.5 rounded-lg transition-colors ${
             activeTool === 'annotate' ? 'bg-white text-[#e11d48] shadow-xs' : 'text-[#8c7664] hover:text-[#2c1a0e]'
           }`}
-          title="Crear notas explicativas atadas al punto [Tecla A]"
+          title="Anotar: Clic en cualquier dato para crear notas explicativas atadas al punto [Tecla A]"
         >
           <MessageSquarePlus className="w-4 h-4" />
         </button>

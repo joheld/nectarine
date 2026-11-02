@@ -3,7 +3,8 @@ import { BaseNode } from '../engine/types';
 import { useMutationStore } from '../store/mutationStore';
 import { colorService } from '../services/colorService';
 import { useLayerStore } from '../store/layerStore';
-import { buildCubicBezierPath } from '../engine/bezierMath';
+import { useDataStore } from '../store/dataStore';
+import { buildClosedOrganicBezierPath, generateOrganicBezierHandles } from '../engine/bezierMath';
 
 interface CanvasNodeProps {
   node: BaseNode;
@@ -18,6 +19,7 @@ export const CanvasNode: React.FC<CanvasNodeProps> = ({ node, blendMode, zoom = 
     selectNode,
     updatePosition,
     updateBezierHandles,
+    resetBezierHandles,
     setHoveredNode,
     activeTool,
     calculateDistortion,
@@ -25,16 +27,20 @@ export const CanvasNode: React.FC<CanvasNodeProps> = ({ node, blendMode, zoom = 
     isGlowEnabled,
   } = useMutationStore();
 
+  const { baseNodes } = useDataStore();
   const { layerOverrides, addAnnotation } = useLayerStore();
   const [isDragging, setIsDragging] = useState(false);
   const [isDraggingCp1, setIsDraggingCp1] = useState(false);
   const [isDraggingCp2, setIsDraggingCp2] = useState(false);
 
-  const nodeDragStartRef = useRef<{ clientX: number; clientY: number; initialX: number; initialY: number }>({
+  const nodeDragStartRef = useRef<{
+    clientX: number;
+    clientY: number;
+    initialPositions: Record<string, { x: number; y: number }>;
+  }>({
     clientX: 0,
     clientY: 0,
-    initialX: 0,
-    initialY: 0,
+    initialPositions: {},
   });
 
   const cp1DragStartRef = useRef<{ clientX: number; clientY: number; initialCp1x: number; initialCp1y: number }>({
@@ -72,24 +78,25 @@ export const CanvasNode: React.FC<CanvasNodeProps> = ({ node, blendMode, zoom = 
   const distortion = calculateDistortion(node);
   const showGhost = isPinned && (Math.abs(currentX - node.mathX) > 2 || Math.abs(currentY - node.mathY) > 2);
 
-  // Default Bézier handles relative to center
-  const cp1x = mut?.cp1x ?? -radius * 1.5;
-  const cp1y = mut?.cp1y ?? -radius * 0.8;
-  const cp2x = mut?.cp2x ?? radius * 1.5;
-  const cp2y = mut?.cp2y ?? radius * 0.8;
+  // Default organic Bézier handles relative to center
+  const defaultHandles = generateOrganicBezierHandles(radius);
+  const cp1x = mut?.cp1x ?? defaultHandles.cp1x;
+  const cp1y = mut?.cp1y ?? defaultHandles.cp1y;
+  const cp2x = mut?.cp2x ?? defaultHandles.cp2x;
+  const cp2y = mut?.cp2y ?? defaultHandles.cp2y;
   const hasCustomBezier = mut?.cp1x !== undefined || mut?.cp2x !== undefined;
 
   const handlePointerDown = (e: React.PointerEvent) => {
     if (isLocked) return;
 
-    // Si la herramienta activa es Mano (pan), permitir que el evento burbujee al lienzo
+    // Si la herramienta es Mano (pan), burbujea al lienzo
     if (activeTool === 'pan') {
       return;
     }
 
     e.stopPropagation();
 
-    // Si la herramienta activa es Anotar, solicitar texto y crear nota atada
+    // 1. Herramienta Anotar: solicitar texto al hacer clic
     if (activeTool === 'annotate') {
       selectNode(node.id, false);
       const label = node.label || `Dato #${node.rawIndex + 1}`;
@@ -100,32 +107,61 @@ export const CanvasNode: React.FC<CanvasNodeProps> = ({ node, blendMode, zoom = 
       return;
     }
 
-    selectNode(node.id, e.shiftKey || e.metaKey);
+    // 2. Herramienta Selección: SOLO SELECCIONA (No arrastra el nodo por accidente)
+    if (activeTool === 'select') {
+      selectNode(node.id, e.shiftKey || e.metaKey);
+      return;
+    }
 
-    // Herramienta Mover o Seleccionar: iniciar arrastre con zoom compensado
-    if (activeTool === 'move' || activeTool === 'select') {
+    // 3. Herramienta Curvar Bézier: selecciona e inicializa manetas de curvatura si no existen
+    if (activeTool === 'bezier') {
+      selectNode(node.id, false);
+      if (!hasCustomBezier) {
+        updateBezierHandles(node.id, defaultHandles.cp1x, defaultHandles.cp1y, defaultHandles.cp2x, defaultHandles.cp2y);
+      }
+      return;
+    }
+
+    // 4. Herramienta Mover / Arrastre: inicia arrastre del nodo o grupo
+    if (activeTool === 'move') {
+      const isAlreadySelected = selectedNodeIds.includes(node.id);
+      if (!isAlreadySelected) {
+        selectNode(node.id, false);
+      }
+
+      const targetsToMove = isAlreadySelected ? selectedNodeIds : [node.id];
+      const initialPositions: Record<string, { x: number; y: number }> = {};
+
+      targetsToMove.forEach((id) => {
+        const targetNode = baseNodes.find((n) => n.id === id);
+        if (targetNode) {
+          const targetMut = mutations[id];
+          initialPositions[id] = {
+            x: targetMut?.customX ?? targetNode.mathX,
+            y: targetMut?.customY ?? targetNode.mathY,
+          };
+        }
+      });
+
       setIsDragging(true);
       nodeDragStartRef.current = {
         clientX: e.clientX,
         clientY: e.clientY,
-        initialX: currentX,
-        initialY: currentY,
+        initialPositions,
       };
       (e.currentTarget as Element).setPointerCapture(e.pointerId);
-    }
-
-    // Herramienta Curvar Bézier: inicializar manetas si no existen
-    if (activeTool === 'bezier' && !hasCustomBezier) {
-      updateBezierHandles(node.id, cp1x, cp1y, cp2x, cp2y);
     }
   };
 
   const handlePointerMove = (e: React.PointerEvent) => {
-    if (isDragging) {
+    if (isDragging && activeTool === 'move') {
       e.stopPropagation();
       const dx = (e.clientX - nodeDragStartRef.current.clientX) / zoom;
       const dy = (e.clientY - nodeDragStartRef.current.clientY) / zoom;
-      updatePosition(node.id, nodeDragStartRef.current.initialX + dx, nodeDragStartRef.current.initialY + dy, true);
+
+      Object.entries(nodeDragStartRef.current.initialPositions).forEach(([id, initPos]) => {
+        updatePosition(id, initPos.x + dx, initPos.y + dy, true);
+      });
     }
   };
 
@@ -210,11 +246,20 @@ export const CanvasNode: React.FC<CanvasNodeProps> = ({ node, blendMode, zoom = 
     }
   };
 
+  const handleResetBezier = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    resetBezierHandles(node.id);
+  };
+
   const nodeCursor = isLocked
     ? 'cursor-not-allowed'
     : activeTool === 'pan'
     ? 'cursor-grab'
+    : activeTool === 'select'
+    ? 'cursor-pointer'
     : activeTool === 'annotate'
+    ? 'cursor-crosshair'
+    : activeTool === 'bezier'
     ? 'cursor-crosshair'
     : activeTool === 'move'
     ? isDragging
@@ -225,7 +270,7 @@ export const CanvasNode: React.FC<CanvasNodeProps> = ({ node, blendMode, zoom = 
   return (
     <g
       id={node.id}
-      className={`${nodeCursor} transition-opacity`}
+      className={`${nodeCursor} transition-opacity group`}
       onPointerEnter={() => setHoveredNode(node.id)}
       onPointerLeave={() => setHoveredNode(null)}
       onDoubleClick={(e) => {
@@ -260,7 +305,7 @@ export const CanvasNode: React.FC<CanvasNodeProps> = ({ node, blendMode, zoom = 
         </g>
       )}
 
-      {/* 2. Main Vector Node */}
+      {/* 2. Main Vector Node Shape (Closed Organic Bézier or Exact Circle) */}
       <g
         transform={`translate(${currentX}, ${currentY})`}
         onPointerDown={handlePointerDown}
@@ -269,16 +314,11 @@ export const CanvasNode: React.FC<CanvasNodeProps> = ({ node, blendMode, zoom = 
       >
         {hasCustomBezier ? (
           <path
-            d={buildCubicBezierPath(
-              { x: -radius, y: 0 },
-              { x: cp1x, y: cp1y },
-              { x: cp2x, y: cp2y },
-              { x: radius, y: 0 }
-            )}
+            d={buildClosedOrganicBezierPath(radius, { x: cp1x, y: cp1y }, { x: cp2x, y: cp2y })}
             fill={fill}
             fillOpacity="0.88"
-            stroke="rgba(0,0,0,0.15)"
-            strokeWidth="1"
+            stroke="rgba(0,0,0,0.18)"
+            strokeWidth={isSelected ? 2 : 1}
             filter={isGlowEnabled ? 'url(#celestial-glow)' : undefined}
             style={{ mixBlendMode: blendMode as any }}
           />
@@ -291,6 +331,19 @@ export const CanvasNode: React.FC<CanvasNodeProps> = ({ node, blendMode, zoom = 
             strokeWidth={isSelected ? 2 : 1}
             filter={isGlowEnabled ? 'url(#celestial-glow)' : undefined}
             style={{ mixBlendMode: blendMode as any }}
+          />
+        )}
+
+        {/* Halo outline hint when Bézier tool is active */}
+        {activeTool === 'bezier' && !isSelected && (
+          <circle
+            r={radius + 4}
+            fill="none"
+            stroke="#e11d48"
+            strokeWidth="1"
+            strokeDasharray="3 3"
+            opacity="0.65"
+            className="animate-pulse"
           />
         )}
 
@@ -311,7 +364,7 @@ export const CanvasNode: React.FC<CanvasNodeProps> = ({ node, blendMode, zoom = 
         {/* Selection Ring (Purged on export) */}
         {isSelected && (
           <circle
-            r={radius + 4}
+            r={radius + 5}
             fill="none"
             stroke="#0066cc"
             strokeWidth="2"
@@ -352,54 +405,93 @@ export const CanvasNode: React.FC<CanvasNodeProps> = ({ node, blendMode, zoom = 
         </g>
       )}
 
-      {/* 4. Bézier Interactive Handles (Purged on export) */}
+      {/* 4. Bézier Interactive Handles & Reset (Purged on export) */}
       {isSelected && activeTool === 'bezier' && (
         <g className="bezier-handles" data-editor-ui="true">
+          {/* Line to cp1 (Upper tangent) */}
           <line
             x1={currentX}
             y1={currentY}
             x2={currentX + cp1x}
             y2={currentY + cp1y}
-            stroke="#0066cc"
-            strokeWidth="1"
-            strokeDasharray="2 2"
+            stroke="#0284c7"
+            strokeWidth="1.2"
+            strokeDasharray="3 2"
             className="bezier-line"
           />
-          <circle
-            cx={currentX + cp1x}
-            cy={currentY + cp1y}
-            r={5}
-            fill="#0066cc"
-            stroke="#ffffff"
-            strokeWidth="1.5"
-            className="bezier-handle cursor-grab active:cursor-grabbing hover:scale-125 transition-transform"
+          {/* Handle 1: Upper control (Cyan/Blue) */}
+          <g
+            transform={`translate(${currentX + cp1x}, ${currentY + cp1y})`}
             onPointerDown={handleCp1PointerDown}
             onPointerMove={handleCp1PointerMove}
             onPointerUp={handleCp1PointerUp}
-          />
+            className="cursor-grab active:cursor-grabbing group/h1"
+          >
+            <title>Maneta Superior: Arrastra para deformar el lóbulo superior</title>
+            {/* Expanded Hit area */}
+            <circle r={15} fill="transparent" />
+            <circle
+              r={6.5}
+              fill="#0284c7"
+              stroke="#ffffff"
+              strokeWidth="2"
+              className="drop-shadow-sm group-hover/h1:scale-125 transition-transform"
+            />
+            {/* Tag badge */}
+            <rect x={10} y={-8} width={48} height={15} rx={4} fill="#0284c7" opacity={0.9} />
+            <text x={14} y={3} fill="#ffffff" fontSize="8.5" fontWeight="bold" fontFamily="monospace">
+              Curva 1
+            </text>
+          </g>
 
+          {/* Line to cp2 (Lower tangent) */}
           <line
             x1={currentX}
             y1={currentY}
             x2={currentX + cp2x}
             y2={currentY + cp2y}
             stroke="#e11d48"
-            strokeWidth="1"
-            strokeDasharray="2 2"
+            strokeWidth="1.2"
+            strokeDasharray="3 2"
             className="bezier-line"
           />
-          <circle
-            cx={currentX + cp2x}
-            cy={currentY + cp2y}
-            r={5}
-            fill="#e11d48"
-            stroke="#ffffff"
-            strokeWidth="1.5"
-            className="bezier-handle cursor-grab active:cursor-grabbing hover:scale-125 transition-transform"
+          {/* Handle 2: Lower control (Rose/Red) */}
+          <g
+            transform={`translate(${currentX + cp2x}, ${currentY + cp2y})`}
             onPointerDown={handleCp2PointerDown}
             onPointerMove={handleCp2PointerMove}
             onPointerUp={handleCp2PointerUp}
-          />
+            className="cursor-grab active:cursor-grabbing group/h2"
+          >
+            <title>Maneta Inferior: Arrastra para deformar el lóbulo inferior</title>
+            {/* Expanded Hit area */}
+            <circle r={15} fill="transparent" />
+            <circle
+              r={6.5}
+              fill="#e11d48"
+              stroke="#ffffff"
+              strokeWidth="2"
+              className="drop-shadow-sm group-hover/h2:scale-125 transition-transform"
+            />
+            {/* Tag badge */}
+            <rect x={10} y={-8} width={48} height={15} rx={4} fill="#e11d48" opacity={0.9} />
+            <text x={14} y={3} fill="#ffffff" fontSize="8.5" fontWeight="bold" fontFamily="monospace">
+              Curva 2
+            </text>
+          </g>
+
+          {/* Reset curve button */}
+          {hasCustomBezier && (
+            <g
+              transform={`translate(${currentX + radius + 14}, ${currentY})`}
+              className="cursor-pointer hover:scale-110 transition-transform"
+              onClick={handleResetBezier}
+            >
+              <title>Restablecer forma circular perfecta</title>
+              <rect x={-9} y={-9} width={18} height={18} rx={5} fill="#ffffff" stroke="#dfd2c4" strokeWidth="1" className="shadow-xs" />
+              <text x={0} y={3.5} textAnchor="middle" fill="#8c7664" fontSize="11" fontWeight="bold">↺</text>
+            </g>
+          )}
         </g>
       )}
     </g>

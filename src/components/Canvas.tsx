@@ -5,7 +5,7 @@ import { CanvasNode } from './CanvasNode';
 import { TetheredAnnotations } from './TetheredAnnotations';
 import { DataLassoContextMenu } from './DataLasso';
 import { colorService } from '../services/colorService';
-import { ZoomIn, ZoomOut, Maximize2, Upload, ShieldCheck } from 'lucide-react';
+import { ZoomIn, ZoomOut, Maximize2, Upload, ShieldCheck, Spline } from 'lucide-react';
 import { NectarineLogo } from './NectarineLogo';
 import { openNativeFileDialog, processDataFile } from '../services/fileImportHelper';
 
@@ -28,13 +28,14 @@ export const Canvas: React.FC<CanvasProps> = ({ svgRef }) => {
     setLayoutBounds,
     loadDataset,
   } = useDataStore();
-  const { clearSelection, isGlowEnabled, activeTool } = useMutationStore();
+  const { clearSelection, selectAll, isGlowEnabled, activeTool, mutations } = useMutationStore();
   const containerRef = useRef<HTMLDivElement>(null);
   const fileInputFallbackRef = useRef<HTMLInputElement>(null);
 
   const [zoom, setZoom] = useState(1);
   const [pan, setPan] = useState({ x: 0, y: 0 });
   const [isPanning, setIsPanning] = useState(false);
+  const [marquee, setMarquee] = useState<{ startX: number; startY: number; currentX: number; currentY: number } | null>(null);
   const [isDraggingFile, setIsDraggingFile] = useState(false);
   const panStartRef = useRef({ x: 0, y: 0 });
 
@@ -78,9 +79,19 @@ export const Canvas: React.FC<CanvasProps> = ({ svgRef }) => {
       return;
     }
 
-    if (e.button === 0 && (e.target as Element).tagName === 'svg') {
+    const target = e.target as Element;
+    if (e.button === 0 && (target.tagName === 'svg' || target.classList.contains('canvas-background'))) {
       clearSelection();
       setContextMenu((prev) => ({ ...prev, visible: false }));
+
+      // Si la herramienta es Selección, iniciar caja de selección elástica (Marquee)
+      if (activeTool === 'select' && containerRef.current) {
+        const rect = containerRef.current.getBoundingClientRect();
+        const svgX = (e.clientX - rect.left - pan.x) / zoom;
+        const svgY = (e.clientY - rect.top - pan.y) / zoom;
+        setMarquee({ startX: svgX, startY: svgY, currentX: svgX, currentY: svgY });
+        (e.currentTarget as Element).setPointerCapture(e.pointerId);
+      }
     }
   };
 
@@ -90,12 +101,41 @@ export const Canvas: React.FC<CanvasProps> = ({ svgRef }) => {
         x: e.clientX - panStartRef.current.x,
         y: e.clientY - panStartRef.current.y,
       });
+      return;
+    }
+
+    if (marquee && containerRef.current) {
+      const rect = containerRef.current.getBoundingClientRect();
+      const svgX = (e.clientX - rect.left - pan.x) / zoom;
+      const svgY = (e.clientY - rect.top - pan.y) / zoom;
+      setMarquee((prev) => (prev ? { ...prev, currentX: svgX, currentY: svgY } : null));
+
+      const minX = Math.min(marquee.startX, svgX);
+      const maxX = Math.max(marquee.startX, svgX);
+      const minY = Math.min(marquee.startY, svgY);
+      const maxY = Math.max(marquee.startY, svgY);
+
+      const insideIds = baseNodes
+        .filter((n) => {
+          const x = mutations[n.id]?.customX ?? n.mathX;
+          const y = mutations[n.id]?.customY ?? n.mathY;
+          return x >= minX && x <= maxX && y >= minY && y <= maxY;
+        })
+        .map((n) => n.id);
+
+      selectAll(insideIds);
     }
   };
 
   const handlePointerUp = (e: React.PointerEvent) => {
     if (isPanning) {
       setIsPanning(false);
+      try {
+        (e.currentTarget as Element).releasePointerCapture(e.pointerId);
+      } catch (_) {}
+    }
+    if (marquee) {
+      setMarquee(null);
       try {
         (e.currentTarget as Element).releasePointerCapture(e.pointerId);
       } catch (_) {}
@@ -490,8 +530,34 @@ export const Canvas: React.FC<CanvasProps> = ({ svgRef }) => {
           </g>
 
           <TetheredAnnotations zoom={zoom} />
+
+          {/* Marquee Selection Box */}
+          {marquee && (
+            <rect
+              x={Math.min(marquee.startX, marquee.currentX)}
+              y={Math.min(marquee.startY, marquee.currentY)}
+              width={Math.max(1, Math.abs(marquee.currentX - marquee.startX))}
+              height={Math.max(1, Math.abs(marquee.currentY - marquee.startY))}
+              fill="rgba(225, 29, 72, 0.08)"
+              stroke="#e11d48"
+              strokeWidth={1.2 / zoom}
+              strokeDasharray="4 3"
+              className="pointer-events-none"
+              data-editor-ui="true"
+            />
+          )}
         </g>
       </svg>
+
+      {/* Visual Guidance Banner for Bézier Curvature Mode */}
+      {activeTool === 'bezier' && (
+        <div className="absolute top-3 left-1/2 -translate-x-1/2 z-30 flex items-center gap-2.5 px-4 py-2 rounded-full bg-[#fffdfa]/95 border border-[#dfd2c4] shadow-md text-[#5e4634] text-[11.5px] backdrop-blur-sm pointer-events-none animate-in fade-in slide-in-from-top-2">
+          <Spline className="w-4 h-4 text-[#e11d48] shrink-0" />
+          <span>
+            <strong>Modo Curvar Bézier:</strong> Haz clic en cualquier elemento para activar sus manetas y arrastra <strong>Curva 1</strong> (azul) o <strong>Curva 2</strong> (rosa) para deformarlo orgánicamente.
+          </span>
+        </div>
+      )}
 
       {contextMenu.visible && (
         <DataLassoContextMenu
