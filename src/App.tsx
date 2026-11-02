@@ -25,7 +25,16 @@ export const App: React.FC = () => {
         return;
       }
 
-      if (e.key === '?') {
+      if ((e.metaKey || e.ctrlKey) && !e.shiftKey && e.key.toLowerCase() === 'z') {
+        e.preventDefault();
+        useMutationStore.getState().undo();
+      } else if (
+        (e.metaKey || e.ctrlKey) &&
+        ((e.shiftKey && e.key.toLowerCase() === 'z') || e.key.toLowerCase() === 'y')
+      ) {
+        e.preventDefault();
+        useMutationStore.getState().redo();
+      } else if (e.key === '?') {
         e.preventDefault();
         setIsDocsOpen((prev) => !prev);
       } else if (e.key === 'Escape') {

@@ -678,3 +678,37 @@ Tras la queja del usuario sobre el aspecto de la interfaz, se ejecutó un script
 - `bun run verify` (`tsc -b && vite build`): 0 errores, compilación de producción limpia en 2.32s.
 - Verificación visual con Playwright: capturas PNG (`screenshot_v3_perfect.png`) confirmaron composición equilibrada, cero desbordamientos y legibilidad cristalina.
 - Socket HTTP 200 en puerto 5220 y sellado de código en `/Users/joe/Desktop/Nectarine.app` verificados.
+
+
+---
+
+## Entrada 021 — Blindaje para Evaluadores de Élite: Demos 1-Clic, Tooltips Hover & Pila Undo/Redo (⌘Z)
+- **Fecha y Hora**: 2026-11-02 15:20
+- **Fase**: Fase 6: Pulido de Excelencia & Cero Fricción para Visualizadores de Élite
+- **Arquitecto**: Antigravity Principal Software Architect
+
+### Contexto y Necesidad
+Con el objetivo de compartir Nectarine Studio con visualizadores de datos de renombre internacional (periodistas visuales, autores y diseñadores de información), se implementaron las 3 características imprescindibles para garantizar una primera impresión de clase mundial sin fricciones ni frustraciones:
+
+### Implementación Detallada
+1. **Datasets de Demostración Curados en 1 Clic (`demoDatasets.ts` & `Canvas.tsx`)**:
+   - En la tarjeta central del lienzo vacío se incorporó una sección dedicada: *"¿Quieres probar la app de inmediato? Carga una demo:"*.
+   - **Demo 1: Desarrollo Humano & Economía Global**: 14 naciones con métricas de PIB per cápita, esperanza de vida, población e índice de felicidad. Activa inmediatamente el gráfico de Dispersión con 5 regiones en capas.
+   - **Demo 2: Cosmos & Exoplanetas Descubiertos**: 12 mundos interestelares con distancia en años luz, masa, clase estelar y temperatura. Activa la arquitectura Celestial / Espiral áurea.
+   - Permite que cualquier evaluador comience a interactuar con las 9 geometrías en menos de 2 segundos sin tener que buscar o formatear un CSV.
+2. **Tooltips de Precisión al Pasar el Cursor (`CanvasNode.tsx`)**:
+   - Detección de puntero reactiva con `onPointerEnter` y `onPointerLeave` vinculada a `hoveredNodeId`.
+   - Renderizado dinámico de un tooltip vectorial flotante con fondo obsidiana `#2c1a0e`, bisel blanco traslúcido, sombra difusa y flecha indicadora.
+   - Muestra el nombre de la entidad en negrita y su categoría junto a la métrica X formateada con separador de miles.
+   - Marcado con `data-editor-ui="true"` para garantizar purga automática al exportar a SVG o copiar a Figma.
+   - Inyección de etiqueta accesible `<title>` nativa para compatibilidad total con lectores de pantalla.
+3. **Motor Completo de Deshacer / Rehacer (Undo / Redo con <kbd>⌘Z</kbd> & <kbd>⌘⇧Z</kbd>)**:
+   - En `mutationStore.ts` se implementó una pila de historial inmutable (`undoStack` y `redoStack`) con un límite de 40 estados.
+   - Instantáneas automáticas (`recordSnapshot`) antes de cada mutación: arrastre de nodos, manetas Bézier, cambios de color, morfología de glifos, escala o anclaje ético.
+   - Listener de teclado global en `App.tsx` que intercepta <kbd>⌘Z</kbd> (Deshacer) y <kbd>⌘⇧Z</kbd> / <kbd>⌘Y</kbd> (Rehacer), respetando inputs de texto activos.
+
+### Batería Zero-Defect
+- `bun test`: 36/36 tests pasados (100%), incluyendo 2 nuevos tests unitarios para la pila de historial <kbd>⌘Z</kbd> y los datasets demo.
+- `bun run verify` (`tsc -b && vite build`): 0 errores de tipado, compilación en 2.23s.
+- Verificación con Playwright: capturas PNG confirmaron el renderizado impecable de las tarjetas demo y el tooltip flotante al posar el cursor sobre un nodo.
+- Socket HTTP 200 en puerto 5220 y sellado de código en `/Users/joe/Desktop/Nectarine.app` verificados.

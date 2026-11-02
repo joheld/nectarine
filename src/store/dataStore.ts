@@ -111,8 +111,9 @@ export const useDataStore = create<DataState>((set, get) => ({
 
     const guardrail = datasetProfiler.checkPerformance(rows.length);
 
-    // Limpiar mutaciones previas y anotaciones al cargar un nuevo dataset
+    // Limpiar mutaciones previas, historial y anotaciones al cargar un nuevo dataset
     useMutationStore.getState().resetAllMutations();
+    useMutationStore.getState().clearHistory();
     useLayerStore.getState().clearAnnotations();
 
     set({

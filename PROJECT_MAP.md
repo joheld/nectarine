@@ -30,6 +30,7 @@ gitGraph
     commit id: "feat-live-hot-reload-glyphs-textures-figma-clipboard" tag: "v3.0.0"
     commit id: "feat-vertical-toolbox-palette" tag: "v3.1.0"
     commit id: "feat-pro-visual-architecture-redesign" tag: "v3.2.0"
+    commit id: "feat-demo-datasets-hover-tooltips-undo-redo" tag: "v3.3.0"
 ```
 
 ---
@@ -67,6 +68,7 @@ gitGraph
 | **CP-26** | Vanguardia de Taller: Reconciliación en Caliente, Glifos Morfológicos, Texturas de Imprenta & Copiar a Figma (<kbd>⌘C</kbd>) | Motor de reconciliación determinista `reconciler.ts` que permite soltar un CSV/JSON actualizado preservando todas las mutaciones artísticas y notas de entidades previas por clave primaria. Estudio de Glifos Morfológicos (`glyphMath.ts`: Círculo, Pétalo, Estrella, Rombo, Semilla). Texturas analógicas de taller editorial (`textureService.ts`: Grano Risográfico, Trama Halftone, Papel de Algodón). Copia directa a Figma/Illustrator con <kbd>⌘C</kbd> y botón en barra. | **Completado** |
 | **CP-27** | Paleta Vertical Clásica & Barra Superior Desahogada | Implementación de `VerticalToolbox.tsx` como tira vertical delgada (48px) fija a la izquierda del lienzo (estilo Illustrator / Photoshop) con las 5 herramientas (`select` [V], `move` [M], `bezier` [B], `annotate` [A], `pan` [H]) y botón de reseteo (`↺`). Desahogo total de la barra superior: los 9 gráficos permanecen accesibles en 1 clic directo en el control segmentado central sin menús ocultos, archivo/filtros a la izquierda y estilos/exportación a la derecha. | **Completado** |
 | **CP-28** | Auditoría Visual Forense (Visión Computacional) & Rediseño Pro | Inspección empírica de capturas PNG con Playwright: resolución del desbordamiento horizontal en la barra superior (erradicación de selects anchos, visibilidad 100% de 'Copiar a Figma' y 'Exportar SVG'), reubicación ergonómica de la tira de herramientas en el extremo exterior izquierdo (48px), dimensionamiento simétrico de Capas (256px) e implementación del Inspector Permanente Dual (`NodeInspector.tsx`: 'Estudio & Estilo' con swatches de color y controles táctiles cuando no hay selección, e 'Inspector de Vector' cuando se selecciona un elemento). | **Completado** |
+| **CP-29** | Blindaje para Evaluadores de Élite: Demos 1-Clic, Tooltips Hover & Pila Undo/Redo (<kbd>⌘Z</kbd>) | Erradicación total de las 3 fuentes de fricción: 1) Dos datasets de demostración curados listos para cargar en 1 clic ('Desarrollo Humano' y 'Cosmos & Exoplanetas') en la tarjeta de lienzo vacío para desbloquear y probar las 9 geometrías en 2 segundos. 2) Tooltip visual de precisión al posar el cursor (`CanvasNode.tsx`) con nombre, categoría y métricas tabulares. 3) Pila reactiva de Deshacer/Rehacer (<kbd>⌘Z</kbd> / <kbd>⌘⇧Z</kbd>) en `mutationStore.ts` para revertir posiciones, colores, escalas y manetas Bézier. | **Completado** |
 
 ---
 
@@ -114,5 +116,5 @@ flowchart TD
 
 ## 4. Estado de la Sesión
 
-- **Estado Actual**: Rediseño visual y arquitectónico completo guiado por visión computacional con capturas reales renderizadas en Playwright. Se eliminó el desbordamiento horizontal en la barra superior (los botones 'Copiar a Figma' y 'Exportar SVG' tienen visibilidad total y margen garantizado), la tira de 5 herramientas se ubicó en el extremo izquierdo exterior (`VerticalToolbox.tsx`, 48px), el panel de Capas se ajustó a 256px y el inspector lateral derecho (`NodeInspector.tsx`, 288px) es permanente con modo dual ('Estudio & Estilo' con previsualización de muestras de color cuando no hay selección, e 'Inspector de Vector' cuando se selecciona un dato). 34/34 tests aprobados, `tsc -b && vite build` limpio en 2.32s y HTTP 200 en puerto 5220.
-- **Siguiente Paso**: Commit atómico y entrega explicativa al usuario.
+- **Estado Actual**: Nectarine Studio queda completamente blindado para evaluación por visualizadores de datos de élite. Implementados: 1) Carga de datasets demo en 1 solo clic en la pantalla de bienvenida (Países y Exoplanetas), 2) Tooltips visuales obsidian/terracotta al pasar el cursor (hover) sobre cualquier nodo, y 3) Pila completa de Deshacer/Rehacer con atajos universales de macOS (<kbd>⌘Z</kbd> / <kbd>⌘⇧Z</kbd>). 36/36 tests unitarios aprobados, compilación limpia en 2.23s y HTTP 200 en puerto 5220.
+- **Siguiente Paso**: Commit atómico y entrega explicativa al usuario con guía de compartición.

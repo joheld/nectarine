@@ -22,6 +22,7 @@ export const CanvasNode: React.FC<CanvasNodeProps> = ({ node, blendMode, zoom = 
     updateBezierHandles,
     resetBezierHandles,
     setHoveredNode,
+    hoveredNodeId,
     activeTool,
     calculateDistortion,
     togglePin,
@@ -147,6 +148,7 @@ export const CanvasNode: React.FC<CanvasNodeProps> = ({ node, blendMode, zoom = 
       });
 
       setIsDragging(true);
+      useMutationStore.getState().recordSnapshot();
       nodeDragStartRef.current = {
         clientX: e.clientX,
         clientY: e.clientY,
@@ -179,6 +181,7 @@ export const CanvasNode: React.FC<CanvasNodeProps> = ({ node, blendMode, zoom = 
 
   const handleCp1PointerDown = (e: React.PointerEvent) => {
     e.stopPropagation();
+    useMutationStore.getState().recordSnapshot();
     setIsDraggingCp1(true);
     cp1DragStartRef.current = {
       clientX: e.clientX,
@@ -215,6 +218,7 @@ export const CanvasNode: React.FC<CanvasNodeProps> = ({ node, blendMode, zoom = 
 
   const handleCp2PointerDown = (e: React.PointerEvent) => {
     e.stopPropagation();
+    useMutationStore.getState().recordSnapshot();
     setIsDraggingCp2(true);
     cp2DragStartRef.current = {
       clientX: e.clientX,
@@ -314,7 +318,10 @@ export const CanvasNode: React.FC<CanvasNodeProps> = ({ node, blendMode, zoom = 
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
+        onPointerEnter={() => setHoveredNode(node.id)}
+        onPointerLeave={() => setHoveredNode(null)}
       >
+        <title>{`${node.label} (${node.category})${node.valueX !== undefined ? `\nX: ${node.valueX}` : ''}${node.valueY !== undefined ? `\nY: ${node.valueY}` : ''}`}</title>
         {hasCustomBezier ? (
           <path
             d={buildClosedOrganicBezierPath(radius, { x: cp1x, y: cp1y }, { x: cp2x, y: cp2y })}
@@ -418,7 +425,54 @@ export const CanvasNode: React.FC<CanvasNodeProps> = ({ node, blendMode, zoom = 
         </g>
       )}
 
-      {/* 4. Bézier Interactive Handles & Reset (Purged on export) */}
+      {/* 4. Precision Hover Tooltip (Purged on export) */}
+      {hoveredNodeId === node.id && !isDragging && (
+        <g
+          transform={`translate(${currentX}, ${currentY - radius - 16})`}
+          className="canvas-node-tooltip pointer-events-none select-none"
+          data-editor-ui="true"
+        >
+          {/* Tooltip Background with Drop Shadow & Rim-Light */}
+          <rect
+            x={-65}
+            y={-30}
+            width={130}
+            height={30}
+            rx={7}
+            fill="#2c1a0e"
+            stroke="rgba(255, 255, 255, 0.22)"
+            strokeWidth="0.8"
+            filter="drop-shadow(0 3px 6px rgba(44, 26, 14, 0.3))"
+          />
+          {/* Tooltip Pointing Arrow */}
+          <path d="M -4 0 L 0 4 L 4 0 Z" fill="#2c1a0e" />
+          {/* Primary Label */}
+          <text
+            x={0}
+            y={-17}
+            textAnchor="middle"
+            fill="#fffdfa"
+            fontSize="10"
+            fontWeight="bold"
+            letterSpacing="-0.01em"
+          >
+            {node.label.length > 20 ? node.label.slice(0, 18) + '…' : node.label}
+          </text>
+          {/* Category & Numerical Values Subtitle */}
+          <text
+            x={0}
+            y={-6}
+            textAnchor="middle"
+            fill="#e2d2bf"
+            fontSize="8"
+            fontFamily="SF Mono, monospace"
+          >
+            {node.category} {node.valueX !== undefined ? `• ${node.valueX.toLocaleString()}` : ''}
+          </text>
+        </g>
+      )}
+
+      {/* 5. Bézier Interactive Handles & Reset (Purged on export) */}
       {isSelected && activeTool === 'bezier' && (
         <g className="bezier-handles" data-editor-ui="true">
           {/* Line to cp1 (Upper tangent) */}

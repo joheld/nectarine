@@ -133,4 +133,49 @@ describe('Canvas Tools, Hand/Pan & Dynamic Annotations Suite', () => {
     expect(Object.keys(useMutationStore.getState().mutations).length).toBe(0);
     expect(useDataStore.getState().datasetName).toBe('nuevo_dataset.csv');
   });
+
+  it('supports undo (⌘Z) and redo (⌘⇧Z) history for vector mutations', () => {
+    const store = useMutationStore.getState();
+    store.clearHistory();
+    expect(useMutationStore.getState().undoStack.length).toBe(0);
+
+    // Initial state: mutate fill
+    store.updateFill('node-1', '#ff0000');
+    expect(useMutationStore.getState().mutations['node-1']?.customFill).toBe('#ff0000');
+    expect(useMutationStore.getState().undoStack.length).toBe(1);
+
+    // Second state: mutate scale
+    store.setManualScale('node-1', 2.0);
+    expect(useMutationStore.getState().mutations['node-1']?.manualScale).toBe(2.0);
+    expect(useMutationStore.getState().undoStack.length).toBe(2);
+
+    // Perform Undo (⌘Z)
+    const didUndo = store.undo();
+    expect(didUndo).toBe(true);
+    // Scale should revert to 1.0 (from initial fill mutation), while fill remains #ff0000
+    expect(useMutationStore.getState().mutations['node-1']?.manualScale).toBe(1.0);
+    expect(useMutationStore.getState().mutations['node-1']?.customFill).toBe('#ff0000');
+    expect(useMutationStore.getState().redoStack.length).toBe(1);
+
+    // Perform Redo (⌘⇧Z)
+    const didRedo = store.redo();
+    expect(didRedo).toBe(true);
+    expect(useMutationStore.getState().mutations['node-1']?.manualScale).toBe(2.0);
+  });
+
+  it('supports loading curated 1-click demo datasets without errors', () => {
+    const { DEMO_DATASETS } = require('../src/data/demoDatasets');
+    expect(DEMO_DATASETS.length).toBe(2);
+
+    // Load first demo (Countries)
+    const demo1 = DEMO_DATASETS[0];
+    useDataStore.getState().loadDataset(demo1.name, demo1.rows);
+    expect(useDataStore.getState().baseNodes.length).toBe(demo1.rows.length);
+    expect(useDataStore.getState().profiledColumns.length).toBeGreaterThan(3);
+
+    // Load second demo (Exoplanets)
+    const demo2 = DEMO_DATASETS[1];
+    useDataStore.getState().loadDataset(demo2.name, demo2.rows);
+    expect(useDataStore.getState().baseNodes.length).toBe(demo2.rows.length);
+  });
 });

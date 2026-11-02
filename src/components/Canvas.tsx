@@ -6,9 +6,10 @@ import { TetheredAnnotations } from './TetheredAnnotations';
 import { DataLassoContextMenu } from './DataLasso';
 import { colorService } from '../services/colorService';
 import { textureService } from '../services/textureService';
-import { ZoomIn, ZoomOut, Maximize2, Upload, ShieldCheck, Spline, X } from 'lucide-react';
+import { ZoomIn, ZoomOut, Maximize2, Upload, ShieldCheck, Spline, X, Sparkles, ArrowRight } from 'lucide-react';
 import { NectarineLogo } from './NectarineLogo';
 import { openNativeFileDialog, processDataFile } from '../services/fileImportHelper';
+import { DEMO_DATASETS } from '../data/demoDatasets';
 
 interface CanvasProps {
   svgRef: React.RefObject<SVGSVGElement | null>;
@@ -31,6 +32,7 @@ export const Canvas: React.FC<CanvasProps> = ({ svgRef }) => {
     setLayoutBounds,
     loadDataset,
     reconcileDataset,
+    setChartType,
   } = useDataStore();
   const { clearSelection, selectAll, isGlowEnabled, activeTool, mutations } = useMutationStore();
   const containerRef = useRef<HTMLDivElement>(null);
@@ -273,6 +275,37 @@ export const Canvas: React.FC<CanvasProps> = ({ svgRef }) => {
               <Upload className="w-4 h-4" />
               <span>Subir Archivo de Datos</span>
             </button>
+
+            {/* 1-Click Curated Demos for Visual Designers */}
+            <div className="w-full pt-3 border-t border-[#ede5db] space-y-2">
+              <div className="text-[11px] font-medium text-[#8c7664] flex items-center justify-center gap-1.5">
+                <Sparkles className="w-3.5 h-3.5 text-[#ea580c]" />
+                <span>¿Quieres probar la app de inmediato? Carga una demo:</span>
+              </div>
+              <div className="flex flex-col gap-1.5 w-full">
+                {DEMO_DATASETS.map((demo) => (
+                  <button
+                    key={demo.id}
+                    onClick={() => {
+                      loadDataset(demo.name, demo.rows);
+                      setChartType(demo.recommendedChart);
+                    }}
+                    className="p-2.5 rounded-xl bg-[#faf7f2] hover:bg-[#f3ece0] active:scale-[0.99] border border-[#dfd2c4] text-left transition-all cursor-pointer group flex items-center justify-between"
+                    title={demo.description}
+                  >
+                    <div>
+                      <div className="font-semibold text-xs text-[#2c1a0e] group-hover:text-[#e11d48] transition-colors flex items-center gap-1.5">
+                        <span>{demo.title}</span>
+                      </div>
+                      <div className="text-[10px] text-[#8c7664] leading-tight mt-0.5">
+                        {demo.rows.length} datos • {demo.description}
+                      </div>
+                    </div>
+                    <ArrowRight className="w-4 h-4 text-[#8c7664] group-hover:text-[#e11d48] group-hover:translate-x-0.5 transition-all shrink-0 ml-2" />
+                  </button>
+                ))}
+              </div>
+            </div>
 
             <div className="flex items-center gap-2 pt-2 text-[10.5px] text-[#8c7664] font-mono">
               <span className="px-2 py-0.5 rounded bg-[#f5ede3] border border-[#e2d5c5]">.csv delimitado</span>

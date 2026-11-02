@@ -7,6 +7,14 @@ interface MutationState {
   activeTool: 'pan' | 'select' | 'move' | 'bezier' | 'annotate';
   hoveredNodeId: string | null;
 
+  // History Stacks for ⌘Z / ⌘⇧Z
+  undoStack: Record<string, NodeMutation>[];
+  redoStack: Record<string, NodeMutation>[];
+  recordSnapshot: () => void;
+  undo: () => boolean;
+  redo: () => boolean;
+  clearHistory: () => void;
+
   // Actions
   selectNode: (id: string, multiSelect?: boolean) => void;
   selectAll: (ids: string[]) => void;
@@ -40,6 +48,47 @@ export const useMutationStore = create<MutationState>((set, get) => ({
   activeTool: 'select',
   hoveredNodeId: null,
   isGlowEnabled: true,
+
+  undoStack: [],
+  redoStack: [],
+
+  recordSnapshot: () => {
+    const current = get().mutations;
+    set((state) => ({
+      undoStack: [...state.undoStack.slice(-39), JSON.parse(JSON.stringify(current))],
+      redoStack: [],
+    }));
+  },
+
+  undo: () => {
+    const { undoStack, mutations } = get();
+    if (undoStack.length === 0) return false;
+    const previous = undoStack[undoStack.length - 1];
+    const newUndoStack = undoStack.slice(0, -1);
+    set((state) => ({
+      undoStack: newUndoStack,
+      redoStack: [JSON.parse(JSON.stringify(mutations)), ...state.redoStack.slice(0, 39)],
+      mutations: previous,
+    }));
+    return true;
+  },
+
+  redo: () => {
+    const { redoStack, mutations } = get();
+    if (redoStack.length === 0) return false;
+    const next = redoStack[0];
+    const newRedoStack = redoStack.slice(1);
+    set((state) => ({
+      undoStack: [...state.undoStack.slice(-39), JSON.parse(JSON.stringify(mutations))],
+      redoStack: newRedoStack,
+      mutations: next,
+    }));
+    return true;
+  },
+
+  clearHistory: () => {
+    set({ undoStack: [], redoStack: [] });
+  },
 
   toggleGlow: () => {
     set((state) => ({ isGlowEnabled: !state.isGlowEnabled }));
@@ -111,6 +160,7 @@ export const useMutationStore = create<MutationState>((set, get) => ({
   },
 
   resetBezierHandles: (id) => {
+    get().recordSnapshot();
     set((state) => {
       const existing = state.mutations[id];
       if (!existing) return state;
@@ -125,6 +175,7 @@ export const useMutationStore = create<MutationState>((set, get) => ({
   },
 
   updateFill: (id, fill) => {
+    get().recordSnapshot();
     set((state) => {
       const existing = state.mutations[id] || { id, isPinned: false, manualScale: 1.0 };
       return {
@@ -140,17 +191,22 @@ export const useMutationStore = create<MutationState>((set, get) => ({
   },
 
   batchUpdateFill: (ids, fill) => {
+    get().recordSnapshot();
     set((state) => {
-      const updated = { ...state.mutations };
+      const nextMutations = { ...state.mutations };
       ids.forEach((id) => {
-        const existing = updated[id] || { id, isPinned: false, manualScale: 1.0 };
-        updated[id] = { ...existing, customFill: fill };
+        const existing = nextMutations[id] || { id, isPinned: false, manualScale: 1.0 };
+        nextMutations[id] = {
+          ...existing,
+          customFill: fill,
+        };
       });
-      return { mutations: updated };
+      return { mutations: nextMutations };
     });
   },
 
   updateGlyphShape: (id, shape) => {
+    get().recordSnapshot();
     set((state) => {
       const existing = state.mutations[id] || { id, isPinned: false, manualScale: 1.0 };
       return {
@@ -166,13 +222,17 @@ export const useMutationStore = create<MutationState>((set, get) => ({
   },
 
   batchUpdateGlyphShape: (ids, shape) => {
+    get().recordSnapshot();
     set((state) => {
-      const updated = { ...state.mutations };
+      const nextMutations = { ...state.mutations };
       ids.forEach((id) => {
-        const existing = updated[id] || { id, isPinned: false, manualScale: 1.0 };
-        updated[id] = { ...existing, glyphShape: shape };
+        const existing = nextMutations[id] || { id, isPinned: false, manualScale: 1.0 };
+        nextMutations[id] = {
+          ...existing,
+          glyphShape: shape,
+        };
       });
-      return { mutations: updated };
+      return { mutations: nextMutations };
     });
   },
 
@@ -192,6 +252,7 @@ export const useMutationStore = create<MutationState>((set, get) => ({
   },
 
   setManualScale: (id, scale) => {
+    get().recordSnapshot();
     set((state) => {
       const existing = state.mutations[id] || { id, isPinned: false, manualScale: 1.0 };
       return {
@@ -207,16 +268,9 @@ export const useMutationStore = create<MutationState>((set, get) => ({
   },
 
   togglePin: (id) => {
+    get().recordSnapshot();
     set((state) => {
-      const existing = state.mutations[id];
-      if (!existing) {
-        return {
-          mutations: {
-            ...state.mutations,
-            [id]: { id, isPinned: true, manualScale: 1.0 },
-          },
-        };
-      }
+      const existing = state.mutations[id] || { id, isPinned: false, manualScale: 1.0 };
       return {
         mutations: {
           ...state.mutations,
@@ -230,6 +284,7 @@ export const useMutationStore = create<MutationState>((set, get) => ({
   },
 
   resetMutation: (id) => {
+    get().recordSnapshot();
     set((state) => {
       const copy = { ...state.mutations };
       delete copy[id];
@@ -238,6 +293,9 @@ export const useMutationStore = create<MutationState>((set, get) => ({
   },
 
   resetAllMutations: () => {
+    if (Object.keys(get().mutations).length > 0) {
+      get().recordSnapshot();
+    }
     set({ mutations: {}, selectedNodeIds: [] });
   },
 
