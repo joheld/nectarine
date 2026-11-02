@@ -9,12 +9,12 @@ PORT="${PORT:-5220}"
 URL="http://127.0.0.1:${PORT}"
 
 if curl -s -o /dev/null -w "%{http_code}" "$URL" 2>/dev/null | grep -q "200"; then
-  echo "[Cinnamon] Servidor ya activo en $URL"
+  echo "[Nectarine] Servidor ya activo en $URL"
 else
-  echo "[Cinnamon] Iniciando servidor de atelier..."
+  echo "[Nectarine] Iniciando servidor de taller..."
   "$PROJECT_DIR/run.sh"
 fi
 
 open "$URL"
 
-osascript -e 'display notification "Atelier de datos y arte vectorial abierto" with title "Cinnamon" subtitle "En línea en :5220"' 2>/dev/null || true
+osascript -e 'display notification "Taller de datos y arte vectorial abierto" with title "Nectarine Studio" subtitle "En línea en :5220"' 2>/dev/null || true

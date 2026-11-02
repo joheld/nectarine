@@ -379,3 +379,49 @@ El usuario detectó con precisión que el manual anunciaba "9 geometrías" pero 
    - `vite build`: Build de producción generado en 2.25s.
    - `cargo check`: Aprobado limpiamente en 0.51s.
    - Socket `http://127.0.0.1:5220`: Respondiendo `HTTP/1.1 200 OK`.
+
+
+---
+
+## Entrada 014 — Diagnóstico y Reparación Integral de Lanzadores macOS (Nectarine.app & Nectarine.command)
+- **Fecha y Hora**: 2026-11-02 13:35
+- **Fase**: Resiliencia Operativa, Firma de Código & UX de Escritorio
+- **Arquitecto**: Antigravity Principal Software Architect
+
+### Diagnóstico de Fallas (Causas Raíz Identificadas)
+1. **Firma de Código Dañada en `Nectarine.app`**:
+   - `codesign -v "/Users/joe/Desktop/Nectarine.app"` fallaba con `a sealed resource is missing or invalid: file modified: .../Contents/Resources/applet.icns`.
+   - Al haberse modificado el archivo de icono sin regenerar el sello de firma ad-hoc, Gatekeeper y el subsistema de seguridad de macOS bloqueaban la ejecución del bundle desde Finder.
+2. **AppleScript Frágil & Conflicto con Terminal TCC**:
+   - `main.scpt` contenía `tell application "Terminal" do script "cd \"$HOME/vectura\" && bun run dev" activate end tell`.
+   - En macOS moderno, el envío de AppleEvents a `Terminal.app` requiere permisos explícitos de Automatización TCC. Si no fueron concedidos o el diálogo fue cancelado, el applet fallaba silenciosamente.
+   - Además, ejecutar `bun run dev` directamente en una sesión de Terminal provocaba que, si el servidor ya estaba escuchando en el puerto dedicado `5220` (`strictPort: true`), Vite abortara inmediatamente arrojando `Error: Port 5220 is already in use`.
+3. **Ausencia de Apertura Automática de la Interfaz (UI)**:
+   - Ni `Nectarine.app` ni `Nectarine.command` invocaban la apertura del navegador o cliente web (`open "http://127.0.0.1:5220"`). Aunque el proceso de Vite iniciara en terminal, el usuario nunca veía la aplicación abrirse en pantalla.
+4. **Residuos de Nombres Antiguos en Scripts de Lanzamiento**:
+   - `run.sh` y `launch-desktop.sh` conservaban cadenas y rutas de registro obsoletas (`[Cinnamon]`, `/tmp/cinnamon.log`).
+
+### Resoluciones Aplicadas
+1. **Desacople Total de Terminal en `Nectarine.app`**:
+   - Se recompiló `Contents/Resources/Scripts/main.scpt` con `osacompile` para que invoque asíncronamente `launch-desktop.sh` sin requerir permisos AppleEvents ni abrir pestañas de Terminal:
+     ```applescript
+     set userHome to POSIX path of (path to home folder)
+     set launchScript to userHome & "vectura/launch-desktop.sh"
+     do shell script "/bin/bash " & quoted form of launchScript & " > /dev/null 2>&1 &"
+     ```
+2. **Saneamiento y Resellado de Firma de Código**:
+   - Se eliminaron atributos extendidos restrictivos (`xattr -cr "/Users/joe/Desktop/Nectarine.app"`).
+   - Se firmó ad-hoc en profundidad con `codesign --force --deep --sign - "/Users/joe/Desktop/Nectarine.app"`.
+   - Se validó con `codesign -vvv --deep`: salida `valid on disk` y `satisfies its Designated Requirement`.
+3. **Resiliencia Operativa y Auto-Recuperación de Socket en `run.sh`**:
+   - Se actualizó `run.sh` para detectar si el puerto `5220` responde `HTTP 200 OK` (retorno inmediato sin relanzar procesos duplicados).
+   - Si el puerto está retenido por un proceso no responsivo o zombie, lo libera automáticamente antes de iniciar una nueva instancia limpia con `nohup ... </dev/null >/tmp/nectarine.log 2>&1 &`.
+4. **Actualización de `launch-desktop.sh` y `Nectarine.command`**:
+   - `launch-desktop.sh` actualizado a la marca Nectarine, garantizando la apertura instantánea de `http://127.0.0.1:5220` en el navegador nativo y notificación de sistema macOS.
+   - `Nectarine.command` actualizado para delegar en `launch-desktop.sh`, garantizando paridad de comportamiento robusto.
+5. **Batería de Verificación Zero-Defect**:
+   - Prueba de arranque en frío (tras liberar puerto `5220`): `open /Users/joe/Desktop/Nectarine.app` levantó el servidor y respondió `HTTP 200 OK` en <2s.
+   - Prueba de arranque en caliente: respuesta inmediata `HTTP 200 OK` sin errores de puerto ocupado.
+   - `bun test`: 19/19 tests pasados (100%).
+   - `tsc -b`: 0 errores de tipado.
+   - `vite build`: Build de producción validado en 2.26s.
