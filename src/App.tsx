@@ -8,6 +8,7 @@ import { DataProfilerModal } from './components/DataProfilerModal';
 import { GuardrailWarning } from './components/GuardrailWarning';
 import { DocumentationModal } from './components/DocumentationModal';
 import { duckdbService } from './services/duckdb';
+import { useMutationStore } from './store/mutationStore';
 
 export const App: React.FC = () => {
   const [isProfilerOpen, setIsProfilerOpen] = useState(false);
@@ -15,7 +16,7 @@ export const App: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const svgRef = useRef<SVGSVGElement | null>(null);
 
-  // Keyboard shortcut listener for '?' to toggle documentation
+  // Keyboard shortcut listener for tools and documentation
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       const activeTag = document.activeElement?.tagName.toLowerCase();
@@ -29,6 +30,16 @@ export const App: React.FC = () => {
       } else if (e.key === 'Escape') {
         setIsDocsOpen(false);
         setIsProfilerOpen(false);
+      } else if (e.key === 'h' || e.key === 'H') {
+        useMutationStore.getState().setActiveTool('pan');
+      } else if (e.key === 'v' || e.key === 'V') {
+        useMutationStore.getState().setActiveTool('select');
+      } else if (e.key === 'm' || e.key === 'M') {
+        useMutationStore.getState().setActiveTool('move');
+      } else if (e.key === 'b' || e.key === 'B') {
+        useMutationStore.getState().setActiveTool('bezier');
+      } else if (e.key === 'a' || e.key === 'A') {
+        useMutationStore.getState().setActiveTool('annotate');
       }
     };
 

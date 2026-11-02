@@ -25,16 +25,7 @@ interface LayerState {
 
 export const useLayerStore = create<LayerState>((set) => ({
   layerOverrides: {},
-  annotations: [
-    {
-      id: 'ann-1',
-      targetNodeId: 'node-0',
-      text: 'Punto de Referencia: Mayor PIB y Esperanza de Vida',
-      dx: 45,
-      dy: -50,
-      curveType: 'bezier',
-    },
-  ],
+  annotations: [],
 
   toggleLayerVisibility: (category) => {
     set((state) => {

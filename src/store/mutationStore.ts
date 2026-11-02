@@ -4,7 +4,7 @@ import { NodeMutation, DistortionMetric, BaseNode } from '../engine/types';
 interface MutationState {
   mutations: Record<string, NodeMutation>;
   selectedNodeIds: string[];
-  activeTool: 'select' | 'move' | 'bezier' | 'annotate';
+  activeTool: 'pan' | 'select' | 'move' | 'bezier' | 'annotate';
   hoveredNodeId: string | null;
 
   // Actions

@@ -8,9 +8,10 @@ import { buildCubicBezierPath } from '../engine/bezierMath';
 interface CanvasNodeProps {
   node: BaseNode;
   blendMode: string;
+  zoom?: number;
 }
 
-export const CanvasNode: React.FC<CanvasNodeProps> = ({ node, blendMode }) => {
+export const CanvasNode: React.FC<CanvasNodeProps> = ({ node, blendMode, zoom = 1 }) => {
   const {
     mutations,
     selectedNodeIds,
@@ -24,11 +25,31 @@ export const CanvasNode: React.FC<CanvasNodeProps> = ({ node, blendMode }) => {
     isGlowEnabled,
   } = useMutationStore();
 
-  const { layerOverrides } = useLayerStore();
+  const { layerOverrides, addAnnotation } = useLayerStore();
   const [isDragging, setIsDragging] = useState(false);
   const [isDraggingCp1, setIsDraggingCp1] = useState(false);
   const [isDraggingCp2, setIsDraggingCp2] = useState(false);
-  const dragStartRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
+
+  const nodeDragStartRef = useRef<{ clientX: number; clientY: number; initialX: number; initialY: number }>({
+    clientX: 0,
+    clientY: 0,
+    initialX: 0,
+    initialY: 0,
+  });
+
+  const cp1DragStartRef = useRef<{ clientX: number; clientY: number; initialCp1x: number; initialCp1y: number }>({
+    clientX: 0,
+    clientY: 0,
+    initialCp1x: 0,
+    initialCp1y: 0,
+  });
+
+  const cp2DragStartRef = useRef<{ clientX: number; clientY: number; initialCp2x: number; initialCp2y: number }>({
+    clientX: 0,
+    clientY: 0,
+    initialCp2x: 0,
+    initialCp2y: 0,
+  });
 
   const mut = mutations[node.id];
   const isSelected = selectedNodeIds.includes(node.id);
@@ -56,26 +77,55 @@ export const CanvasNode: React.FC<CanvasNodeProps> = ({ node, blendMode }) => {
   const cp1y = mut?.cp1y ?? -radius * 0.8;
   const cp2x = mut?.cp2x ?? radius * 1.5;
   const cp2y = mut?.cp2y ?? radius * 0.8;
+  const hasCustomBezier = mut?.cp1x !== undefined || mut?.cp2x !== undefined;
 
   const handlePointerDown = (e: React.PointerEvent) => {
     if (isLocked) return;
+
+    // Si la herramienta activa es Mano (pan), permitir que el evento burbujee al lienzo
+    if (activeTool === 'pan') {
+      return;
+    }
+
     e.stopPropagation();
+
+    // Si la herramienta activa es Anotar, solicitar texto y crear nota atada
+    if (activeTool === 'annotate') {
+      selectNode(node.id, false);
+      const label = node.label || `Dato #${node.rawIndex + 1}`;
+      const text = prompt(`Añadir anotación atada a "${label}":`, `Nota: ${label}`);
+      if (text && text.trim() !== '') {
+        addAnnotation(node.id, text.trim(), 40, -45, 'bezier');
+      }
+      return;
+    }
+
     selectNode(node.id, e.shiftKey || e.metaKey);
 
+    // Herramienta Mover o Seleccionar: iniciar arrastre con zoom compensado
     if (activeTool === 'move' || activeTool === 'select') {
       setIsDragging(true);
-      dragStartRef.current = { x: e.clientX, y: e.clientY };
-      (e.target as Element).setPointerCapture(e.pointerId);
+      nodeDragStartRef.current = {
+        clientX: e.clientX,
+        clientY: e.clientY,
+        initialX: currentX,
+        initialY: currentY,
+      };
+      (e.currentTarget as Element).setPointerCapture(e.pointerId);
+    }
+
+    // Herramienta Curvar Bézier: inicializar manetas si no existen
+    if (activeTool === 'bezier' && !hasCustomBezier) {
+      updateBezierHandles(node.id, cp1x, cp1y, cp2x, cp2y);
     }
   };
 
   const handlePointerMove = (e: React.PointerEvent) => {
     if (isDragging) {
       e.stopPropagation();
-      const dx = e.clientX - dragStartRef.current.x;
-      const dy = e.clientY - dragStartRef.current.y;
-      dragStartRef.current = { x: e.clientX, y: e.clientY };
-      updatePosition(node.id, currentX + dx, currentY + dy, true);
+      const dx = (e.clientX - nodeDragStartRef.current.clientX) / zoom;
+      const dy = (e.clientY - nodeDragStartRef.current.clientY) / zoom;
+      updatePosition(node.id, nodeDragStartRef.current.initialX + dx, nodeDragStartRef.current.initialY + dy, true);
     }
   };
 
@@ -83,7 +133,7 @@ export const CanvasNode: React.FC<CanvasNodeProps> = ({ node, blendMode }) => {
     if (isDragging) {
       setIsDragging(false);
       try {
-        (e.target as Element).releasePointerCapture(e.pointerId);
+        (e.currentTarget as Element).releasePointerCapture(e.pointerId);
       } catch (_) {}
     }
   };
@@ -91,15 +141,27 @@ export const CanvasNode: React.FC<CanvasNodeProps> = ({ node, blendMode }) => {
   const handleCp1PointerDown = (e: React.PointerEvent) => {
     e.stopPropagation();
     setIsDraggingCp1(true);
-    (e.target as Element).setPointerCapture(e.pointerId);
+    cp1DragStartRef.current = {
+      clientX: e.clientX,
+      clientY: e.clientY,
+      initialCp1x: cp1x,
+      initialCp1y: cp1y,
+    };
+    (e.currentTarget as Element).setPointerCapture(e.pointerId);
   };
 
   const handleCp1PointerMove = (e: React.PointerEvent) => {
     if (isDraggingCp1) {
       e.stopPropagation();
-      const newCp1x = e.clientX - currentX;
-      const newCp1y = e.clientY - currentY;
-      updateBezierHandles(node.id, newCp1x, newCp1y, cp2x, cp2y);
+      const deltaX = (e.clientX - cp1DragStartRef.current.clientX) / zoom;
+      const deltaY = (e.clientY - cp1DragStartRef.current.clientY) / zoom;
+      updateBezierHandles(
+        node.id,
+        cp1DragStartRef.current.initialCp1x + deltaX,
+        cp1DragStartRef.current.initialCp1y + deltaY,
+        cp2x,
+        cp2y
+      );
     }
   };
 
@@ -107,7 +169,7 @@ export const CanvasNode: React.FC<CanvasNodeProps> = ({ node, blendMode }) => {
     if (isDraggingCp1) {
       setIsDraggingCp1(false);
       try {
-        (e.target as Element).releasePointerCapture(e.pointerId);
+        (e.currentTarget as Element).releasePointerCapture(e.pointerId);
       } catch (_) {}
     }
   };
@@ -115,15 +177,27 @@ export const CanvasNode: React.FC<CanvasNodeProps> = ({ node, blendMode }) => {
   const handleCp2PointerDown = (e: React.PointerEvent) => {
     e.stopPropagation();
     setIsDraggingCp2(true);
-    (e.target as Element).setPointerCapture(e.pointerId);
+    cp2DragStartRef.current = {
+      clientX: e.clientX,
+      clientY: e.clientY,
+      initialCp2x: cp2x,
+      initialCp2y: cp2y,
+    };
+    (e.currentTarget as Element).setPointerCapture(e.pointerId);
   };
 
   const handleCp2PointerMove = (e: React.PointerEvent) => {
     if (isDraggingCp2) {
       e.stopPropagation();
-      const newCp2x = e.clientX - currentX;
-      const newCp2y = e.clientY - currentY;
-      updateBezierHandles(node.id, cp1x, cp1y, newCp2x, newCp2y);
+      const deltaX = (e.clientX - cp2DragStartRef.current.clientX) / zoom;
+      const deltaY = (e.clientY - cp2DragStartRef.current.clientY) / zoom;
+      updateBezierHandles(
+        node.id,
+        cp1x,
+        cp1y,
+        cp2DragStartRef.current.initialCp2x + deltaX,
+        cp2DragStartRef.current.initialCp2y + deltaY
+      );
     }
   };
 
@@ -131,17 +205,27 @@ export const CanvasNode: React.FC<CanvasNodeProps> = ({ node, blendMode }) => {
     if (isDraggingCp2) {
       setIsDraggingCp2(false);
       try {
-        (e.target as Element).releasePointerCapture(e.pointerId);
+        (e.currentTarget as Element).releasePointerCapture(e.pointerId);
       } catch (_) {}
     }
   };
 
-  const hasCustomBezier = mut?.cp1x !== undefined || mut?.cp2x !== undefined;
+  const nodeCursor = isLocked
+    ? 'cursor-not-allowed'
+    : activeTool === 'pan'
+    ? 'cursor-grab'
+    : activeTool === 'annotate'
+    ? 'cursor-crosshair'
+    : activeTool === 'move'
+    ? isDragging
+      ? 'cursor-grabbing'
+      : 'cursor-grab'
+    : 'cursor-pointer';
 
   return (
     <g
       id={node.id}
-      className="cursor-pointer transition-opacity"
+      className={`${nodeCursor} transition-opacity`}
       onPointerEnter={() => setHoveredNode(node.id)}
       onPointerLeave={() => setHoveredNode(null)}
       onDoubleClick={(e) => {
@@ -278,16 +362,17 @@ export const CanvasNode: React.FC<CanvasNodeProps> = ({ node, blendMode }) => {
             y2={currentY + cp1y}
             stroke="#0066cc"
             strokeWidth="1"
+            strokeDasharray="2 2"
             className="bezier-line"
           />
           <circle
             cx={currentX + cp1x}
             cy={currentY + cp1y}
-            r={4.5}
+            r={5}
             fill="#0066cc"
             stroke="#ffffff"
             strokeWidth="1.5"
-            className="bezier-handle cursor-grab active:cursor-grabbing"
+            className="bezier-handle cursor-grab active:cursor-grabbing hover:scale-125 transition-transform"
             onPointerDown={handleCp1PointerDown}
             onPointerMove={handleCp1PointerMove}
             onPointerUp={handleCp1PointerUp}
@@ -298,18 +383,19 @@ export const CanvasNode: React.FC<CanvasNodeProps> = ({ node, blendMode }) => {
             y1={currentY}
             x2={currentX + cp2x}
             y2={currentY + cp2y}
-            stroke="#ff2a85"
+            stroke="#e11d48"
             strokeWidth="1"
+            strokeDasharray="2 2"
             className="bezier-line"
           />
           <circle
             cx={currentX + cp2x}
             cy={currentY + cp2y}
-            r={4.5}
-            fill="#ff2a85"
+            r={5}
+            fill="#e11d48"
             stroke="#ffffff"
             strokeWidth="1.5"
-            className="bezier-handle cursor-grab active:cursor-grabbing"
+            className="bezier-handle cursor-grab active:cursor-grabbing hover:scale-125 transition-transform"
             onPointerDown={handleCp2PointerDown}
             onPointerMove={handleCp2PointerMove}
             onPointerUp={handleCp2PointerUp}

@@ -10,6 +10,7 @@ import {
   Waves,
   Palette,
   SlidersHorizontal,
+  Hand,
   Pointer,
   Move,
   Spline,
@@ -143,14 +144,23 @@ export const Toolbar: React.FC<ToolbarProps> = ({ onOpenProfiler, svgRef }) => {
 
       <div className="h-5 w-px bg-[#e6dcce] shrink-0" />
 
-      {/* 3. Canvas Tools (Select, Move, Curvar, Anotar) */}
+      {/* 3. Canvas Tools (Mano, Selección, Mover, Curvar Bézier, Anotar) */}
       <div className="flex items-center bg-[#ede5db] p-1 rounded-xl border border-[#dfd2c4] gap-0.5 shrink-0">
+        <button
+          onClick={() => setActiveTool('pan')}
+          className={`p-1.5 rounded-lg transition-colors ${
+            activeTool === 'pan' ? 'bg-white text-[#e11d48] shadow-xs' : 'text-[#8c7664] hover:text-[#2c1a0e]'
+          }`}
+          title="Mano: Mover y encuadrar lienzo [Tecla H o Espacio]"
+        >
+          <Hand className="w-4 h-4" />
+        </button>
         <button
           onClick={() => setActiveTool('select')}
           className={`p-1.5 rounded-lg transition-colors ${
             activeTool === 'select' ? 'bg-white text-[#e11d48] shadow-xs' : 'text-[#8c7664] hover:text-[#2c1a0e]'
           }`}
-          title="Seleccionar elemento [Tecla V]"
+          title="Seleccionar elemento o grupo [Tecla V]"
         >
           <Pointer className="w-4 h-4" />
         </button>

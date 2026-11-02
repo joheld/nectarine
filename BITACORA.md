@@ -425,3 +425,53 @@ El usuario detectó con precisión que el manual anunciaba "9 geometrías" pero 
    - `bun test`: 19/19 tests pasados (100%).
    - `tsc -b`: 0 errores de tipado.
    - `vite build`: Build de producción validado en 2.26s.
+
+
+---
+
+## Entrada 015 — Reparación Integral de Herramientas de Lienzo & Purga de Anotación Ficticia
+- **Fecha y Hora**: 2026-11-02 13:56
+- **Fase**: Interacción Directa con el Lienzo, Ergonomía de Herramientas & Fidelidad Semántica
+- **Arquitecto**: Antigravity Principal Software Architect
+
+### Diagnóstico de Fallas (En respuesta al feedback del usuario)
+1. **Comentario Fantasma Intrusivo**:
+   - `useLayerStore.ts` iniciaba con un elemento predeterminado en `annotations`: `"Punto de Referencia: Mayor PIB y Esperanza de Vida"` anclado a `node-0`. Aunque el usuario cargara un archivo de música, sensores o ventas, esa tarjeta aparecía de forma espuria sobre el primer nodo estorbando la vista.
+2. **Herramienta Mano ("la mani") Inexistente en Barra de Herramientas**:
+   - En `Toolbar.tsx` solo existían cuatro botones (`select`, `move`, `bezier`, `annotate`). El paneo del lienzo requería pulsar la rueda central del ratón o la tecla `Alt`, lo cual confundía a los usuarios que buscaban la clásica herramienta de Mano para desplazar el lienzo.
+3. **Arrastre ("arrastre") Desincronizado del Cursor por Zoom**:
+   - En `CanvasNode.tsx`, el cálculo de desplazamiento `dx = e.clientX - dragStartRef.clientX` no compensaba el factor de escala `zoom`. Si el usuario aplicaba zoom in o zoom out, el nodo se movía a una velocidad distinta al cursor del ratón (desbordamiento visual).
+4. **Herramienta Comentario Inoperante al Clic**:
+   - Al activar la herramienta de Anotar (`activeTool === 'annotate'`), hacer clic sobre un nodo solo ejecutaba `selectNode()`, sin invocar la creación de notas ni desplegar ningún diálogo para escribir texto.
+5. **Herramienta Curvar Bézier Rota (Salto a Infinito)**:
+   - Al arrastrar las manetas `cp1` o `cp2`, se calculaba `newCp1x = e.clientX - currentX`, restando coordenadas globales de la ventana (`e.clientX`) a coordenadas relativas del SVG (`currentX`). Esto provocaba que al primer movimiento la maneta saltara de inmediato a cientos de píxeles fuera de pantalla.
+
+### Resoluciones Aplicadas
+1. **Purga Definitiva de Anotaciones Muestra**:
+   - `layerStore.ts` inicia con `annotations: []`.
+   - `loadDataset()` en `dataStore.ts` invoca automáticamente `useLayerStore.getState().clearAnnotations()` y `resetAllMutations()` para garantizar que al abrir un nuevo dataset el lienzo esté inmaculado.
+2. **Incorporación de la Herramienta de Mano (`pan`)**:
+   - Añadida al store `mutationStore.ts`: `activeTool: 'pan' | 'select' | 'move' | 'bezier' | 'annotate'`.
+   - Botón de Mano (`Hand`) añadido al inicio del grupo de herramientas en `Toolbar.tsx` con atajo `[Tecla H]` y cursores dinámicos `cursor-grab` y `cursor-grabbing`.
+   - En `Canvas.tsx`, con la herramienta Mano activa, arrastrar con clic primario desplaza suavemente el lienzo por toda el área de trabajo.
+3. **Arrastre de Nodos Fiel 1:1 con Compensación de Zoom**:
+   - `CanvasNode.tsx` recibe la propiedad `zoom`.
+   - El delta se divide por el factor de escala: `dx = (e.clientX - dragStart.clientX) / zoom`, logrando adherencia subpíxel al cursor a cualquier nivel de aumento (0.3x - 5x).
+4. **Flujo Interactivo de Anotaciones al Clic**:
+   - Con `activeTool === 'annotate'`, el cursor cambia a `cursor-crosshair`.
+   - Al pulsar sobre cualquier nodo, se despliega un diálogo nativo contextual para ingresar la nota explicativa.
+   - La tarjeta se crea de inmediato con su flecha curva y cuenta ahora con un botón de borrado directo (`×`) en la esquina superior derecha, además de permitir edición con doble clic.
+   - El arrastre de la tarjeta de anotación también fue inmunizado contra discrepancias de zoom.
+5. **Cálculo de Manetas Bézier en Delta Relativo**:
+   - Se refactorizó el arrastre de manetas en `CanvasNode.tsx` registrando la posición inicial del puntero y sumando el delta normalizado: `cp1x = initialCp1x + (deltaX / zoom)`. La maneta sigue con exactitud milimétrica el cursor.
+6. **Atajos de Teclado Globales en `App.tsx`**:
+   - `H`: Mano (pan)
+   - `V`: Selección (select)
+   - `M`: Mover / Arrastre (move)
+   - `B`: Curvar Bézier (bezier)
+   - `A`: Anotar / Comentario (annotate)
+7. **Batería Zero-Defect**:
+   - Suite nueva creada: `tests/toolsAndAnnotations.test.ts` validando el ciclo de vida de herramientas y limpieza de anotaciones.
+   - `bun test`: 23/23 tests pasados (100%).
+   - `tsc -b`: 0 errores de tipado.
+   - `vite build`: Build de producción generado limpiamente en 2.17s.

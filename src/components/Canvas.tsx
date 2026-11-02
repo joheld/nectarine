@@ -28,7 +28,7 @@ export const Canvas: React.FC<CanvasProps> = ({ svgRef }) => {
     setLayoutBounds,
     loadDataset,
   } = useDataStore();
-  const { clearSelection, isGlowEnabled } = useMutationStore();
+  const { clearSelection, isGlowEnabled, activeTool } = useMutationStore();
   const containerRef = useRef<HTMLDivElement>(null);
   const fileInputFallbackRef = useRef<HTMLInputElement>(null);
 
@@ -71,9 +71,10 @@ export const Canvas: React.FC<CanvasProps> = ({ svgRef }) => {
   };
 
   const handlePointerDown = (e: React.PointerEvent) => {
-    if (e.button === 1 || e.altKey) {
+    if (e.button === 1 || e.altKey || activeTool === 'pan') {
       setIsPanning(true);
       panStartRef.current = { x: e.clientX - pan.x, y: e.clientY - pan.y };
+      (e.currentTarget as Element).setPointerCapture(e.pointerId);
       return;
     }
 
@@ -92,8 +93,13 @@ export const Canvas: React.FC<CanvasProps> = ({ svgRef }) => {
     }
   };
 
-  const handlePointerUp = () => {
-    setIsPanning(false);
+  const handlePointerUp = (e: React.PointerEvent) => {
+    if (isPanning) {
+      setIsPanning(false);
+      try {
+        (e.currentTarget as Element).releasePointerCapture(e.pointerId);
+      } catch (_) {}
+    }
   };
 
   const handleDragOver = (e: React.DragEvent) => {
@@ -146,10 +152,18 @@ export const Canvas: React.FC<CanvasProps> = ({ svgRef }) => {
 
   const currentBlendMode = colorService.getBlendMode();
 
+  const cursorClass = isPanning
+    ? 'cursor-grabbing'
+    : activeTool === 'pan'
+    ? 'cursor-grab'
+    : activeTool === 'annotate'
+    ? 'cursor-crosshair'
+    : 'cursor-default';
+
   return (
     <div
       ref={containerRef}
-      className={`flex-1 h-full relative overflow-hidden bg-[#fffdf9] select-none cursor-default transition-colors ${
+      className={`flex-1 h-full relative overflow-hidden bg-[#fffdf9] select-none ${cursorClass} transition-colors ${
         isDraggingFile ? 'bg-rose-50/50 ring-4 ring-inset ring-[#e11d48]/20' : ''
       }`}
       onWheel={handleWheel}
@@ -470,11 +484,12 @@ export const Canvas: React.FC<CanvasProps> = ({ svgRef }) => {
                 key={node.id}
                 node={node}
                 blendMode={currentBlendMode}
+                zoom={zoom}
               />
             ))}
           </g>
 
-          <TetheredAnnotations />
+          <TetheredAnnotations zoom={zoom} />
         </g>
       </svg>
 

@@ -11,6 +11,8 @@ import {
 } from '../engine/types';
 import { computeLayout, LayoutBounds } from '../engine/layoutEngine';
 import { datasetProfiler, GuardrailCheck } from '../services/profiler';
+import { useMutationStore } from './mutationStore';
+import { useLayerStore } from './layerStore';
 
 interface DataState {
   datasetName: string;
@@ -84,6 +86,10 @@ export const useDataStore = create<DataState>((set, get) => ({
     const suggested = compatibilities.find((c) => c.type === firstCompatible)?.suggestedMappings || {};
 
     const guardrail = datasetProfiler.checkPerformance(rows.length);
+
+    // Limpiar mutaciones previas y anotaciones al cargar un nuevo dataset
+    useMutationStore.getState().resetAllMutations();
+    useLayerStore.getState().clearAnnotations();
 
     set({
       datasetName: name,
