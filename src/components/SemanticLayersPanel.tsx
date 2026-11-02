@@ -88,7 +88,7 @@ export const SemanticLayersPanel: React.FC = () => {
   };
 
   return (
-    <aside className="w-72 bg-[#f8f5ee] border-r border-[#e6dcce] flex flex-col h-full select-none text-xs">
+    <aside className="w-64 bg-[#f8f5ee] border-r border-[#e6dcce] flex flex-col h-full select-none text-xs shrink-0">
       {/* 1. Header */}
       <div className="h-11 px-4 border-b border-[#e6dcce] flex items-center justify-between bg-[#f3ece0]">
         <div className="flex items-center gap-2">

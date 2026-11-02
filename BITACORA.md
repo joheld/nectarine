@@ -639,3 +639,42 @@ Al incorporar nuevas capacidades avanzadas (hot-reload, glifos, texturas y copia
 - `bun run verify` (`tsc -b && vite build`): 0 errores de tipado, compilación de producción limpia.
 - Socket HTTP 200 en puerto 5220 verificado.
 - Firma de código en `/Users/joe/Desktop/Nectarine.app` verificada como válida con Designated Requirement.
+
+
+---
+
+## Entrada 020 — Auditoría Visual Forense (Visión Computacional) & Rediseño de Arquitectura Pro
+- **Fecha y Hora**: 2026-11-02 15:05
+- **Fase**: Fase 6: Auditoría Visual & Rediseño Arquitectónico de Calibre Humano
+- **Arquitecto**: Antigravity Principal Software Architect
+
+### Diagnóstico con Visión Computacional (Captura Real Renderizada)
+Tras la queja del usuario sobre el aspecto de la interfaz, se ejecutó un script con Playwright para capturar y renderizar la pantalla en resolución estándar de escritorio (1440x900). La inspección visual forense reveló cuatro fallos críticos graves:
+1. **Desbordamiento Horizontal Brutal en Barra Superior**: Tres menús desplegables nativos gigantescos (*Nectarine & Melocotón*, *Círculo Clásico*, *Vectorial Puro*) ocupaban más de 450px en la barra superior. Esto empujaba los botones más críticos del producto (**Copiar a Figma** y **Exportar SVG**) completamente fuera del viewport visible, quedando ocultos e inaccesibles.
+2. **Invisibilidad de Gráficos**: En el control segmentado de gráficos, mientras 'Dispersión' mostraba un rótulo rojo brillante, los otros 8 gráficos se renderizaban como puntos grises apagados (`opacity-40`), prácticamente invisibles e indistinguibles.
+3. **Disposición 'Sándwich' Inversa de la Caja de Herramientas**: La tira de herramientas de 48px había quedado encajada entre el panel de Capas (288px) y el lienzo, creando una grieta visual extraña en medio de la pantalla. Además, los botones tenían letras minúsculas superpuestas en las esquinas que parecían artefactos rotos.
+4. **Colapso del Lateral Derecho y Asimetría del Lienzo**: Cuando no había ningún nodo seleccionado, `NodeInspector.tsx` retornaba `null`, dejando todo el lateral derecho como un vacío en blanco y empujando el lienzo asimétricamente a la derecha.
+
+### Solución Arquitectónica Implementada
+1. **Inspector Permanente Dual (`NodeInspector.tsx`, 288px)**:
+   - **Modo Global ('Estudio & Estilo')**: Cuando no hay ningún nodo seleccionado, el panel derecho permanece activo y muestra:
+     - **Paleta Cromática**: Tarjetas interactivas con tiras de muestras reales de los 5 colores para cada una de las 5 paletas editoriales.
+     - **Morfología Maestra de Glifos**: Cuadrícula de botones táctiles con icono SVG de cada forma (*Círculo, Pétalo, Estrella, Rombo, Semilla*).
+     - **Acabado de Taller / Textura**: Selector de 4 estilos (*Vectorial Puro, Grano Risográfico, Trama Semitonos, Papel de Algodón*) con descripción técnica.
+     - **Resplandor Estelar (Glow)**: Conmutador táctil con indicador de estado ámbar.
+     - **Telemetría del Dataset**: Resumen con nombre de archivo, recuento de filas y vectores en lienzo con tipografía monoespaciada tabular.
+   - **Modo Elemento ('Inspector de Vector')**: Al hacer clic en cualquier dato, conmuta al inspector de nodo con color individual, glifo específico, control de escala 1:1, botón de anclaje ético y telemetría de distorsión empírica.
+2. **Barra Superior Esbelta y Equilibrada (`Toolbar.tsx`, 48px)**:
+   - Se erradicaron los tres menús anchos de la barra superior al mudarlos al inspector derecho.
+   - **Izquierda**: *Subir Archivo*, *Hot-Reload* reconciliador y *Filtros*.
+   - **Centro**: Los 9 gráficos se muestran con icono y rótulo legible (*Dispersión, Burbujas, Cuerdas, Espiral, Celestial, Barras, Mosaico, Red, Ondas*).
+   - **Derecha**: *Copiar a Figma* (<kbd>⌘C</kbd>) y *Exportar SVG* con 100% de visibilidad garantizada y amplio margen de seguridad.
+3. **Tira de Herramientas en el Extremo Exterior Izquierdo (`VerticalToolbox.tsx`, 48px)**:
+   - Se movió al borde absoluto izquierdo de la ventana (`w-12`), replicando el arquetipo clásico de Adobe Illustrator y Photoshop: `[Tira de Herramientas] -> [Capas (256px)] -> [Lienzo] -> [Inspector (288px)]`.
+   - Se eliminaron las letras superpuestas en las esquinas de los iconos, usando tooltips estándar nativos y rim-light sutil en el botón activo.
+
+### Batería Zero-Defect
+- `bun test`: 34/34 tests pasados (100%).
+- `bun run verify` (`tsc -b && vite build`): 0 errores, compilación de producción limpia en 2.32s.
+- Verificación visual con Playwright: capturas PNG (`screenshot_v3_perfect.png`) confirmaron composición equilibrada, cero desbordamientos y legibilidad cristalina.
+- Socket HTTP 200 en puerto 5220 y sellado de código en `/Users/joe/Desktop/Nectarine.app` verificados.

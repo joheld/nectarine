@@ -85,8 +85,8 @@ export const App: React.FC = () => {
           </div>
         ) : (
           <>
-            <SemanticLayersPanel />
             <VerticalToolbox />
+            <SemanticLayersPanel />
             <Canvas svgRef={svgRef} />
             <NodeInspector />
           </>

@@ -8,25 +8,18 @@ import {
   Network,
   Share2,
   Waves,
-  Palette,
   SlidersHorizontal,
   Disc,
   Orbit,
   Sparkles,
-  SunMedium,
   Copy,
   RefreshCw,
-  Layers,
   Check,
 } from 'lucide-react';
 import { useDataStore } from '../store/dataStore';
-import { useMutationStore } from '../store/mutationStore';
-import { colorService, EDITORIAL_PALETTES } from '../services/colorService';
-import { textureService, STUDIO_FINISHES } from '../services/textureService';
 import { datasetProfiler } from '../services/profiler';
 import { exportService } from '../services/exportService';
-import { ChartType, StudioFinish, GlyphShape } from '../engine/types';
-import { GLYPH_OPTIONS } from '../engine/glyphMath';
+import { ChartType } from '../engine/types';
 import { openNativeFileDialog, processDataFile } from '../services/fileImportHelper';
 
 interface ToolbarProps {
@@ -41,34 +34,14 @@ export const Toolbar: React.FC<ToolbarProps> = ({ onOpenProfiler, svgRef }) => {
     profiledColumns,
     rawRows,
     activeFilters,
-    defaultGlyphShape,
-    setDefaultGlyphShape,
     loadDataset,
     reconcileDataset,
-    recalculateLayout,
   } = useDataStore();
-  const { isGlowEnabled, toggleGlow } = useMutationStore();
+
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [copyToast, setCopyToast] = useState(false);
-  const [currentFinish, setCurrentFinish] = useState(textureService.getActiveFinish());
-
-  useEffect(() => {
-    return textureService.subscribe((finish) => {
-      setCurrentFinish(finish);
-    });
-  }, []);
 
   const compatibilities = datasetProfiler.evaluateCompatibility(profiledColumns, rawRows.length);
-  const currentPalette = colorService.getPalette();
-
-  const handlePaletteChange = (paletteId: string) => {
-    colorService.setPalette(paletteId);
-    recalculateLayout();
-  };
-
-  const handleFinishChange = (finish: StudioFinish) => {
-    textureService.setFinish(finish);
-  };
 
   const handleNativeImport = async () => {
     await openNativeFileDialog(loadDataset, fileInputRef.current);
@@ -126,19 +99,19 @@ export const Toolbar: React.FC<ToolbarProps> = ({ onOpenProfiler, svgRef }) => {
   };
 
   const chartButtons: { type: ChartType; label: string; icon: React.ReactNode }[] = [
-    { type: 'scatter', label: 'Dispersión', icon: <ScatterChart className="w-4 h-4" /> },
-    { type: 'bubble', label: 'Burbujas', icon: <CircleDot className="w-4 h-4" /> },
-    { type: 'chord', label: 'Cuerdas', icon: <Disc className="w-4 h-4" /> },
-    { type: 'spiral', label: 'Espiral', icon: <Orbit className="w-4 h-4" /> },
-    { type: 'celestial', label: 'Celestial', icon: <Sparkles className="w-4 h-4" /> },
-    { type: 'bar', label: 'Barras', icon: <BarChart3 className="w-4 h-4" /> },
-    { type: 'voronoi', label: 'Mosaico', icon: <Share2 className="w-4 h-4" /> },
-    { type: 'network', label: 'Red', icon: <Network className="w-4 h-4" /> },
-    { type: 'stream', label: 'Ondas', icon: <Waves className="w-4 h-4" /> },
+    { type: 'scatter', label: 'Dispersión', icon: <ScatterChart className="w-3.5 h-3.5" /> },
+    { type: 'bubble', label: 'Burbujas', icon: <CircleDot className="w-3.5 h-3.5" /> },
+    { type: 'chord', label: 'Cuerdas', icon: <Disc className="w-3.5 h-3.5" /> },
+    { type: 'spiral', label: 'Espiral', icon: <Orbit className="w-3.5 h-3.5" /> },
+    { type: 'celestial', label: 'Celestial', icon: <Sparkles className="w-3.5 h-3.5" /> },
+    { type: 'bar', label: 'Barras', icon: <BarChart3 className="w-3.5 h-3.5" /> },
+    { type: 'voronoi', label: 'Mosaico', icon: <Share2 className="w-3.5 h-3.5" /> },
+    { type: 'network', label: 'Red', icon: <Network className="w-3.5 h-3.5" /> },
+    { type: 'stream', label: 'Ondas', icon: <Waves className="w-3.5 h-3.5" /> },
   ];
 
   return (
-    <div className="h-12 bg-[#f8f5ee] border-b border-[#e6dcce] px-4 flex items-center justify-between text-xs select-none z-40 gap-3">
+    <div className="h-12 bg-[#f8f5ee] border-b border-[#e6dcce] px-4 flex items-center justify-between text-xs select-none z-40 gap-4">
       {/* 1. File Actions */}
       <div className="flex items-center gap-2 shrink-0">
         <input
@@ -150,7 +123,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({ onOpenProfiler, svgRef }) => {
         />
         <button
           onClick={handleNativeImport}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white hover:bg-[#faf7f2] active:bg-[#ede5db] text-[#2c1a0e] border border-[#e6dcce] transition-colors font-medium shadow-2xs"
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white hover:bg-[#faf7f2] active:bg-[#ede5db] text-[#2c1a0e] border border-[#e6dcce] transition-colors font-medium shadow-2xs cursor-pointer"
           title="Importar un archivo CSV, JSON o Parquet desde tu equipo"
         >
           <Upload className="w-3.5 h-3.5 text-[#e11d48]" />
@@ -160,7 +133,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({ onOpenProfiler, svgRef }) => {
         {rawRows.length > 0 && (
           <button
             onClick={handleNativeReconcile}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#eff6ff] hover:bg-[#dbeafe] active:bg-[#bfdbfe] text-[#0369a1] border border-[#bfdbfe] transition-colors font-medium shadow-2xs"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#eff6ff] hover:bg-[#dbeafe] active:bg-[#bfdbfe] text-[#0369a1] border border-[#bfdbfe] transition-colors font-medium shadow-2xs cursor-pointer"
             title="Cargar dataset actualizado preservando todas tus mutaciones artísticas, notas y curvas por clave"
           >
             <RefreshCw className="w-3.5 h-3.5 text-[#0284c7]" />
@@ -170,7 +143,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({ onOpenProfiler, svgRef }) => {
 
         <button
           onClick={onOpenProfiler}
-          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border transition-colors font-medium shadow-2xs ${
+          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border transition-colors font-medium shadow-2xs cursor-pointer ${
             activeFilters && activeFilters.length > 0
               ? 'bg-[#fff7ed] border-[#fed7aa] text-[#c2410c]'
               : 'bg-white hover:bg-[#faf7f2] text-[#2c1a0e] border-[#e6dcce]'
@@ -187,10 +160,8 @@ export const Toolbar: React.FC<ToolbarProps> = ({ onOpenProfiler, svgRef }) => {
         </button>
       </div>
 
-      <div className="h-5 w-px bg-[#e6dcce] shrink-0" />
-
-      {/* 2. Chart Types Segmented Control (Airy & Spacious: active shows label, others icon-only) */}
-      <div className="flex items-center bg-[#ede5db] p-1 rounded-xl border border-[#dfd2c4] gap-0.5 shrink-0">
+      {/* 2. Chart Types Segmented Control (High Density, Crystal Clear & Balanced) */}
+      <div className="flex items-center bg-[#ede5db] p-1 rounded-xl border border-[#dfd2c4] gap-0.5">
         {chartButtons.map((btn) => {
           const compat = compatibilities.find((c) => c.type === btn.type);
           const isCompatible = compat ? compat.isCompatible : true;
@@ -206,88 +177,25 @@ export const Toolbar: React.FC<ToolbarProps> = ({ onOpenProfiler, svgRef }) => {
                   ? `${btn.label}: Gráfico compatible con los datos actuales`
                   : `${btn.label}: Incompatible (${compat?.reason})`
               }
-              className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg transition-all ${
+              className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg transition-all cursor-pointer ${
                 isSelected
                   ? 'bg-[#e11d48] text-white shadow-xs font-semibold'
                   : isCompatible
                   ? 'text-[#5e4634] hover:text-[#2c1a0e] hover:bg-white/80'
-                  : 'text-[#8c7664] opacity-35 cursor-not-allowed'
+                  : 'text-[#8c7664] opacity-40 cursor-not-allowed'
               }`}
             >
               {btn.icon}
-              {isSelected && <span className="text-[11px] whitespace-nowrap">{btn.label}</span>}
+              <span className={`text-[11px] whitespace-nowrap ${isSelected ? 'font-semibold' : 'font-normal'}`}>
+                {btn.label}
+              </span>
             </button>
           );
         })}
       </div>
 
-      <div className="h-5 w-px bg-[#e6dcce] shrink-0" />
-
-      {/* 3. Style, Glow, Morphological Glyphs, Textures & Clean Export */}
-      <div className="flex items-center gap-2.5 shrink-0">
-        <button
-          onClick={toggleGlow}
-          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border transition-all ${
-            isGlowEnabled
-              ? 'bg-[#fff7ed] border-[#fed7aa] text-[#c2410c] font-medium shadow-xs'
-              : 'bg-white border-[#e6dcce] text-[#8c7664] hover:text-[#2c1a0e]'
-          }`}
-          title="Alternar resplandor estelar y halos de luz (Glow SVG)"
-        >
-          <SunMedium className={`w-3.5 h-3.5 ${isGlowEnabled ? 'text-[#ea580c]' : 'text-[#8c7664]'}`} />
-          <span className="text-[11px] hidden 2xl:inline">Luz & Glow</span>
-        </button>
-
-        <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-white border border-[#e6dcce] text-[#2c1a0e] shadow-2xs">
-          <Palette className="w-3.5 h-3.5 text-[#e11d48]" />
-          <select
-            value={currentPalette.id}
-            onChange={(e) => handlePaletteChange(e.target.value)}
-            className="bg-transparent text-[#2c1a0e] text-xs focus:outline-none cursor-pointer font-medium"
-          >
-            {EDITORIAL_PALETTES.map((p) => (
-              <option key={p.id} value={p.id} className="bg-white text-[#2c1a0e]">
-                {p.name}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {/* Morphological Glyph Studio */}
-        <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-white border border-[#e6dcce] text-[#2c1a0e] shadow-2xs">
-          <Sparkles className="w-3.5 h-3.5 text-[#c2410c]" />
-          <select
-            value={defaultGlyphShape}
-            onChange={(e) => setDefaultGlyphShape(e.target.value as GlyphShape)}
-            className="bg-transparent text-[#2c1a0e] text-xs focus:outline-none cursor-pointer font-medium"
-            title="Morfología artesanal de las marcas de datos (Glifos)"
-          >
-            {GLYPH_OPTIONS.map((g) => (
-              <option key={g.id} value={g.id} className="bg-white text-[#2c1a0e]">
-                {g.label}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {/* Studio Finishes (Risograph, Halftone, Paper) */}
-        <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-white border border-[#e6dcce] text-[#2c1a0e] shadow-2xs">
-          <Layers className="w-3.5 h-3.5 text-[#7c3aed]" />
-          <select
-            value={currentFinish}
-            onChange={(e) => handleFinishChange(e.target.value as StudioFinish)}
-            className="bg-transparent text-[#2c1a0e] text-xs focus:outline-none cursor-pointer font-medium"
-            title="Texturas de imprenta editorial y grano analógico"
-          >
-            {STUDIO_FINISHES.map((f) => (
-              <option key={f.id} value={f.id} className="bg-white text-[#2c1a0e]">
-                {f.label}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {/* Copy for Figma & Illustrator */}
+      {/* 3. Figma Copy & Clean SVG Export */}
+      <div className="flex items-center gap-2 shrink-0">
         <button
           onClick={handleCopyToClipboard}
           className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border transition-all font-medium shadow-2xs cursor-pointer ${
@@ -303,11 +211,14 @@ export const Toolbar: React.FC<ToolbarProps> = ({ onOpenProfiler, svgRef }) => {
             <Copy className="w-3.5 h-3.5 text-[#0284c7]" />
           )}
           <span>{copyToast ? '¡Copiado!' : 'Copiar a Figma'}</span>
+          <kbd className="hidden xl:inline text-[9px] font-mono text-[#8c7664] bg-[#f0e7dc] px-1 py-0.2 rounded border border-[#dfd2c4]">
+            ⌘C
+          </kbd>
         </button>
 
         <button
           onClick={handleExport}
-          className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-[#e11d48] hover:bg-[#be123c] active:translate-y-px text-white font-medium shadow-[0_1px_2px_rgba(225,29,72,0.35),inset_0_1px_0_rgba(255,255,255,0.2)] transition-all"
+          className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-[#e11d48] hover:bg-[#be123c] active:translate-y-px text-white font-medium shadow-[0_1px_2px_rgba(225,29,72,0.35),inset_0_1px_0_rgba(255,255,255,0.2)] transition-all cursor-pointer"
           title="Descargar ilustración vectorial pura en formato SVG"
         >
           <Download className="w-3.5 h-3.5" />
