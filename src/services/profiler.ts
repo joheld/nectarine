@@ -14,6 +14,13 @@ export interface GuardrailCheck {
   }[];
 }
 
+export interface FilterCondition {
+  id: string;
+  column: string;
+  operator: '>' | '<' | '>=' | '<=' | '=' | '!=' | 'contains';
+  value: any;
+}
+
 class DatasetProfiler {
   /**
    * Analyzes loaded columns: data types, cardinality, ranges, null counts
@@ -265,23 +272,78 @@ class DatasetProfiler {
   }
 
   /**
-   * Non-SQL Visual Transformation: Filter Range or Value
+   * Non-SQL Visual Transformation: Multi-Column Filter with Conjunction (AND / OR)
+   */
+  public transformMultiFilter(
+    rows: Record<string, any>[],
+    conditions: FilterCondition[],
+    conjunction: 'AND' | 'OR' = 'AND'
+  ): Record<string, any>[] {
+    const validConditions = conditions.filter(
+      (c) => c.column && c.value !== undefined && c.value !== null && String(c.value).trim() !== ''
+    );
+
+    if (validConditions.length === 0) {
+      return rows;
+    }
+
+    return rows.filter((row) => {
+      const matchCondition = (cond: FilterCondition) => {
+        const val = row[cond.column];
+        if (val === undefined || val === null) {
+          return cond.operator === '!=';
+        }
+
+        const condVal = cond.value;
+        const numRow = Number(val);
+        const numCond = Number(condVal);
+        const isNumeric = !isNaN(numRow) && !isNaN(numCond) && String(condVal).trim() !== '';
+
+        switch (cond.operator) {
+          case '>':
+            return isNumeric ? numRow > numCond : String(val) > String(condVal);
+          case '<':
+            return isNumeric ? numRow < numCond : String(val) < String(condVal);
+          case '>=':
+            return isNumeric ? numRow >= numCond : String(val) >= String(condVal);
+          case '<=':
+            return isNumeric ? numRow <= numCond : String(val) <= String(condVal);
+          case '=':
+            return isNumeric
+              ? numRow === numCond
+              : String(val).trim().toLowerCase() === String(condVal).trim().toLowerCase();
+          case '!=':
+            return isNumeric
+              ? numRow !== numCond
+              : String(val).trim().toLowerCase() !== String(condVal).trim().toLowerCase();
+          case 'contains':
+            return String(val).toLowerCase().includes(String(condVal).toLowerCase());
+          default:
+            return true;
+        }
+      };
+
+      if (conjunction === 'OR') {
+        return validConditions.some(matchCondition);
+      }
+      return validConditions.every(matchCondition);
+    });
+  }
+
+  /**
+   * Non-SQL Visual Transformation: Single Filter Range or Value
    */
   public transformFilter(
     rows: Record<string, any>[],
     column: string,
-    operator: '>' | '<' | '=' | '!=' | 'contains',
+    operator: '>' | '<' | '>=' | '<=' | '=' | '!=' | 'contains',
     filterValue: any
   ): Record<string, any>[] {
-    return rows.filter((row) => {
-      const val = row[column];
-      if (operator === '>') return Number(val) > Number(filterValue);
-      if (operator === '<') return Number(val) < Number(filterValue);
-      if (operator === '=') return String(val).toLowerCase() === String(filterValue).toLowerCase();
-      if (operator === '!=') return String(val).toLowerCase() !== String(filterValue).toLowerCase();
-      if (operator === 'contains') return String(val).toLowerCase().includes(String(filterValue).toLowerCase());
-      return true;
-    });
+    return this.transformMultiFilter(
+      rows,
+      [{ id: 'single', column, operator, value: filterValue }],
+      'AND'
+    );
   }
 
   /**

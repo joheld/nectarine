@@ -35,7 +35,7 @@ interface ToolbarProps {
 }
 
 export const Toolbar: React.FC<ToolbarProps> = ({ onOpenProfiler, svgRef }) => {
-  const { chartType, setChartType, profiledColumns, rawRows, loadDataset, recalculateLayout } = useDataStore();
+  const { chartType, setChartType, profiledColumns, rawRows, activeFilters, loadDataset, recalculateLayout } = useDataStore();
   const { activeTool, setActiveTool, resetAllMutations, mutations, isGlowEnabled, toggleGlow } = useMutationStore();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -100,11 +100,20 @@ export const Toolbar: React.FC<ToolbarProps> = ({ onOpenProfiler, svgRef }) => {
 
         <button
           onClick={onOpenProfiler}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white hover:bg-[#faf7f2] text-[#2c1a0e] border border-[#e6dcce] transition-colors font-medium shadow-2xs"
+          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border transition-colors font-medium shadow-2xs ${
+            activeFilters && activeFilters.length > 0
+              ? 'bg-[#fff7ed] border-[#fed7aa] text-[#c2410c]'
+              : 'bg-white hover:bg-[#faf7f2] text-[#2c1a0e] border-[#e6dcce]'
+          }`}
           title="Ver columnas, valores y filtrar datos sin fórmulas"
         >
           <SlidersHorizontal className="w-3.5 h-3.5 text-[#f97316]" />
           <span>Filtros</span>
+          {activeFilters && activeFilters.length > 0 && (
+            <span className="px-1.5 py-0.2 bg-[#ea580c] text-white text-[9px] rounded-full font-mono font-bold">
+              {activeFilters.length}
+            </span>
+          )}
         </button>
       </div>
 

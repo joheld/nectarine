@@ -475,3 +475,49 @@ El usuario detectó con precisión que el manual anunciaba "9 geometrías" pero 
    - `bun test`: 23/23 tests pasados (100%).
    - `tsc -b`: 0 errores de tipado.
    - `vite build`: Build de producción generado limpiamente en 2.17s.
+
+
+---
+
+## Entrada 016 — Motor de Filtrado Multicolumna Compuesto (Multi-Condition Engine)
+- **Fecha y Hora**: 2026-11-02 14:08
+- **Fase**: Transformación Analítica No-SQL, Filtrado Dinámico & Experiencia de Usuario
+- **Arquitecto**: Antigravity Principal Software Architect
+
+### Diagnóstico de Brechas (En respuesta al feedback del usuario)
+1. **Limitación a Filtro de Columna Única**:
+   - `DataProfilerModal.tsx` solo disponía de tres controles (`filterCol`, `filterOp`, `filterVal`), permitiendo evaluar únicamente una condición sobre una sola columna a la vez. Al aplicar un nuevo filtro se sobrescribía el anterior sin posibilidad de componer restricciones lógicas entre múltiples variables (e.g. `Continente = 'Europa'` Y `PIB > 25000` Y `Esperanza_Vida >= 80`).
+2. **Falta de Operadores Relacionales**:
+   - Solo se soportaban `>`, `<`, `=`, `!=`. Faltaban operadores fundamentales como `>=` (mayor o igual) y `<=` (menor o igual).
+3. **Ausencia de Telemetría Predictiva en Filtros**:
+   - El usuario no podía conocer cuántas filas resultarían del filtro antes de aplicarlo, obligando a cerrar el modal a ciegas para ver el resultado.
+
+### Resoluciones Aplicadas
+1. **Motor de Filtrado Compuesto en `profiler.ts`**:
+   - Se diseñó e implementó la interfaz `FilterCondition`:
+     ```typescript
+     export interface FilterCondition {
+       id: string;
+       column: string;
+       operator: '>' | '<' | '>=' | '<=' | '=' | '!=' | 'contains';
+       value: any;
+     }
+     ```
+   - Se añadió el método `transformMultiFilter(rows, conditions, conjunction: 'AND' | 'OR')`, con evaluación automática de tipos numéricos y textuales (soporte para mayúsculas/minúsculas y subcadenas).
+2. **Gestión de Estado en `dataStore.ts`**:
+   - `activeFilters: FilterCondition[]` y `filterConjunction: 'AND' | 'OR'` agregados al estado reactivo.
+   - Acción `applyMultiFilter(conditions, conjunction)` con recálculo dinámico de layout SVG.
+   - `resetTransforms()` y `loadDataset()` limpian todos los filtros activos automáticamente.
+3. **Rediseño Integral de la Pestaña "Filtrar Datos" en `DataProfilerModal.tsx`**:
+   - **Selector de Conjunción Booleana**: Segmented control conmutable entre `Todas (Y / AND)` y `Cualquiera (O / OR)`.
+   - **Telemetría en Tiempo Real**: Badge reactivo que calcula y muestra al instante el número y porcentaje de filas coincidentes (`X de Y filas coinciden (Z%)`).
+   - **Filas Dinámicas de Condiciones**: Cada regla cuenta con su identificador numérico (`#1`, `#2`), selector de columna, selector de operador contextual según el tipo de dato, campo de valor con sugerencia de muestra (`placeholder`) y botón de eliminación individual (`Trash2`).
+   - **Botón "+ Añadir otra condición"**: Permite agregar tantas restricciones sobre columnas distintas como el usuario requiera.
+   - **Botón "Limpiar Filtros"** y **"Aplicar Filtros (N)"**: Con cierre automático y actualización inmediata del lienzo.
+4. **Badge Visual en la Barra de Herramientas (`Toolbar.tsx`)**:
+   - El botón "Filtros" ahora refleja visualmente el número de filtros activos con un badge numérico ámbar cuando existen reglas aplicadas.
+5. **Batería Zero-Defect**:
+   - 3 nuevos tests unitarios en `tests/profiler.test.ts` evaluando conjunciones AND, OR y operador `contains`.
+   - `bun test`: 26/26 tests pasados (100%).
+   - `tsc -b`: 0 errores de tipado.
+   - `vite build`: Build de producción validado en 2.41s.

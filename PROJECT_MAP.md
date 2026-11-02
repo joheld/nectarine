@@ -25,6 +25,7 @@ gitGraph
     commit id: "purge-samples-dynamic-grouping-deslop" tag: "v1.7.0"
     commit id: "fix-macos-launchers-nectarine" tag: "v1.8.0"
     commit id: "fix-tools-hand-drag-annotate-bezier" tag: "v1.9.0"
+    commit id: "feat-multi-column-filtering" tag: "v2.0.0"
 ```
 
 ---
@@ -57,6 +58,7 @@ gitGraph
 | **CP-21** | Purga de Datos Muestra, Lienzo con Dropzone & Agrupación Dinámica Multicolumna | Eliminación radical de muestras precargadas (`paises_y_desarrollo.csv` y `ventas_tecnologia.csv`). El lienzo arranca limpio con tarjeta interactiva de soltar archivos (drag & drop). En el panel de Capas Semánticas se implementó selector de columna primaria y sub-agrupación secundaria jerárquica con recálculo en tiempo real. Erradicación completa de clases oscuras en `DataProfilerModal`, `DataLasso` y `App`. | **Completado** |
 | **CP-22** | Resiliencia de Lanzadores macOS & Firma de Código | Corrección de firma de código rota (`a sealed resource is missing or invalid`), desacople total de Terminal en `Nectarine.app`, invocación asíncrona de `launch-desktop.sh`, apertura garantizada de UI en navegador, recuperación de puerto 5220 ante procesos colgados y actualización de `Nectarine.command`. | **Completado** |
 | **CP-23** | Reparación Integral de Herramientas & Purga de Anotación Ficticia | Herramienta de Mano (`pan`) añadida para encuadre del lienzo, arrastre de nodos con compensación de escala por zoom 1:1, manetas Bézier con cálculo relativo libre de saltos a infinito, creación interactiva de anotaciones al hacer clic sobre cualquier nodo, botón de eliminación rápida (`×`) en tarjetas y erradicación definitiva del comentario precargado de PIB/esperanza de vida. | **Completado** |
+| **CP-24** | Filtrado Multicolumna Compuesto (Multi-Condition Engine) | Sistema dinámico de filtrado multi-regla con soporte para múltiples columnas simultáneas, conjunción lógica conmutable (Y / O), operadores extendidos (`>`, `<`, `>=`, `<=`, `=`, `!=`, `contiene`), contador de filas en tiempo real con telemetría visual, persistencia en `dataStore` y badge numérico en botón de filtros. | **Completado** |
 
 ---
 
@@ -104,5 +106,5 @@ flowchart TD
 
 ## 4. Estado de la Sesión
 
-- **Estado Actual**: Herramientas de lienzo de Nectarine 100% operativas (Mano/Pan, Puntero de selección, Arrastre/Move con zoom 1:1, Curvar Bézier con delta relativo sin saltos y Anotación interactiva al clic con callouts atados). Comentario precargado ficticio purgado en su totalidad. 23/23 tests unitarios aprobados, tipado estricto `tsc` con 0 errores y build de producción validado en 2.17s.
+- **Estado Actual**: Sistema de filtrado de datos ampliado a soporte multicolumna completo con lógica booleana Y / O, operadores avanzados y telemetría de coincidencia en tiempo real. 26/26 tests unitarios aprobados, tipado estricto `tsc` con 0 errores y build de producción validado en 2.41s.
 - **Siguiente Paso**: Commit atómico y entrega al usuario con reporte técnico y guía de operación.

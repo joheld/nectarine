@@ -10,7 +10,7 @@ import {
   CurvedTextPath,
 } from '../engine/types';
 import { computeLayout, LayoutBounds } from '../engine/layoutEngine';
-import { datasetProfiler, GuardrailCheck } from '../services/profiler';
+import { datasetProfiler, GuardrailCheck, FilterCondition } from '../services/profiler';
 import { useMutationStore } from './mutationStore';
 import { useLayerStore } from './layerStore';
 
@@ -40,6 +40,8 @@ interface DataState {
   layoutBounds: LayoutBounds;
   guardrailCheck: GuardrailCheck | null;
   isGuardrailModalOpen: boolean;
+  activeFilters: FilterCondition[];
+  filterConjunction: 'AND' | 'OR';
 
   // Actions
   loadDataset: (name: string, rows: Record<string, any>[]) => void;
@@ -47,7 +49,8 @@ interface DataState {
   setMappings: (mappings: Partial<DataState['mappings']>) => void;
   setLayoutBounds: (bounds: LayoutBounds) => void;
   recalculateLayout: () => void;
-  applyFilter: (column: string, operator: '>' | '<' | '=' | '!=', value: any) => void;
+  applyFilter: (column: string, operator: '>' | '<' | '>=' | '<=' | '=' | '!=' | 'contains', value: any) => void;
+  applyMultiFilter: (conditions: FilterCondition[], conjunction?: 'AND' | 'OR') => void;
   applyGroupBy: (groupCol: string, metricCol: string, op: 'sum' | 'mean' | 'count' | 'max' | 'min') => void;
   applyTopN: (metricCol: string, n?: number) => void;
   resetTransforms: () => void;
@@ -78,6 +81,8 @@ export const useDataStore = create<DataState>((set, get) => ({
   layoutBounds: DEFAULT_BOUNDS,
   guardrailCheck: null,
   isGuardrailModalOpen: false,
+  activeFilters: [],
+  filterConjunction: 'AND',
 
   loadDataset: (name, rows) => {
     const profiled = datasetProfiler.profileColumns(rows);
@@ -95,6 +100,8 @@ export const useDataStore = create<DataState>((set, get) => ({
       datasetName: name,
       rawRows: rows,
       activeRows: rows,
+      activeFilters: [],
+      filterConjunction: 'AND',
       profiledColumns: profiled,
       chartType: firstCompatible,
       mappings: {
@@ -157,11 +164,19 @@ export const useDataStore = create<DataState>((set, get) => ({
     });
   },
 
-  applyFilter: (column, operator, value) => {
+  applyMultiFilter: (conditions, conjunction = 'AND') => {
     const { rawRows } = get();
-    const filtered = datasetProfiler.transformFilter(rawRows, column, operator, value);
-    set({ activeRows: filtered });
+    const filtered = datasetProfiler.transformMultiFilter(rawRows, conditions, conjunction);
+    set({
+      activeRows: filtered,
+      activeFilters: conditions,
+      filterConjunction: conjunction,
+    });
     get().recalculateLayout();
+  },
+
+  applyFilter: (column, operator, value) => {
+    get().applyMultiFilter([{ id: `f-${Date.now()}`, column, operator, value }], 'AND');
   },
 
   applyGroupBy: (groupCol, metricCol, op) => {
@@ -187,7 +202,10 @@ export const useDataStore = create<DataState>((set, get) => ({
 
   resetTransforms: () => {
     const { rawRows } = get();
-    set({ activeRows: rawRows });
+    set({
+      activeRows: rawRows,
+      activeFilters: [],
+    });
     get().recalculateLayout();
   },
 

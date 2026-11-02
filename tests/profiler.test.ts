@@ -62,6 +62,42 @@ describe('DatasetProfiler & Performance Guardrail', () => {
     expect(filtered.map((r) => r.country)).toEqual(['A', 'B']);
   });
 
+  it('applies multi-column filtering with AND conjunction', () => {
+    const filtered = datasetProfiler.transformMultiFilter(
+      sampleData,
+      [
+        { id: '1', column: 'gdp', operator: '>', value: 20000 },
+        { id: '2', column: 'region', operator: '=', value: 'Europe' },
+      ],
+      'AND'
+    );
+    expect(filtered.length).toBe(1);
+    expect(filtered[0].country).toBe('A');
+  });
+
+  it('applies multi-column filtering with OR conjunction', () => {
+    const filtered = datasetProfiler.transformMultiFilter(
+      sampleData,
+      [
+        { id: '1', column: 'region', operator: '=', value: 'Europe' },
+        { id: '2', column: 'region', operator: '=', value: 'Africa' },
+      ],
+      'OR'
+    );
+    expect(filtered.length).toBe(2);
+    expect(filtered.map((r) => r.country)).toEqual(['A', 'D']);
+  });
+
+  it('filters text columns with contains operator', () => {
+    const filtered = datasetProfiler.transformMultiFilter(
+      sampleData,
+      [{ id: '1', column: 'region', operator: 'contains', value: 'eri' }],
+      'AND'
+    );
+    expect(filtered.length).toBe(1);
+    expect(filtered[0].country).toBe('C');
+  });
+
   it('applies non-SQL group by aggregation', () => {
     const dataWithDuplicates = [
       { cat: 'Tech', val: 100 },
