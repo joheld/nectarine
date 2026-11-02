@@ -9,6 +9,7 @@ import {
   ChevronDown,
   FolderTree,
   Filter,
+  Sparkles,
 } from 'lucide-react';
 import { useDataStore } from '../store/dataStore';
 import { useMutationStore } from '../store/mutationStore';
@@ -16,11 +17,10 @@ import { useLayerStore } from '../store/layerStore';
 import { colorService } from '../services/colorService';
 
 export const SemanticLayersPanel: React.FC = () => {
-  const { baseNodes, profiledColumns, mappings, setMappings } = useDataStore();
-  const { selectedNodeIds, selectAll, clearSelection } = useMutationStore();
+  const { baseNodes, profiledColumns, mappings, setMappings, subGroupCol, setSubGroupCol } = useDataStore();
+  const { selectedNodeIds, selectAll, clearSelection, setHoveredNode } = useMutationStore();
   const { layerOverrides, toggleLayerVisibility, toggleLayerLock, setLayerColor } = useLayerStore();
   const [collapsedFolders, setCollapsedFolders] = useState<Record<string, boolean>>({});
-  const [subGroupCol, setSubGroupCol] = useState<string>('');
 
   const activeCategoryCol = mappings.category || (profiledColumns.find((c) => c.type === 'string')?.name ?? profiledColumns[0]?.name ?? '');
 
@@ -62,14 +62,16 @@ export const SemanticLayersPanel: React.FC = () => {
         subCategory: subCat,
         nodes: subNodes,
         count: subNodes.length,
+        glyphShape: subNodes[0]?.glyphShape || 'circle',
       })),
     }));
   }, [baseNodes, subGroupCol]);
 
   const toggleFolder = (category: string) => {
+    const currentState = collapsedFolders[category] ?? (subGroupCol ? false : true);
     setCollapsedFolders((prev) => ({
       ...prev,
-      [category]: !prev[category],
+      [category]: !currentState,
     }));
   };
 
@@ -139,8 +141,11 @@ export const SemanticLayersPanel: React.FC = () => {
                 </span>
                 {subGroupCol && (
                   <button
-                    onClick={() => setSubGroupCol('')}
-                    className="text-[9.5px] text-[#e11d48] hover:underline cursor-pointer"
+                    onClick={() => {
+                      setSubGroupCol('');
+                      setCollapsedFolders({});
+                    }}
+                    className="text-[9.5px] text-[#e11d48] hover:underline cursor-pointer font-medium"
                   >
                     Quitar
                   </button>
@@ -148,9 +153,13 @@ export const SemanticLayersPanel: React.FC = () => {
               </div>
               <select
                 value={subGroupCol}
-                onChange={(e) => setSubGroupCol(e.target.value)}
+                onChange={(e) => {
+                  setSubGroupCol(e.target.value);
+                  // Auto expand all folders when setting a subgroup column
+                  setCollapsedFolders({});
+                }}
                 className="w-full bg-white border border-[#dfd2c4] rounded-lg px-2 py-1 text-[11px] text-[#5e4634] shadow-2xs focus:outline-none focus:border-[#e11d48] cursor-pointer"
-                title="Crea una jerarquía secundaria dentro de cada grupo"
+                title="Crea una jerarquía secundaria dentro de cada grupo y asigna glifos diferenciados"
               >
                 <option value="">(Ninguno — Grupo único)</option>
                 {profiledColumns
@@ -161,6 +170,12 @@ export const SemanticLayersPanel: React.FC = () => {
                     </option>
                   ))}
               </select>
+              {subGroupCol && (
+                <div className="text-[9.5px] text-[#c2410c] flex items-center gap-1 pt-0.5">
+                  <Sparkles className="w-2.5 h-2.5 shrink-0" />
+                  <span>Glifos morfológicos asignados por subgrupo</span>
+                </div>
+              )}
             </div>
           )}
         </div>
@@ -184,7 +199,8 @@ export const SemanticLayersPanel: React.FC = () => {
             const isVisible = override.isVisible !== false;
             const isLocked = override.isLocked || false;
             const currentColor = override.color || defaultColor;
-            const isCollapsed = collapsedFolders[category] ?? true;
+            // Default to expanded when subgrouping is active!
+            const isCollapsed = collapsedFolders[category] ?? (subGroupCol ? false : true);
             const isGroupSelected = nodes.some((n) => selectedNodeIds.includes(n.id));
 
             return (
@@ -208,7 +224,7 @@ export const SemanticLayersPanel: React.FC = () => {
                         e.stopPropagation();
                         toggleFolder(category);
                       }}
-                      className="text-[#8c7664] hover:text-[#2c1a0e] p-0.5"
+                      className="text-[#8c7664] hover:text-[#2c1a0e] p-0.5 cursor-pointer"
                     >
                       {isCollapsed ? (
                         <ChevronRight className="w-3 h-3" />
@@ -247,20 +263,20 @@ export const SemanticLayersPanel: React.FC = () => {
 
                     <button
                       onClick={() => toggleLayerVisibility(category)}
-                      className={`p-1 rounded hover:bg-[#f5ede3] ${
+                      className={`p-1 rounded hover:bg-[#f5ede3] cursor-pointer ${
                         isVisible ? 'text-[#5e4634]' : 'text-[#8c7664] opacity-30'
                       }`}
-                      title={isVisible ? 'Ocultar grupo' : 'Mostrar grupo'}
+                      title={isVisible ? 'Ocultar grupo en lienzo' : 'Mostrar grupo en lienzo'}
                     >
                       {isVisible ? <Eye className="w-3 h-3" /> : <EyeOff className="w-3 h-3" />}
                     </button>
 
                     <button
                       onClick={() => toggleLayerLock(category)}
-                      className={`p-1 rounded hover:bg-[#f5ede3] ${
+                      className={`p-1 rounded hover:bg-[#f5ede3] cursor-pointer ${
                         isLocked ? 'text-[#b44b10]' : 'text-[#8c7664] opacity-40 hover:opacity-100'
                       }`}
-                      title={isLocked ? 'Bloqueado' : 'Bloquear'}
+                      title={isLocked ? 'Grupo bloqueado contra edición' : 'Bloquear grupo'}
                     >
                       {isLocked ? <Lock className="w-3 h-3" /> : <Unlock className="w-3 h-3" />}
                     </button>
@@ -269,27 +285,72 @@ export const SemanticLayersPanel: React.FC = () => {
 
                 {/* Subgroups or Nodes if expanded */}
                 {!isCollapsed && (
-                  <div className="px-3 pb-2 pt-1 border-t border-[#f0e7dc] bg-[#fcfbf9] max-h-48 overflow-y-auto space-y-1 text-[11px] text-[#5e4634]">
+                  <div className="px-3 pb-2 pt-1 border-t border-[#f0e7dc] bg-[#fcfbf9] max-h-56 overflow-y-auto space-y-1 text-[11px] text-[#5e4634]">
                     {subGroups.length > 0 ? (
                       subGroups.map((sub) => {
+                        const subKey = `${category}:${sub.subCategory}`;
+                        const subOverride = layerOverrides[subKey] || {};
+                        const isSubVisible = subOverride.isVisible !== false;
+                        const isSubLocked = subOverride.isLocked || false;
                         const isSubSelected = sub.nodes.every((n) => selectedNodeIds.includes(n.id));
+
                         return (
                           <div
                             key={sub.subCategory}
-                            onClick={() => handleSelectGroup(sub.nodes)}
-                            className={`py-1 px-2 rounded-md flex items-center justify-between cursor-pointer border transition-colors ${
+                            onMouseEnter={() => sub.nodes[0] && setHoveredNode(sub.nodes[0].id)}
+                            onMouseLeave={() => setHoveredNode(null)}
+                            className={`py-1 px-2 rounded-md flex items-center justify-between border transition-all ${
                               isSubSelected
-                                ? 'bg-[#e11d48] text-white border-[#be123c] font-medium'
-                                : 'bg-white hover:bg-[#f5ede3] border-[#e6dcce]'
+                                ? 'bg-[#fff1f2] border-[#f43f5e] font-semibold text-[#be123c]'
+                                : 'bg-white hover:bg-[#faf7f2] border-[#e6dcce]'
                             }`}
-                            title={`Seleccionar ${sub.count} nodos en ${sub.subCategory}`}
                           >
-                            <span className="truncate">{sub.subCategory}</span>
-                            <span className={`text-[9.5px] font-mono px-1.5 py-0.2 rounded ${
-                              isSubSelected ? 'bg-white/20 text-white' : 'bg-[#f0e7dc] text-[#8c7664]'
-                            }`}>
-                              {sub.count}
-                            </span>
+                            {/* Subgroup Name & Select Action */}
+                            <div
+                              onClick={() => handleSelectGroup(sub.nodes)}
+                              className="flex items-center gap-1.5 flex-1 min-w-0 cursor-pointer"
+                              title={`Clic para seleccionar los ${sub.count} nodos de ${sub.subCategory}`}
+                            >
+                              <span
+                                className="w-2 h-2 rounded-xs border border-[#8c7664]/40 shrink-0"
+                                style={{ backgroundColor: currentColor }}
+                                title={`Glifo: ${sub.glyphShape}`}
+                              />
+                              <span className="truncate">{sub.subCategory}</span>
+                              <span className={`text-[9.5px] font-mono px-1.5 py-0.2 rounded shrink-0 ${
+                                isSubSelected ? 'bg-[#f43f5e] text-white' : 'bg-[#f0e7dc] text-[#8c7664]'
+                              }`}>
+                                {sub.count}
+                              </span>
+                            </div>
+
+                            {/* Subgroup Visibility & Lock */}
+                            <div className="flex items-center gap-0.5 shrink-0 ml-1">
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  toggleLayerVisibility(subKey);
+                                }}
+                                className={`p-0.5 rounded hover:bg-[#f5ede3] cursor-pointer ${
+                                  isSubVisible ? 'text-[#5e4634]' : 'text-[#8c7664] opacity-30'
+                                }`}
+                                title={isSubVisible ? 'Ocultar subgrupo en lienzo' : 'Mostrar subgrupo en lienzo'}
+                              >
+                                {isSubVisible ? <Eye className="w-3 h-3" /> : <EyeOff className="w-3 h-3" />}
+                              </button>
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  toggleLayerLock(subKey);
+                                }}
+                                className={`p-0.5 rounded hover:bg-[#f5ede3] cursor-pointer ${
+                                  isSubLocked ? 'text-[#b44b10]' : 'text-[#8c7664] opacity-40 hover:opacity-100'
+                                }`}
+                                title={isSubLocked ? 'Subgrupo bloqueado' : 'Bloquear subgrupo'}
+                              >
+                                {isSubLocked ? <Lock className="w-3 h-3" /> : <Unlock className="w-3 h-3" />}
+                              </button>
+                            </div>
                           </div>
                         );
                       })
@@ -319,7 +380,9 @@ export const SemanticLayersPanel: React.FC = () => {
 
       {groups.length > 0 && (
         <div className="p-2 border-t border-[#e6dcce] bg-[#f3ece0] text-[10px] text-[#8c7664] text-center">
-          Toca cualquier grupo para seleccionarlo en el lienzo
+          {subGroupCol
+            ? `Sub-agrupado por: ${subGroupCol}`
+            : 'Toca cualquier grupo para seleccionarlo en el lienzo'}
         </div>
       )}
     </aside>

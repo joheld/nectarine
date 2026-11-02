@@ -62,18 +62,20 @@ export const CanvasNode: React.FC<CanvasNodeProps> = ({ node, blendMode, zoom = 
   const mut = mutations[node.id];
   const isSelected = selectedNodeIds.includes(node.id);
   const layerOverride = layerOverrides[node.category];
+  const subLayerKey = node.subCategory ? `${node.category}:${node.subCategory}` : undefined;
+  const subLayerOverride = subLayerKey ? layerOverrides[subLayerKey] : undefined;
 
-  if (layerOverride?.isVisible === false) {
+  if (layerOverride?.isVisible === false || subLayerOverride?.isVisible === false) {
     return null;
   }
 
-  const isLocked = layerOverride?.isLocked || false;
+  const isLocked = (layerOverride?.isLocked || subLayerOverride?.isLocked) || false;
 
   const currentX = mut?.customX ?? node.mathX;
   const currentY = mut?.customY ?? node.mathY;
   const scale = mut?.manualScale ?? 1.0;
   const radius = (mut?.customR ?? node.mathR) * scale;
-  const baseFill = layerOverride?.color || colorService.getColorForCategory(node.category);
+  const baseFill = subLayerOverride?.color || layerOverride?.color || colorService.getColorForCategory(node.category);
   const fill = mut?.customFill || baseFill;
   const isPinned = mut?.isPinned || false;
 
@@ -467,7 +469,7 @@ export const CanvasNode: React.FC<CanvasNodeProps> = ({ node, blendMode, zoom = 
             fontSize="8"
             fontFamily="SF Mono, monospace"
           >
-            {node.category} {node.valueX !== undefined ? `• ${node.valueX.toLocaleString()}` : ''}
+            {node.subCategory ? `${node.category} › ${node.subCategory}` : node.category} {node.valueX !== undefined ? `• ${node.valueX.toLocaleString()}` : ''}
           </text>
         </g>
       )}

@@ -98,6 +98,7 @@ export interface BaseNode {
   mathY: number;
   mathR: number;
   category: string;
+  subCategory?: string;
   label: string;
   glyphShape?: GlyphShape;
   valueX?: number;

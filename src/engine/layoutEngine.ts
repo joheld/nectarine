@@ -7,6 +7,7 @@ import {
   CelestialOrbit,
   ConstellationLink,
   CurvedTextPath,
+  GlyphShape,
 } from './types';
 import { createLinearScale, createBandScale, createSqrtScale } from './scales';
 import { colorService } from '../services/colorService';
@@ -39,7 +40,7 @@ export interface ComputedLayoutResult {
 export function computeLayout(
   chartType: ChartType,
   rows: Record<string, any>[],
-  mappings: { x?: string; y?: string; category?: string; size?: string },
+  mappings: { x?: string; y?: string; category?: string; size?: string; subCategory?: string },
   bounds: LayoutBounds
 ): ComputedLayoutResult {
   const { width, height, padding } = bounds;
@@ -51,9 +52,26 @@ export function computeLayout(
   }
 
   const catKey = mappings.category || Object.keys(rows[0])[0];
+  const subCatKey = mappings.subCategory;
   const xKey = mappings.x;
   const yKey = mappings.y;
   const sizeKey = mappings.size;
+
+  const GLYPH_CYCLE: GlyphShape[] = ['circle', 'petal', 'star', 'diamond', 'seed'];
+  const subCatToGlyph = new Map<string, GlyphShape>();
+  if (subCatKey) {
+    const distinctSubCats = Array.from(new Set(rows.map((r) => String(r[subCatKey] ?? '')))).filter(Boolean);
+    distinctSubCats.forEach((sc, idx) => {
+      subCatToGlyph.set(sc, GLYPH_CYCLE[idx % GLYPH_CYCLE.length]);
+    });
+  }
+
+  const getSubCatInfo = (r: Record<string, any>) => {
+    if (!subCatKey || r[subCatKey] === undefined) return {};
+    const subCategory = String(r[subCatKey]);
+    const glyphShape = subCatToGlyph.get(subCategory);
+    return { subCategory, ...(glyphShape ? { glyphShape } : {}) };
+  };
 
   let computedNodes: BaseNode[] = [];
   let xTicks: { value: string | number; x: number }[] = [];
@@ -98,6 +116,7 @@ export function computeLayout(
           valueX: i,
           valueY: yVal,
           metadata: r,
+          ...getSubCatInfo(r),
         };
       });
       break;
@@ -146,6 +165,7 @@ export function computeLayout(
           valueY: yVal,
           valueSize: sVal,
           metadata: r,
+          ...getSubCatInfo(r),
         };
       });
       break;
@@ -231,6 +251,7 @@ export function computeLayout(
         category: sn.category,
         label: `${sn.category} (#${idx})`,
         metadata: rows[idx],
+        ...getSubCatInfo(rows[idx]),
       }));
       break;
     }
@@ -259,6 +280,7 @@ export function computeLayout(
           valueX: i,
           valueY: yVal,
           metadata: r,
+          ...getSubCatInfo(r),
         };
       });
       break;
@@ -294,6 +316,7 @@ export function computeLayout(
           valueX: sortedIdx,
           valueY: yVal,
           metadata: r,
+          ...getSubCatInfo(r),
         };
       });
 
@@ -400,6 +423,7 @@ export function computeLayout(
           valueX: i,
           valueY: yVal,
           metadata: r,
+          ...getSubCatInfo(r),
         };
       });
 
@@ -497,6 +521,7 @@ export function computeLayout(
           valueX: i,
           valueY: yVal,
           metadata: r,
+          ...getSubCatInfo(r),
         };
       });
 

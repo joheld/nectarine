@@ -24,10 +24,12 @@ interface DataState {
   profiledColumns: ProfiledColumn[];
   chartType: ChartType;
   defaultGlyphShape: GlyphShape;
+  subGroupCol: string;
   mappings: {
     x?: string;
     y?: string;
     category?: string;
+    subCategory?: string;
     size?: string;
   };
   baseNodes: BaseNode[];
@@ -53,6 +55,7 @@ interface DataState {
   reconcileDataset: (name: string, rows: Record<string, any>[], matchKey?: string) => ReconciliationReport;
   clearReconciliationReport: () => void;
   setDefaultGlyphShape: (shape: GlyphShape) => void;
+  setSubGroupCol: (col: string) => void;
   setChartType: (type: ChartType) => void;
   setMappings: (mappings: Partial<DataState['mappings']>) => void;
   setLayoutBounds: (bounds: LayoutBounds) => void;
@@ -78,6 +81,7 @@ export const useDataStore = create<DataState>((set, get) => ({
   profiledColumns: [],
   chartType: 'scatter',
   defaultGlyphShape: 'circle',
+  subGroupCol: '',
   mappings: {},
   baseNodes: [],
   voronoiCells: new Map(),
@@ -124,6 +128,7 @@ export const useDataStore = create<DataState>((set, get) => ({
       filterConjunction: 'AND',
       profiledColumns: profiled,
       chartType: firstCompatible,
+      subGroupCol: '',
       mappings: {
         x: suggested.x || profiled.find((c) => c.type === 'number')?.name,
         y: suggested.y || profiled.filter((c) => c.type === 'number')[1]?.name,
@@ -223,19 +228,35 @@ export const useDataStore = create<DataState>((set, get) => ({
     get().recalculateLayout();
   },
 
+  setSubGroupCol: (col) => {
+    set((state) => ({
+      subGroupCol: col,
+      mappings: {
+        ...state.mappings,
+        subCategory: col || undefined,
+      },
+    }));
+    get().recalculateLayout();
+  },
+
   setLayoutBounds: (bounds) => {
     set({ layoutBounds: bounds });
     get().recalculateLayout();
   },
 
   recalculateLayout: () => {
-    const { chartType, activeRows, mappings, layoutBounds, defaultGlyphShape } = get();
+    const { chartType, activeRows, mappings, layoutBounds, defaultGlyphShape, subGroupCol } = get();
     if (activeRows.length === 0) return;
 
-    const result = computeLayout(chartType, activeRows, mappings, layoutBounds);
+    const effectiveMappings = {
+      ...mappings,
+      subCategory: subGroupCol || mappings.subCategory || undefined,
+    };
+
+    const result = computeLayout(chartType, activeRows, effectiveMappings, layoutBounds);
     const nodesWithGlyph = result.nodes.map((node) => ({
       ...node,
-      glyphShape: defaultGlyphShape,
+      glyphShape: node.glyphShape || defaultGlyphShape,
     }));
     set({
       baseNodes: nodesWithGlyph,

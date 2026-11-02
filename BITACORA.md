@@ -712,3 +712,43 @@ Con el objetivo de compartir Nectarine Studio con visualizadores de datos de ren
 - `bun run verify` (`tsc -b && vite build`): 0 errores de tipado, compilación en 2.23s.
 - Verificación con Playwright: capturas PNG confirmaron el renderizado impecable de las tarjetas demo y el tooltip flotante al posar el cursor sobre un nodo.
 - Socket HTTP 200 en puerto 5220 y sellado de código en `/Users/joe/Desktop/Nectarine.app` verificados.
+
+---
+
+## Entrada 022 — Subagrupación Jerárquica Viva: Árbol Auto-Expandible, Glifos Morfológicos y Visibilidad por Subgrupo
+- **Fecha y Hora**: 2026-11-02 15:35
+- **Fase**: Fase 6: Capas Semánticas Jerárquicas & Morfología Multi-Dimensión
+- **Arquitecto**: Antigravity Principal Software Architect
+
+### Diagnóstico de Brechas (En respuesta al reporte "lo de subagrupar no sirve")
+1. **Estado Aislado e Incomunicado**: `subGroupCol` se almacenaba en un `useState` local dentro de `SemanticLayersPanel.tsx`. Ni `dataStore.ts`, ni `layoutEngine.ts`, ni `CanvasNode.tsx` se enteraban de la selección del usuario.
+2. **Carpetas Colapsadas por Defecto**: Las carpetas de categorías iniciaban en estado colapsado (`isCollapsed = collapsedFolders[category] ?? true`). Al seleccionar una sub-agrupación, el usuario no percibía ningún cambio visual porque las sub-carpetas permanecían ocultas dentro de los grupos cerrados.
+3. **Cero Impacto Visual en el Lienzo**: La selección de subagrupación no alteraba en nada los nodos, colores, glifos ni tooltips del lienzo SVG.
+4. **Sobreescritura Destructiva de Glifos**: En `dataStore.ts`, el método `recalculateLayout()` forzaba `glyphShape: defaultGlyphShape`, anulando cualquier morfología calculada por el motor.
+5. **Carencia de Controles de Subcapa**: Los subgrupos no contaban con controles independientes de visibilidad (ocultar/mostrar), bloqueo o selección de entidades.
+
+### Arquitectura de la Solución Implementada
+1. **Promoción de Estado a Nivel de Tienda Global (`dataStore.ts`)**:
+   - `subGroupCol: string` y `setSubGroupCol: (col: string) => void` añadidos a `DataState`.
+   - `recalculateLayout()` preserva la forma asignada a cada nodo (`glyphShape: node.glyphShape || defaultGlyphShape`).
+2. **Motor Matemático con Mapeo Morfológico Secundario (`layoutEngine.ts` & `types.ts`)**:
+   - Propiedad `subCategory?: string` añadida a `BaseNode`.
+   - En `computeLayout`, si `subGroupCol` está activo, se asigna `node.subCategory` a partir de los datos crudos.
+   - Algoritmo de asignación morfológica cíclica (`subCatToGlyph`): cada subcategoría recibe de forma determinista uno de los 5 glifos editoriales (`circle`, `petal`, `star`, `diamond`, `seed`), permitiendo distinguir inmediatamente las sub-dimensiones en cualquier geometría (dispersión, burbujas, voronoi, barras, ondas, etc.).
+3. **Panel de Capas Semánticas Reactivo (`SemanticLayersPanel.tsx`)**:
+   - Conectado directamente a `useDataStore()`.
+   - **Auto-expansión Inteligente**: Al seleccionar una sub-agrupación, todas las carpetas se despliegan automáticamente (`isCollapsed = collapsedFolders[category] ?? (subGroupCol ? false : true)`).
+   - Filas de subgrupo con:
+     - Badge numérico con el recuento exacto de elementos.
+     - Indicador visual del glifo asignado (*círculo, pétalo, estrella, rombo, semilla*).
+     - Botón de visibilidad individual (`Eye` / `EyeOff`) conmutando la sub-capa `${category}:${subCategory}`.
+     - Botón de bloqueo individual (`Lock` / `Unlock`).
+     - Clic en la fila para seleccionar de golpe todos los nodos de ese subgrupo específico.
+4. **Lienzo y Tooltips con Migas de Pan Jerárquicas (`CanvasNode.tsx`)**:
+   - Respeto estricto a la visibilidad y bloqueo jerárquico de sub-capa.
+   - Tooltip flotante de precisión actualizado para mostrar la ruta completa de datos: `${node.category} › ${node.subCategory}`.
+5. **Batería Zero-Defect**:
+   - Nuevo test unitario en `tests/toolsAndAnnotations.test.ts` verificando la subagrupación jerárquica y asignación de glifos.
+   - `bun test`: 37/37 tests pasados (100%).
+   - `bun run verify` (`tsc -b && vite build`): 0 errores, compilación de producción limpia en 2.50s.
+   - Socket HTTP 200 en puerto 5220 y sellado de código en `/Users/joe/Desktop/Nectarine.app` verificados.

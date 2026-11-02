@@ -178,4 +178,34 @@ describe('Canvas Tools, Hand/Pan & Dynamic Annotations Suite', () => {
     useDataStore.getState().loadDataset(demo2.name, demo2.rows);
     expect(useDataStore.getState().baseNodes.length).toBe(demo2.rows.length);
   });
+
+  it('supports dynamic hierarchical sub-grouping assigning glyphs and subCategory metadata', () => {
+    const dataStore = useDataStore.getState();
+    dataStore.loadDataset('test_subgroup.csv', [
+      { id: 1, pais: 'Noruega', region: 'Europa', nivel: 'Alto', valor: 90 },
+      { id: 2, pais: 'España', region: 'Europa', nivel: 'Medio', valor: 60 },
+      { id: 3, pais: 'Japón', region: 'Asia', nivel: 'Alto', valor: 85 },
+      { id: 4, pais: 'India', region: 'Asia', nivel: 'Bajo', valor: 30 },
+    ]);
+
+    // Apply primary category = region
+    dataStore.setMappings({ category: 'region' });
+    expect(useDataStore.getState().baseNodes[0].category).toBe('Europa');
+
+    // Apply sub-grouping by 'nivel'
+    dataStore.setSubGroupCol('nivel');
+    const nodes = useDataStore.getState().baseNodes;
+
+    expect(nodes[0].subCategory).toBe('Alto');
+    expect(nodes[1].subCategory).toBe('Medio');
+    expect(nodes[2].subCategory).toBe('Alto');
+    expect(nodes[3].subCategory).toBe('Bajo');
+
+    // Distinct subcategories receive distinct morphological glyphs
+    const glyphAlto = nodes[0].glyphShape;
+    const glyphMedio = nodes[1].glyphShape;
+    expect(glyphAlto).toBeDefined();
+    expect(glyphMedio).toBeDefined();
+    expect(glyphAlto).not.toBe(glyphMedio);
+  });
 });
