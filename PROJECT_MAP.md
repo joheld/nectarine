@@ -32,6 +32,7 @@ gitGraph
     commit id: "feat-pro-visual-architecture-redesign" tag: "v3.2.0"
     commit id: "feat-demo-datasets-hover-tooltips-undo-redo" tag: "v3.3.0"
     commit id: "feat-hierarchical-subgrouping-engine" tag: "v3.4.0"
+    commit id: "release-github-public" tag: "v3.5.0"
 ```
 
 ---
@@ -71,6 +72,7 @@ gitGraph
 | **CP-28** | Auditoría Visual Forense (Visión Computacional) & Rediseño Pro | Inspección empírica de capturas PNG con Playwright: resolución del desbordamiento horizontal en la barra superior (erradicación de selects anchos, visibilidad 100% de 'Copiar a Figma' y 'Exportar SVG'), reubicación ergonómica de la tira de herramientas en el extremo exterior izquierdo (48px), dimensionamiento simétrico de Capas (256px) e implementación del Inspector Permanente Dual (`NodeInspector.tsx`: 'Estudio & Estilo' con swatches de color y controles táctiles cuando no hay selección, e 'Inspector de Vector' cuando se selecciona un elemento). | **Completado** |
 | **CP-29** | Blindaje para Evaluadores de Élite: Demos 1-Clic, Tooltips Hover & Pila Undo/Redo (<kbd>⌘Z</kbd>) | Erradicación total de las 3 fuentes de fricción: 1) Dos datasets de demostración curados listos para cargar en 1 clic ('Desarrollo Humano' y 'Cosmos & Exoplanetas') en la tarjeta de lienzo vacío para desbloquear y probar las 9 geometrías en 2 segundos. 2) Tooltip visual de precisión al posar el cursor (`CanvasNode.tsx`) con nombre, categoría y métricas tabulares. 3) Pila reactiva de Deshacer/Rehacer (<kbd>⌘Z</kbd> / <kbd>⌘⇧Z</kbd>) en `mutationStore.ts` para revertir posiciones, colores, escalas y manetas Bézier. | **Completado** |
 | **CP-30** | Subagrupación Jerárquica Viva & Glifos Morfológicos Secundarios | Reparación integral de subagrupación: conexión directa a `dataStore.ts` y `layoutEngine.ts`. Auto-expansión automática de carpetas al seleccionar sub-grupo, asignación algorítmica de glifos morfológicos distintos (`circle`, `petal`, `star`, `diamond`, `seed`) por subcategoría en todas las geometrías, controles de visibilidad/bloqueo individual por sub-capa, selección grupal en 1 clic y tooltips con breadcrumb (`Categoría › Subgrupo`). | **Completado** |
+| **CP-31** | Publicación Open Source en GitHub | Creación y publicación del repositorio público oficial (`joheld/nectarine`), documentación ejecutiva README.md y cierre seguro del entorno local. | **Completado** |
 
 ---
 
@@ -118,5 +120,5 @@ flowchart TD
 
 ## 4. Estado de la Sesión
 
-- **Estado Actual**: Subagrupación jerárquica viva y plenamente operativa en Nectarine Studio. 1) `subGroupCol` promovido a `dataStore.ts` y propagado al motor D3 `layoutEngine.ts`. 2) Auto-expansión instantánea de carpetas en el panel de capas al elegir una dimensión secundaria. 3) Asignación algorítmica de glifos morfológicos editoriales (`circle`, `petal`, `star`, `diamond`, `seed`) diferenciando visualmente cada subgrupo en el lienzo. 4) Controles independientes de visibilidad (`Eye`/`EyeOff`), bloqueo y selección por subgrupo. 5) Tooltips de precisión con migas de pan (`Categoría › Subgrupo`). 37/37 tests unitarios aprobados, compilación limpia en 2.50s y HTTP 200 en puerto 5220.
-- **Siguiente Paso**: Commit atómico y entrega explicativa al usuario con confirmación de operatividad.
+- **Estado Actual**: 🚀 Publicado en GitHub como repositorio público oficial (`joheld/nectarine`). Respaldo íntegro y cierre seguro del entorno local hacia la Papelera de macOS.
+- **Siguiente Paso**: Proyecto cerrado y respaldado en la nube. Reutilizar vía clonación Git cuando sea requerido.
